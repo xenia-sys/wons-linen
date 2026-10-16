@@ -8,7 +8,9 @@ Status on 2026-10-16:
 - Vercel account ID: team_TeJvTdxaTdqJwtuVI310fE8k.
 - Local Vercel pointer is set. CLI authentication and env pull are not complete.
 - Supabase organization confirmed: xenia-sys's Org (okdhtacryxvtoojfocaq). The cost tool quoted USD 0/month, but project creation was rejected because the owner already has 2 active Free projects. Do not pause/delete existing projects or upgrade without owner instruction.
-- No Supabase keys, migrations, seed, development server or live deployment.
+- No Supabase keys, migrations, seed or development server.
+- Initial scaffold Git deployment d03c9ac verified READY in Vercel and success in GitHub commit status. The deployed page embeds the approved mockup; no live commerce or database is connected.
+- Direct browser verification of the deployed page timed out; deployment success is not end-to-end commerce verification.
 
 ## Resume in order
 
