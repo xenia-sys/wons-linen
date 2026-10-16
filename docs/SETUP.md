@@ -11,7 +11,8 @@ Verified on 2026-10-16:
 - Local .env.local is ignored by Git and contains only the public configuration and checkout flag. Local Vercel pointer matches the project above. CLI authentication/env pull have not been set up; connector configuration was used.
 - Server-only secret/service-role key has NOT been provisioned. Add one only when a reviewed server-side feature actually needs it; never expose it in public code or preview builds.
 - Verified: SQL connection to the new WONS database and HTTP 200 from its public Auth settings endpoint using the publishable key. The REST OpenAPI root requires a secret key and is intentionally not used for public-key verification.
-- No database migrations, catalog seed, commerce tables, auth roles or live checkout have been implemented.
+- The native storefront now reads products and variants from the public catalog using the publishable key. The preview migration creates 6 demo products and 42 variants; this is illustrative catalog data, not real inventory.
+- Both catalog tables have RLS and explicit SELECT grants for anon/authenticated. Hidden products and their variants are excluded by policy. Neither public role has INSERT/UPDATE/DELETE privileges. No privileged key or production write access has been added to previews.
 
 ## Source project pause and backup
 
@@ -26,8 +27,15 @@ npm run check:env
 npm run check:supabase
 npm run dev
 npm run typecheck
+npm test
 npm run build
 
-The public-client helper in lib/supabase.ts is for public reads only. All exposed tables must have RLS. No anon write policies exist yet; review environment isolation before adding any writes. Preview must not obtain production data write privileges.
+The public-client helper in lib/supabase.ts is for public reads only. All exposed tables must have RLS. Review environment isolation before adding any writes. Preview must not obtain production data write privileges.
 
-Next build native storefront components, then design and review schema/RLS, catalog management and checkout. The current homepage embeds the approved interactive mockup. It does not persist orders or take payment. Build/REST endpoint success does not verify a completed commerce flow.
+The homepage, Women/Men catalog, product pages, search, category filters, price sorting and bag are native Next.js components. Noto Sans and Noto Serif are self-hosted with their OFL licenses. The original mockup remains at /design-preview.html for design reference only.
+
+The bag stores only variant IDs and quantities under wons.bag.v1 in browser localStorage. It revalidates against the current catalog and never trusts a stored price. Preview quantity limits are illustrative; items are not reserved. Checkout is visibly closed and POST /api/checkout always returns 503 CHECKOUT_NOT_OPEN, even if CHECKOUT_ENABLED is changed. No order, address, payment, email or account is collected.
+
+Before opening purchases: obtain approved photography, catalog prices, fabric/fit/size data, launch status for Men, shipping/tax/payment/returns decisions and client-care contacts. Implement authenticated administration, authoritative checkout with inventory concurrency and idempotency, payment verification and order lifecycle; pass BRD U01–U08. Build/catalog success is not evidence of a completed commerce flow.
+
+Migration history is tracked in supabase/migrations. The file version matches the migration applied to the hosted WONS project. Apply only to the dedicated project; never to Studio Hub or the paused source project.
