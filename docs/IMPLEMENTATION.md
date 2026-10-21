@@ -10,6 +10,7 @@ The approved editorial direction is implemented with native Next.js pages. All c
 - Browser bag persistence and cross-tab updates; malformed/stale data is sanitized.
 - Read-only Supabase catalog with RLS. No customer data or orders tables.
 - Responsive CSS, keyboard focus, live bag feedback, reduced motion support, local fonts and original SVG concept drawings.
+- Product detail gallery with a large image, vertical desktop thumbnails, horizontal mobile thumbnails, previous/next controls, swipe and an accessible enlarged-image modal. Colour changes reset the matching gallery. Photography can be configured in content/product-images.json; see docs/PRODUCT_IMAGES.md. Current assets remain labelled concept illustrations.
 
 ## Deliberately closed before launch
 

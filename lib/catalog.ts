@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { createPublicSupabaseClient } from "./supabase";
 import type { Product } from "./types";
+import productImages from "../content/product-images.json";
 export const getCatalog = cache(async (): Promise<Product[]> => {
   const { data, error } = await createPublicSupabaseClient()
     .from("products")
@@ -18,6 +19,7 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
     .filter((p) => p.variants.length > 0)
     .map((p) => ({
       ...p,
+      images: productImages[p.slug as keyof typeof productImages] ?? [],
       variants: [...p.variants].sort(
         (a, b) =>
           a.color.localeCompare(b.color) ||

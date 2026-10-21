@@ -9,6 +9,13 @@ export type Variant = {
   price_vnd: number;
   available_quantity: number;
 };
+export type ProductImage = {
+  id: string;
+  src: string;
+  alt: string;
+  /** Omit for an image shared by every colour. */
+  color?: string;
+};
 export type Product = {
   id: string;
   slug: string;
@@ -20,6 +27,7 @@ export type Product = {
   is_demo: boolean;
   sort_order: number;
   variants: Variant[];
+  images?: ProductImage[];
 };
 export type CartLine = { variantId: string; quantity: number };
 export type ResolvedLine = CartLine & { product: Product; variant: Variant };

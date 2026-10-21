@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Product } from "../lib/types";
 import { MAX_PER_VARIANT, money } from "../lib/commerce";
 import { useBag } from "./cart-provider";
-import { GarmentArt } from "./garment-art";
+import { ProductGallery } from "./product-gallery";
 import { Arrow } from "./icons";
 export function ProductDetail({ product }: { product: Product }) {
   const colors = [
@@ -12,7 +12,6 @@ export function ProductDetail({ product }: { product: Product }) {
   ];
   const [color, setColor] = useState(colors[0][0]);
   const [size, setSize] = useState("");
-  const [view, setView] = useState("front");
   const [added, setAdded] = useState(false);
   const { lines, add, ready, storageAvailable } = useBag();
   const variant = product.variants.find(
@@ -37,43 +36,12 @@ export function ProductDetail({ product }: { product: Product }) {
         <span>{product.name}</span>
       </nav>
       <section className="product-detail">
-        <div className="product-gallery">
-          <div
-            className={`detail-art art-${product.category.toLowerCase()}`}
-            role="img"
-            aria-label={`${view === "detail" ? "Close-up concept illustration" : "Concept illustration"} of ${product.name} in ${color}`}
-          >
-            <span className="art-label">
-              WONS LINEN / {product.department.toUpperCase()}
-            </span>
-            <GarmentArt
-              category={product.category}
-              color={colors.find((c) => c[0] === color)?.[1]}
-              detail={view === "detail"}
-            />
-            <span className="art-bottom">
-              ILLUSTRATION · PRODUCT PHOTOGRAPHY TO FOLLOW
-            </span>
-          </div>
-          <div
-            className="gallery-controls"
-            role="group"
-            aria-label="Illustration view"
-          >
-            <button
-              aria-pressed={view === "front"}
-              onClick={() => setView("front")}
-            >
-              01 / Full silhouette
-            </button>
-            <button
-              aria-pressed={view === "detail"}
-              onClick={() => setView("detail")}
-            >
-              02 / A closer look
-            </button>
-          </div>
-        </div>
+        <ProductGallery
+          key={`${product.id}:${color}`}
+          product={product}
+          color={color}
+          colorHex={colors.find((c) => c[0] === color)?.[1] ?? "#eee7d7"}
+        />
         <div className="product-info">
           <p className="eyebrow">
             {product.department.toUpperCase()} /{" "}

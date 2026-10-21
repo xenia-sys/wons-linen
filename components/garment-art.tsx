@@ -1,18 +1,77 @@
 import { useId } from "react";
 import type { Category } from "../lib/types";
+import type { IllustrationView } from "../lib/product-gallery";
 // Original SVG concept drawings. Replace with approved product photography before launch.
 export function GarmentArt({
   category,
   color = "#e9e1d2",
   className = "",
   detail = false,
+  view = "front",
 }: {
   category: Category;
   color?: string;
   className?: string;
   detail?: boolean;
+  view?: IllustrationView;
 }) {
   const id = useId().replace(/:/g, "");
+  if (view === "fabric") {
+    return (
+      <svg
+        className={`garment-art ${className}`}
+        viewBox="0 0 500 530"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient id={`${id}-fold`} x1="0" x2="1" y1="0" y2=".7">
+            <stop stopColor={color} />
+            <stop offset=".32" stopColor={color} />
+            <stop offset=".46" stopColor="#f8f4eb" />
+            <stop offset=".55" stopColor={color} />
+            <stop offset=".72" stopColor="#9f927b" />
+            <stop offset="1" stopColor={color} />
+          </linearGradient>
+          <pattern
+            id={`${id}-weave`}
+            width="12"
+            height="12"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(-15)"
+          >
+            <path
+              d="M0 3h12M0 9h12"
+              stroke="#766951"
+              strokeOpacity=".28"
+              strokeWidth="2"
+            />
+            <path
+              d="M3 0v12M9 0v12"
+              stroke="#fff9ed"
+              strokeOpacity=".52"
+              strokeWidth="2"
+            />
+            <path
+              d="M0 5h12M5 0v12"
+              stroke="#75684f"
+              strokeOpacity=".14"
+              strokeWidth="1"
+            />
+          </pattern>
+        </defs>
+        <path d="M-30-20h560v570H-30Z" fill={`url(#${id}-fold)`} />
+        <path d="M-30-20h560v570H-30Z" fill={`url(#${id}-weave)`} />
+        <path
+          d="M-30 400Q190 220 540 100"
+          fill="none"
+          stroke="#fbf6e7"
+          strokeOpacity=".3"
+          strokeWidth="12"
+        />
+      </svg>
+    );
+  }
   const shirt = (
     <g>
       <path
@@ -22,28 +81,55 @@ export function GarmentArt({
         strokeOpacity=".24"
         strokeWidth="1.5"
       />
+      {view === "back" ? (
+        <>
+          <path
+            d="M215 77q35 26 70 0l13 20q-48 27-96 0Z"
+            fill={color}
+            stroke="#6e6554"
+            strokeOpacity=".3"
+          />
+          <path
+            d="M178 145q72 17 144 0m-72 11v270m-8-268v38m16-38v38"
+            fill="none"
+            stroke="#6e6554"
+            strokeOpacity=".28"
+          />
+        </>
+      ) : (
+        <path
+          d="m215 77 35 24-23 43-36-55m94-12-35 24 23 43 36-55"
+          fill={color}
+          stroke="#6e6554"
+          strokeOpacity=".32"
+        />
+      )}
       <path
-        d="m215 77 35 24-23 43-36-55m94-12-35 24 23 43 36-55"
-        fill={color}
-        stroke="#6e6554"
-        strokeOpacity=".32"
-      />
-      <path
-        d="M250 103v329m-76-243 8-65m144 65-8-65m-148 289q80 10 160 0M109 160l42 44m198 0 42-44"
+        d={`${view === "back" ? "" : "M250 103v329"}M174 189l8-65M326 189l-8-65M170 413q80 10 160 0M109 160l42 44m198 0 42-44`}
         fill="none"
         stroke="#6e6554"
         strokeOpacity=".22"
         strokeWidth="1.5"
       />
-      {[158, 211, 264, 317, 370, 416].map((y) => (
-        <circle key={y} cx="256" cy={y} r="2.3" fill="#817665" opacity=".65" />
-      ))}
-      <path
-        d="M280 163h29v39q-15 6-29 0Z"
-        fill="none"
-        stroke="#6e6554"
-        strokeOpacity=".26"
-      />
+      {view !== "back" &&
+        [158, 211, 264, 317, 370, 416].map((y) => (
+          <circle
+            key={y}
+            cx="256"
+            cy={y}
+            r="2.3"
+            fill="#817665"
+            opacity=".65"
+          />
+        ))}
+      {view !== "back" && (
+        <path
+          d="M280 163h29v39q-15 6-29 0Z"
+          fill="none"
+          stroke="#6e6554"
+          strokeOpacity=".26"
+        />
+      )}
       <path
         d="m195 183-7 185m107-127 10 139m-89-228-8 114"
         stroke="#fff"
@@ -62,7 +148,11 @@ export function GarmentArt({
         strokeOpacity=".28"
       />
       <path
-        d="M177 96h146m-72-15v138m-56-123-21 350m130-350 21 350m-166 0 72 6m39 0 72-6M179 110l26 33m116-33-26 33"
+        d={
+          view === "back"
+            ? "M177 96h146m-72 0v123m-72 227 72 6m39 0 72-6M185 148h41v43h-41Zm89 0h41v43h-41Z"
+            : "M177 96h146m-72-15v138m-56-123-21 350m130-350 21 350m-166 0 72 6m39 0 72-6M179 110l26 33m116-33-26 33"
+        }
         fill="none"
         stroke="#6e6554"
         strokeOpacity=".24"
@@ -75,13 +165,17 @@ export function GarmentArt({
         strokeOpacity=".3"
         strokeWidth="5"
       />
-      <circle cx="250" cy="88" r="2.5" fill="#817665" />
+      {view !== "back" && <circle cx="250" cy="88" r="2.5" fill="#817665" />}
     </g>
   );
   const dress = (
     <g>
       <path
-        d="M198 78h25l4 44h46l4-44h25l13 113q-11 20-16 40l62 224q-111 20-222 0l62-224q-5-20-16-40Z"
+        d={
+          view === "back"
+            ? "M198 78h25l4 67h46l4-67h25l13 113q-11 20-16 40l62 224q-111 20-222 0l62-224q-5-20-16-40Z"
+            : "M198 78h25l4 44h46l4-44h25l13 113q-11 20-16 40l62 224q-111 20-222 0l62-224q-5-20-16-40Z"
+        }
         fill={`url(#${id}-cloth)`}
         stroke="#6e6554"
         strokeOpacity=".28"
@@ -133,7 +227,13 @@ export function GarmentArt({
           />
         </filter>
       </defs>
-      <g transform={detail ? "translate(-130 -65) scale(1.55)" : undefined}>
+      <g
+        transform={
+          detail || view === "detail"
+            ? "translate(-130 -65) scale(1.55)"
+            : undefined
+        }
+      >
         <g filter={`url(#${id}-shadow)`}>
           {category === "Dresses" ? (
             dress
