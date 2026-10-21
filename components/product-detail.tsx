@@ -2,7 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Product } from "../lib/types";
-import { MAX_PER_VARIANT, money } from "../lib/commerce";
+import { MAX_PER_VARIANT, unitPrice } from "../lib/commerce";
+import { ProductPrice } from "./product-price";
 import { useBag } from "./cart-provider";
 import { ProductGallery } from "./product-gallery";
 import { Arrow } from "./icons";
@@ -17,6 +18,11 @@ export function ProductDetail({ product }: { product: Product }) {
   const variant = product.variants.find(
     (v) => v.color === color && v.size === size,
   );
+  const displayedVariant =
+    variant ??
+    [...product.variants.filter((v) => v.color === color)].sort(
+      (a, b) => unitPrice(a) - unitPrice(b),
+    )[0];
   const sizes = [...new Set(product.variants.map((v) => v.size))];
   const inBag =
     lines.find((line) => line.variantId === variant?.id)?.quantity ?? 0;
@@ -49,18 +55,13 @@ export function ProductDetail({ product }: { product: Product }) {
           </p>
           <h1>{product.name}</h1>
           <p className="detail-price">
-            {money(
-              variant?.price_vnd ??
-                Math.min(
-                  ...product.variants
-                    .filter((v) => v.color === color)
-                    .map((v) => v.price_vnd),
-                ),
-            )}
+            <ProductPrice variant={displayedVariant} />
           </p>
           <p className="product-description">{product.description}</p>
           <span className="preview-pill">
-            Collection preview · Sample price
+            {product.is_demo
+              ? "Collection preview · Sample price"
+              : "Collection preview · Orders are not open"}
           </span>
           <fieldset>
             <legend>

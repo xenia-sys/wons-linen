@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getCatalog } from "../lib/catalog";
-import { CartProvider } from "../components/cart-provider";
-import { Header } from "../components/header";
-import { Footer } from "../components/footer";
+import { StorefrontShell } from "../components/storefront-shell";
 import "./globals.css";
 const sans = localFont({
   src: [
@@ -38,13 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body>
-        <CartProvider products={products}>
-          <Header />
-          <main id="main" tabIndex={-1}>
-            {children}
-          </main>
-          <Footer />
-        </CartProvider>
+        <StorefrontShell products={products}>{children}</StorefrontShell>
       </body>
     </html>
   );

@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "check:env": "node scripts/check-env.mjs",
     "check:supabase": "node scripts/check-supabase.mjs",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test:rls": "node scripts/test-admin-rls.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",
@@ -22,6 +23,7 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
     "@types/node": "24.0.0",
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",

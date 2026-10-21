@@ -6,7 +6,7 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
   const { data, error } = await createPublicSupabaseClient()
     .from("products")
     .select(
-      "id,slug,name,department,category,description,status,is_demo,sort_order,variants(id,sku,color,color_hex,size,price_vnd,available_quantity)",
+      "id,slug,name,department,category,description,status,is_demo,sort_order,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order)",
     )
     .in("status", ["preview", "published"])
     .order("sort_order")
@@ -15,11 +15,30 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
     throw new Error(
       "The WONS collection could not be loaded. Please try again shortly.",
     );
-  return (data as Product[])
+  return (
+    data as unknown as (Product & {
+      product_images: {
+        id: string;
+        storage_path: string;
+        alt: string;
+        color: string | null;
+        sort_order: number;
+      }[];
+    })[]
+  )
     .filter((p) => p.variants.length > 0)
-    .map((p) => ({
+    .map(({ product_images, ...p }) => ({
       ...p,
-      images: productImages[p.slug as keyof typeof productImages] ?? [],
+      images: product_images.length
+        ? [...product_images]
+            .sort((a, b) => a.sort_order - b.sort_order)
+            .map((i) => ({
+              id: i.id,
+              src: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${i.storage_path}`,
+              alt: i.alt,
+              color: i.color ?? undefined,
+            }))
+        : (productImages[p.slug as keyof typeof productImages] ?? []),
       variants: [...p.variants].sort(
         (a, b) =>
           a.color.localeCompare(b.color) ||

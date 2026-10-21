@@ -1,9 +1,15 @@
 import Link from "next/link";
-import { money } from "../lib/commerce";
+import Image from "next/image";
+import { unitPrice } from "../lib/commerce";
+import { ProductPrice } from "./product-price";
 import type { Product } from "../lib/types";
 import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
 export function ProductCard({ product }: { product: Product }) {
+  const lowest = [...product.variants].sort(
+    (a, b) => unitPrice(a) - unitPrice(b),
+  )[0];
+  const cover = product.images?.[0];
   const colors = [
     ...new Map(product.variants.map((v) => [v.color, v.color_hex])).entries(),
   ];
@@ -14,11 +20,21 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="art-label">
             {product.department} / {product.category}
           </span>
-          <GarmentArt
-            category={product.category}
-            color={colors[product.sort_order % colors.length]?.[1]}
-          />
-          <span className="art-bottom">ILLUSTRATED STUDY</span>
+          {cover ? (
+            <Image
+              src={cover.src}
+              alt=""
+              fill
+              sizes="(max-width: 700px) 50vw, 33vw"
+              style={{ objectFit: "cover" }}
+            />
+          ) : (
+            <GarmentArt
+              category={product.category}
+              color={colors[product.sort_order % colors.length]?.[1]}
+            />
+          )}
+          {!cover && <span className="art-bottom">ILLUSTRATED STUDY</span>}
           <span className="product-arrow">
             <Arrow diagonal />
           </span>
@@ -27,7 +43,7 @@ export function ProductCard({ product }: { product: Product }) {
           <h3>{product.name}</h3>
         </div>
         <p className="product-price">
-          {money(Math.min(...product.variants.map((v) => v.price_vnd)))}
+          <ProductPrice variant={lowest} />
         </p>
         <div className="product-colors">
           {colors.map(([color, hex]) => (

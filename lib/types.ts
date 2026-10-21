@@ -7,6 +7,7 @@ export type Variant = {
   color_hex: string;
   size: string;
   price_vnd: number;
+  sale_price_vnd?: number | null;
   available_quantity: number;
 };
 export type ProductImage = {

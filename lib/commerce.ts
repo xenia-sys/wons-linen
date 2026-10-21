@@ -1,8 +1,17 @@
-import type { CartLine, Product, ResolvedLine } from "./types.ts";
+import type { CartLine, Product, ResolvedLine, Variant } from "./types.ts";
 export const CART_KEY = "wons.bag.v1";
 export const MAX_PER_VARIANT = 10;
 export function money(amount: number) {
   return `VND ${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(amount)}`;
+}
+export function unitPrice(
+  variant: Pick<Variant, "price_vnd" | "sale_price_vnd">,
+) {
+  return variant.sale_price_vnd != null &&
+    variant.sale_price_vnd > 0 &&
+    variant.sale_price_vnd < variant.price_vnd
+    ? variant.sale_price_vnd
+    : variant.price_vnd;
 }
 export function findVariant(products: Product[], variantId: string) {
   for (const product of products) {
@@ -68,7 +77,7 @@ export function resolveCart(
 }
 export function subtotal(lines: ResolvedLine[]) {
   return lines.reduce(
-    (total, line) => total + line.variant.price_vnd * line.quantity,
+    (total, line) => total + unitPrice(line.variant) * line.quantity,
     0,
   );
 }
@@ -91,8 +100,8 @@ export function filterProducts(
   if (sort === "price-asc" || sort === "price-desc")
     filtered.sort(
       (a, b) =>
-        (Math.min(...a.variants.map((v) => v.price_vnd)) -
-          Math.min(...b.variants.map((v) => v.price_vnd))) *
+        (Math.min(...a.variants.map(unitPrice)) -
+          Math.min(...b.variants.map(unitPrice))) *
         (sort === "price-asc" ? 1 : -1),
     );
   return filtered;

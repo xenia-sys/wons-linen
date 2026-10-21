@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useBag } from "./cart-provider";
-import { MAX_PER_VARIANT, money, subtotal } from "../lib/commerce";
+import { MAX_PER_VARIANT, money, subtotal, unitPrice } from "../lib/commerce";
 import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
 export function Bag() {
@@ -40,71 +41,91 @@ export function Bag() {
               <span>SUBTOTAL</span>
             </div>
             <ul className="bag-items">
-              {lines.map((line) => (
-                <li key={line.variantId} className="bag-item">
-                  <Link
-                    href={`/products/${line.product.slug}`}
-                    className="bag-thumbnail"
-                    aria-label={line.product.name}
-                  >
-                    <GarmentArt
-                      category={line.product.category}
-                      color={line.variant.color_hex}
-                    />
-                  </Link>
-                  <div className="bag-item-info">
+              {lines.map((line) => {
+                const cover =
+                  line.product.images?.find(
+                    (i) => i.color === line.variant.color,
+                  ) ?? line.product.images?.find((i) => !i.color);
+                return (
+                  <li key={line.variantId} className="bag-item">
                     <Link
                       href={`/products/${line.product.slug}`}
-                      className="bag-product-name"
+                      className="bag-thumbnail"
+                      aria-label={line.product.name}
                     >
-                      {line.product.name}
+                      {cover ? (
+                        <Image
+                          src={cover.src}
+                          alt=""
+                          width={160}
+                          height={200}
+                          style={{
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        />
+                      ) : (
+                        <GarmentArt
+                          category={line.product.category}
+                          color={line.variant.color_hex}
+                        />
+                      )}
                     </Link>
-                    <p>
-                      {line.variant.color} / Size {line.variant.size}
-                    </p>
-                    <p>{money(line.variant.price_vnd)}</p>
-                    <div className="quantity-row">
-                      <div className="quantity-control">
+                    <div className="bag-item-info">
+                      <Link
+                        href={`/products/${line.product.slug}`}
+                        className="bag-product-name"
+                      >
+                        {line.product.name}
+                      </Link>
+                      <p>
+                        {line.variant.color} / Size {line.variant.size}
+                      </p>
+                      <p>{money(unitPrice(line.variant))}</p>
+                      <div className="quantity-row">
+                        <div className="quantity-control">
+                          <button
+                            aria-label={`Decrease quantity of ${line.product.name}, ${line.variant.color}, ${line.variant.size}`}
+                            disabled={line.quantity <= 1}
+                            onClick={() =>
+                              update(line.variantId, line.quantity - 1)
+                            }
+                          >
+                            −
+                          </button>
+                          <span aria-label="Quantity">{line.quantity}</span>
+                          <button
+                            aria-label={`Increase quantity of ${line.product.name}, ${line.variant.color}, ${line.variant.size}`}
+                            disabled={
+                              line.quantity >=
+                              Math.min(
+                                MAX_PER_VARIANT,
+                                line.variant.available_quantity,
+                              )
+                            }
+                            onClick={() =>
+                              update(line.variantId, line.quantity + 1)
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
                         <button
-                          aria-label={`Decrease quantity of ${line.product.name}, ${line.variant.color}, ${line.variant.size}`}
-                          disabled={line.quantity <= 1}
-                          onClick={() =>
-                            update(line.variantId, line.quantity - 1)
-                          }
+                          className="remove-button"
+                          aria-label={`Remove ${line.product.name}, ${line.variant.color}, ${line.variant.size}`}
+                          onClick={() => remove(line.variantId)}
                         >
-                          −
-                        </button>
-                        <span aria-label="Quantity">{line.quantity}</span>
-                        <button
-                          aria-label={`Increase quantity of ${line.product.name}, ${line.variant.color}, ${line.variant.size}`}
-                          disabled={
-                            line.quantity >=
-                            Math.min(
-                              MAX_PER_VARIANT,
-                              line.variant.available_quantity,
-                            )
-                          }
-                          onClick={() =>
-                            update(line.variantId, line.quantity + 1)
-                          }
-                        >
-                          +
+                          Remove
                         </button>
                       </div>
-                      <button
-                        className="remove-button"
-                        aria-label={`Remove ${line.product.name}, ${line.variant.color}, ${line.variant.size}`}
-                        onClick={() => remove(line.variantId)}
-                      >
-                        Remove
-                      </button>
                     </div>
-                  </div>
-                  <span className="bag-line-total">
-                    {money(line.variant.price_vnd * line.quantity)}
-                  </span>
-                </li>
-              ))}
+                    <span className="bag-line-total">
+                      {money(unitPrice(line.variant) * line.quantity)}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
             <p className="bag-note" role="status">
               {storageAvailable
