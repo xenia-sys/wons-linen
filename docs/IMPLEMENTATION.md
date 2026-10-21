@@ -21,6 +21,6 @@ Checkout returns no success state and never accepts payment or creates an order.
 
 Run npm run typecheck, npm test, npm run test:rls, npm run check:supabase and npm run build. Node tests cover admin input validation, discounts and bag behavior. The isolated PostgreSQL suite applies the actual migrations and verifies role policies, atomic/versioned saves and access revocation without touching hosted Auth data.
 
-Hosted checks verify RLS is enabled on all exposed tables and security advisors report no findings. Administration schema/policies were applied only to imgjlzoodxggihhljojf. No initial Owner is assigned until the founder specifies the email. Auth URL/email settings and real staff acceptance remain pending; see docs/ADMIN.md.
+Hosted checks verify RLS is enabled on all exposed tables and security advisors report no findings. Administration schema/policies were applied only to imgjlzoodxggihhljojf. No initial Owner is assigned until the founder specifies the email. Production Auth URLs are configured. Real staff activation, email delivery and authenticated acceptance remain pending; see docs/ADMIN.md.
 
 Complete browser acceptance before claiming any interactive flow verified. Before commercial launch, use the BRD acceptance checklist and replace preview data with approved content.

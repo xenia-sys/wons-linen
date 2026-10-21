@@ -18,14 +18,14 @@ Product deletion is not offered. Hide a product to withdraw it from the website.
 
 No email address is automatically granted Owner access. The founder must specify the initial Owner email; a trusted project operator then adds that exact normalized email to `staff_members`. Do not infer it from GitHub, a different Supabase project or the first person to register. At implementation time, the hosted project has zero Auth users and zero staff memberships.
 
-Before activating real accounts, finish these Supabase Authentication settings in the WONS project only (`imgjlzoodxggihhljojf`):
+Account configuration in the WONS project only (`imgjlzoodxggihhljojf`):
 
-1. Set Site URL to `https://wons-linen.vercel.app` and allow the exact redirect `https://wons-linen.vercel.app/admin/login`. Do not allow wildcard preview redirects.
+1. Site URL is configured as `https://wons-linen.vercel.app` with the exact allowed redirect `https://wons-linen.vercel.app/admin/login`. Both were saved and verified in the Dashboard. Do not allow wildcard preview redirects.
 2. Keep email confirmation enabled. Confirm working email delivery for the intended staff recipients. Supabase's default mail service restricts recipients and is not a verified production delivery channel; configure an approved SMTP provider if required. No paid email service was provisioned.
 3. Approve the founder's email as Owner, then use **Activate a staff account** and confirm its email before signing in. Set the password yourself; never share passwords or confirmation codes with an operator or in chat.
 4. Owner opens **Team & access**, enters a teammate's individual email and selects **Marketing Editor**. Share the admin URL with that teammate. Saving access does not send an invitation or create an Auth account; they activate and confirm their own account separately.
 
-The Supabase Dashboard browser currently requires reauthentication, so URL/email settings and real staff activation are pending. Neither email delivery nor an authenticated production editing session has been accepted yet. A registered account without a matching active, verified staff email has no administration access.
+The Dashboard was reauthenticated and production Auth URLs are configured. Email delivery to real staff and an authenticated production editing session have not been accepted yet. The project currently uses default email templates without an approved custom SMTP setup. A registered account without a matching active, verified staff email has no administration access.
 
 ## Product workflow
 
@@ -47,6 +47,6 @@ Product saves are atomic across product fields, variants and gallery links. A ve
 
 Completed: typecheck, production build, 21 Node tests for input validation/discounts/cart behavior, and `npm run test:rls` using an isolated in-memory PostgreSQL engine. The SQL suite applies the actual migrations to minimal Auth/Storage schema contracts and checks guest/customer denial, hidden rows, Marketing publication/prices/image policies, role escalation denial, Owner team/history, last-Owner protection, stale/atomic saves, disabled staff and revoked sessions. Fixtures are rolled back. It never reads `.env` or connects to hosted Supabase.
 
-Hosted verification is read-only: RLS on every exposed table, bucket limits, existing catalog counts and security advisors. A proposed rollback-based test with synthetic hosted Auth users/sessions was rejected by automatic approval review; the isolated suite replaced it. Do not run `supabase/tests/product_admin.sql` against production.
+Hosted database verification is read-only: RLS on every exposed table, bucket limits, existing catalog counts and security advisors. Public HTTP checks confirm all administration endpoints reject unauthenticated requests with 401 and checkout remains closed with 503. The production deployment is READY and its login UI was verified in the browser. Vercel runtime logs could not be inspected because the logs API returned 403; no CLI login is configured. A proposed rollback-based test with synthetic hosted Auth users/sessions was rejected by automatic approval review; the isolated suite replaced it. Do not run `supabase/tests/product_admin.sql` against production.
 
 Pending real-account acceptance after activation: Owner sign-in, grant one Marketing account, upload an approved photo, set a sale price, publish then hide a designated test product, verify the public gallery and bag after reload, inspect history, revoke access and confirm the next protected request is denied. The isolated database suite does not prove SMTP, real Auth redirects or Storage HTTP upload/download behavior.
