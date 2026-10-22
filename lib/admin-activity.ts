@@ -36,6 +36,7 @@ export const activityFieldLabels: Record<string, string> = {
   color_hex: "Colour code", size: "Size", alt: "Image description",
   display_name: "Name", email: "Email", role: "Role", active: "Access enabled",
   is_demo: "Demo product", sort_order: "Display order",
+  framing: "Image framing",
 };
 export function activityChanges(entry: ActivityEntry) {
   return [...new Set([...Object.keys(entry.before_data ?? {}), ...Object.keys(entry.after_data ?? {})])]
@@ -63,6 +64,7 @@ export function activityAction(entry: ActivityEntry) {
   if (entry.entity_type === "product_images") {
     if (entry.action === "INSERT") return "Image added";
     if (entry.action === "DELETE") return "Image removed";
+    if (changed.includes("framing")) return "Image reframed";
     return changed.includes("sort_order") ? "Gallery reordered" : "Image updated";
   }
   if (entry.entity_type === "variants") {
@@ -81,6 +83,10 @@ export function activityAction(entry: ActivityEntry) {
 }
 export function activityValue(key: string, value: unknown): string {
   if (value === null || value === undefined || value === "") return "—";
+  if (key === "framing" && typeof value === "object") {
+    const frame = value as { x: number; y: number; zoom: number };
+    return `Position ${frame.x}% / ${frame.y}% · Zoom ${Math.round(frame.zoom * 100)}%`;
+  }
   if ((key === "price_vnd" || key === "sale_price_vnd") && typeof value === "number") {
     return "VND " + new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
   }

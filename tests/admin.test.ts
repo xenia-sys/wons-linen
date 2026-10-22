@@ -126,6 +126,14 @@ test("gallery validates product ownership, alt text, colour matching and duplica
     /once/,
   );
 });
+test("product saves carry framing, allow reset and preserve omitted legacy fields", () => {
+  const image = { storage_path: `${pid}/${imageId}.webp`, alt: "Front view", color: null };
+  const framing = { x: 24, y: 67, zoom: 1.8 };
+  assert.deepEqual(parseProductDraft({ ...draft(), images: [{ ...image, framing }] }).images[0].framing, framing);
+  assert.equal(parseProductDraft({ ...draft(), images: [{ ...image, framing: null }] }).images[0].framing, null);
+  assert.equal(Object.hasOwn(parseProductDraft({ ...draft(), images: [image] }).images[0], "framing"), false);
+  assert.throws(() => parseProductDraft({ ...draft(), images: [{ ...image, framing: { ...framing, zoom: 9 } }] }));
+});
 test("approved staff emails are normalized and roles are allowlisted", () => {
   assert.deepEqual(
     parseStaff({

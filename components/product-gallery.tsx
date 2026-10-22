@@ -6,6 +6,7 @@ import type { KeyboardEvent, TouchEvent } from "react";
 import type { Product } from "../lib/types";
 import { getProductGallery } from "../lib/product-gallery";
 import type { GalleryMedia } from "../lib/product-gallery";
+import { imageFramingStyle } from "../lib/image-framing";
 import { GarmentArt } from "./garment-art";
 
 function Chevron({ previous = false }: { previous?: boolean }) {
@@ -80,6 +81,7 @@ function GalleryAsset({
               : "(max-width: 700px) calc(100vw - 40px), 46vw"
         }
         className="gallery-photo"
+        style={imageFramingStyle(enlarged ? null : media.framing, "contain")}
         loading={thumbnail ? "lazy" : "eager"}
         onError={() => setFailed(true)}
       />
@@ -164,6 +166,7 @@ export function ProductGallery({
         <div
           id={stageId}
           className={`gallery-stage art-${product.category.toLowerCase()}`}
+          style={current.kind === "photo" && current.framing ? { aspectRatio: "4 / 5" } : undefined}
           onTouchStart={startSwipe}
           onTouchEnd={endSwipe}
           onTouchCancel={() => {

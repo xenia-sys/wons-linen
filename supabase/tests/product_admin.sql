@@ -56,6 +56,29 @@ begin
   path:=pid::text||'/'||gen_random_uuid()::text||'.webp';
   insert into storage.objects(bucket_id,name,metadata) values('product-images',path,'{"mimetype":"image/webp","size":32}');
   insert into public.product_images(product_id,storage_path,alt,sort_order) values(pid,path,'Transaction-only image',0);
+  -- Exercise crop persistence through the same atomic RPC used by the admin API.
+  p:=jsonb_set(p,'{variants,0,sale_price_vnd}','80000');
+  p:=jsonb_set(p,'{version}',to_jsonb((select version from public.products where id=pid)));
+  p:=jsonb_set(p,'{images}',(select jsonb_agg(jsonb_build_object('id',id,'storage_path',storage_path,'alt',alt,'color',color,'framing',jsonb_build_object('x',23,'y',74,'zoom',1.6))) from public.product_images where product_id=pid));
+  result:=public.admin_save_product(p);
+  if not exists(select 1 from public.product_images where product_id=pid and framing='{"x":23,"y":74,"zoom":1.6}'::jsonb) then raise exception 'RPC did not save framing';end if;
+  -- A stale browser that omits framing must not erase the saved crop.
+  p:=jsonb_set(p,'{version}',result->'version');
+  p:=jsonb_set(p,'{images,0}',(p#>'{images,0}')-'framing');
+  result:=public.admin_save_product(p);
+  if not exists(select 1 from public.product_images where product_id=pid and framing->>'x'='23') then raise exception 'Legacy client erased framing';end if;
+  -- Invalid crops must roll back the entire save, including its version bump.
+  p:=jsonb_set(p,'{version}',result->'version');
+  p:=jsonb_set(p,'{images,0,framing}','{"x":101,"y":50,"zoom":1}');
+  begin perform public.admin_save_product(p);raise exception 'Out-of-bounds crop saved';exception when check_violation then null;end;
+  if (select version from public.products where id=pid)<>(result->>'version')::integer then raise exception 'Invalid crop changed product version';end if;
+  begin update public.product_images set framing='{"x":50,"zoom":1}' where product_id=pid;raise exception 'Incomplete crop saved';exception when check_violation then null;end;
+  begin update public.product_images set framing='{"x":"left","y":50,"zoom":1}' where product_id=pid;raise exception 'Non-numeric crop saved';exception when check_violation then null;end;
+  begin update public.product_images set framing='{"x":50,"y":50,"zoom":4}' where product_id=pid;raise exception 'Excess zoom saved';exception when check_violation then null;end;
+  -- An explicit reset restores the original presentation.
+  p:=jsonb_set(p,'{images,0,framing}','null');
+  result:=public.admin_save_product(p);
+  if exists(select 1 from public.product_images where product_id=pid and framing is not null) then raise exception 'Crop reset failed';end if;
   update public.products set status='hidden' where id=pid;
   if (select status from public.products where id=pid)<>'hidden' then raise exception 'Editor could not hide product';end if;
 end $$;
@@ -65,6 +88,7 @@ set local role authenticated;
 do $$ begin
   if (select count(*) from public.staff_members)<>2 then raise exception 'Owner cannot read team';end if;
   if not exists(select 1 from public.activity_log where entity_type='variants' and after_data->>'sale_price_vnd'='80000') then raise exception 'Price history missing';end if;
+  if not exists(select 1 from public.activity_log where entity_type='product_images' and after_data->'framing'->>'x'='23') then raise exception 'Framing history missing';end if;
   insert into public.staff_members(email,display_name,role) values('wons-new-editor@example.invalid','Pending editor','marketing_editor');
   begin update public.staff_members set active=false where email='wons-owner-rls@example.invalid';raise exception 'Last owner disabled';exception when check_violation then null;end;
   update public.staff_members set active=false where email='wons-editor-rls@example.invalid';

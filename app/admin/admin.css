@@ -451,6 +451,36 @@
   padding: 12px;
   border-radius: 6px;
 }
+.admin-photo-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  touch-action: pan-y;
+}
+.admin-photo-frame.is-adjusting { cursor: grab; touch-action: none; user-select: none; }
+.admin-photo-frame.is-adjusting:active { cursor: grabbing; }
+.admin-photo-frame img { pointer-events: none; user-select: none; }
+.admin-framing-hint {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  padding: 7px 12px; border-radius: 20px; background: #fffcf4ed; color: var(--ink);
+  font-size: 10px; white-space: nowrap; pointer-events: none;
+}
+.admin-framing-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.admin-framing-actions button, .admin-framing-controls button {
+  min-height: 44px; padding: 9px 12px; border: 1px solid var(--control-border); font-size: 11px;
+}
+.admin-framing-controls { border: 0; border-top: 1px solid var(--line); padding: 10px 0 0; margin: 12px 0 0; min-width: 0; }
+.admin-framing-controls label { grid-template-columns: 1fr auto; align-items: center; }
+.admin-root .admin-framing-controls input[type="range"] {
+  grid-column: 1 / -1; width: 100%; padding: 0; min-height: 36px; border: 0;
+  accent-color: var(--action); cursor: ew-resize;
+}
+.admin-framing-controls output { color: var(--muted); font-variant-numeric: tabular-nums; }
 .admin-uploaded-image {
   width: 100%;
   height: auto;

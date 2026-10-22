@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { PhotoFraming } from "./photo-framing";
 import { useRouter } from "next/navigation";
 import { adminFetch } from "../../lib/admin-browser";
 import { parseProductDraft } from "../../lib/admin-validation";
@@ -64,6 +64,7 @@ function fromRecord(p: ProductRecord): ProductDraft {
         storage_path: i.storage_path,
         alt: i.alt,
         color: i.color,
+        framing: i.framing ?? null,
       })),
   };
 }
@@ -210,6 +211,7 @@ export function ProductEditor({ id }: { id?: string }) {
               storage_path: result.storage_path,
               alt: `${prev.name}, product view ${prev.images.length + 1}`,
               color: null,
+              framing: null,
             },
           ],
         }));
@@ -375,12 +377,13 @@ export function ProductEditor({ id }: { id?: string }) {
               <div className="admin-image-grid">
                 {draft.images.map((img, i) => (
                   <div className="admin-image-card" key={img.storage_path}>
-                    <Image
+                    <PhotoFraming
                       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${img.storage_path}`}
                       alt={img.alt}
-                      width={320}
-                      height={400}
-                      className="admin-uploaded-image"
+                      framing={img.framing}
+                      index={i}
+                      disabled={busy || uploading}
+                      onChange={framing => image(i, { framing })}
                     />
                     <span className="admin-image-position">
                       {i === 0 ? "Cover" : `Image ${i + 1}`}
@@ -441,7 +444,7 @@ export function ProductEditor({ id }: { id?: string }) {
               </div>
               <p className="admin-help">
                 Images are resized and exported as WebP before upload. Save the
-                product to publish gallery changes. Removing a gallery image
+                product to publish gallery changes, including image framing. Removing a gallery image
                 retains the original file.
               </p>
             </section>

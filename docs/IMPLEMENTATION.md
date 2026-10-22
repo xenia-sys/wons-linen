@@ -13,6 +13,7 @@ The approved Champagne Gold palette is shared by the storefront and product admi
 - Public Supabase catalog with RLS; staff-only product administration. No customer data or orders tables.
 - Responsive CSS, keyboard focus, live bag feedback, reduced motion support, local fonts and original SVG concept drawings.
 - Product detail gallery with a large image, vertical desktop thumbnails, horizontal mobile thumbnails, previous/next controls, swipe and an accessible enlarged-image modal. Colour changes reset the matching gallery. Photography can be configured in content/product-images.json; see docs/PRODUCT_IMAGES.md. Current assets remain labelled concept illustrations.
+- Per-image 4:5 framing in Product photography, with bounded pointer/touch dragging, keyboard alternatives, 100–300% zoom and reset. Crops persist in atomic product saves and render consistently in catalog cards and galleries. Originals remain available in the lightbox.
 - English product administration at /admin/login with Owner and Marketing Editor roles. Marketing manages content, photos, variants, regular/sale prices and publication. Owner additionally manages staff and reads filtered, paginated before/after change history. Overview, grouped navigation and safe sign-in return destinations clarify the role-specific workflow. Activation and remaining real-account acceptance are documented in docs/ADMIN.md.
 
 ## Deliberately closed before launch

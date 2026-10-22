@@ -6,7 +6,7 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
   const { data, error } = await createPublicSupabaseClient()
     .from("products")
     .select(
-      "id,slug,name,department,category,description,status,is_demo,sort_order,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order)",
+      "id,slug,name,department,category,description,status,is_demo,sort_order,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order,framing)",
     )
     .in("status", ["preview", "published"])
     .order("sort_order")
@@ -23,6 +23,7 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
         alt: string;
         color: string | null;
         sort_order: number;
+        framing: NonNullable<Product["images"]>[number]["framing"];
       }[];
     })[]
   )
@@ -37,6 +38,7 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
               src: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${i.storage_path}`,
               alt: i.alt,
               color: i.color ?? undefined,
+              framing: i.framing,
             }))
         : (productImages[p.slug as keyof typeof productImages] ?? []),
       variants: [...p.variants].sort(

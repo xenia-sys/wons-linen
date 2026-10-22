@@ -1,3 +1,4 @@
+import type { ImageFraming } from "./image-framing.ts";
 export type Department = "Women" | "Men";
 export type Category = "Shirts" | "Dresses" | "Trousers" | "Sets";
 export type Variant = {
@@ -16,6 +17,7 @@ export type ProductImage = {
   alt: string;
   /** Omit for an image shared by every colour. */
   color?: string;
+  framing?: ImageFraming | null;
 };
 export type Product = {
   id: string;

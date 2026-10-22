@@ -42,6 +42,8 @@ Create a new product as **Hidden**, add at least one variant and save. Then uplo
 
 Set each variant's regular price and optional lower sale price. Clear Sale price to end the discount. The catalog, product detail and bag use the effective price from the current database catalog; stored bag prices are ignored. Publish after confirming the product's images and content. Published non-demo products require variants and photography. New public page loads reflect saved changes; already open pages need a reload. Hidden products are excluded from public catalog queries and product links.
 
+In **Product photography**, choose **Adjust framing** on an image. Drag with a mouse or finger to move it inside a 4:5 frame; use arrow keys or the horizontal/vertical sliders as alternatives. Zoom from 100% to 300% to create more room to move. Dragging stops at the image edges so no blank border appears. **Reset to centre** restores centred 100% zoom, and **Show full image** removes custom framing. Choose **Done adjusting**, then **Save product**. Framing is saved individually per image and is shared by the catalog cover and product gallery (including mobile); the enlarged lightbox shows the original full image. Existing unframed images keep their previous presentation. Source files are unchanged. Owner and Marketing Editor can both edit framing, and changes appear in Activity history as **Image reframed**.
+
 Gallery removal detaches the image; the immutable original Storage object is retained. Product images use a public bucket, so hiding a product does not revoke a previously known image URL. Use this bucket only for approved public product photography.
 
 ## Access enforcement and history

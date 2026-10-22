@@ -1,3 +1,5 @@
+import { parseImageFraming } from "./image-framing.ts";
+import type { ImageFraming } from "./image-framing.ts";
 export type StaffRole = "owner" | "marketing_editor";
 export type AdminVariant = {
   id?: string;
@@ -14,6 +16,7 @@ export type AdminImage = {
   storage_path: string;
   alt: string;
   color: string | null;
+  framing?: ImageFraming | null;
 };
 export type ProductDraft = {
   id?: string;
@@ -134,6 +137,7 @@ export function parseProductDraft(input: unknown): ProductDraft {
       id: optionalId(v.id),
       storage_path: path,
       alt: text(v.alt, "Image description", 300),
+      ...(Object.hasOwn(v, "framing") ? { framing: parseImageFraming(v.framing) } : {}),
       color:
         v.color === null || v.color === ""
           ? null

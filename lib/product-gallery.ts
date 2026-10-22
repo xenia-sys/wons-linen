@@ -1,8 +1,9 @@
 import type { Product } from "./types.ts";
+import type { ImageFraming } from "./image-framing.ts";
 
 export type IllustrationView = "front" | "back" | "detail" | "fabric";
 export type GalleryMedia =
-  | { id: string; kind: "photo"; src: string; alt: string; label: string }
+  | { id: string; kind: "photo"; src: string; alt: string; label: string; framing?: ImageFraming | null }
   | {
       id: string;
       kind: "illustration";

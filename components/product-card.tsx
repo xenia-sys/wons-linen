@@ -5,6 +5,7 @@ import { ProductPrice } from "./product-price";
 import type { Product } from "../lib/types";
 import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
+import { imageFramingStyle } from "../lib/image-framing";
 export function ProductCard({ product }: { product: Product }) {
   const lowest = [...product.variants].sort(
     (a, b) => unitPrice(a) - unitPrice(b),
@@ -16,7 +17,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="product-card">
       <Link href={`/products/${product.slug}`} className="product-card-link">
-        <div className={`product-art art-${product.category.toLowerCase()}`}>
+        <div className={`product-art art-${product.category.toLowerCase()}`} style={cover?.framing ? { aspectRatio: "4 / 5" } : undefined}>
           <span className="art-label">
             {product.department} / {product.category}
           </span>
@@ -26,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
               alt=""
               fill
               sizes="(max-width: 700px) 50vw, 33vw"
-              style={{ objectFit: "cover" }}
+              style={imageFramingStyle(cover.framing)}
             />
           ) : (
             <GarmentArt
