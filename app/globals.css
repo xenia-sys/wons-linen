@@ -1164,7 +1164,8 @@
   details summary::-webkit-details-marker {
     display: none;
   }
-  details[open] summary > span {
+  .product-accordions details[open] > summary > span,
+  .size-guide[open] > summary > span {
     transform: rotate(45deg);
   }
   details p {
