@@ -8,7 +8,7 @@
   "scripts": {
     "predev": "npm run check:env",
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npm run typecheck && npm test",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "check:env": "node scripts/check-env.mjs",

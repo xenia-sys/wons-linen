@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { AdminOverview } from "../../components/admin/overview";
 export default function Admin() {
-  redirect("/admin/products");
+  return <AdminOverview />;
 }

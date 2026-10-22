@@ -744,3 +744,72 @@
   margin: 0;
   min-width: 0;
 }
+
+/* Workspace navigation and audit review */
+.admin-nav-group { display: grid; gap: 4px; margin-bottom: 16px; }
+.admin-nav-heading { padding: 0 13px; margin: 0 0 5px; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.admin-topbar nav { display: flex; gap: 5px; font-size: 11px; letter-spacing: 0; }
+.admin-topbar nav a { text-decoration: underline; text-underline-offset: 3px; }
+.admin-route-denied p { max-width: 620px; line-height: 1.8; }
+.admin-route-denied .button { margin-top: 20px; }
+.admin-overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.admin-task-card { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.admin-task-card h2 { font-size: 22px; margin: 0; }
+.admin-task-card p { margin: 0 0 8px; line-height: 1.8; }
+.admin-task-card > a { margin-top: auto; }
+.admin-workflow-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; padding-left: 20px; }
+.admin-workflow-steps li { padding-left: 5px; line-height: 1.8; }
+.admin-workflow-steps p { margin: 10px 0 0; font-size: 12px; }
+.admin-access-summary p { line-height: 1.8; }
+.admin-activity-panel .admin-filters { margin-bottom: 15px; }
+.admin-activity-panel button:not(.button), .admin-page-heading > button {
+  min-height: 44px; padding: 10px 16px; border: 1px solid var(--control-border); background: var(--surface-soft); font-size: 12px;
+}
+.admin-activity-state { padding: 40px 0; max-width: 650px; line-height: 1.8; }
+.admin-activity-state h2 { margin-bottom: 12px; }
+.admin-activity-state .underlined-link { display: inline-block; margin-top: 12px; }
+.admin-event { border-top: 1px solid var(--line); }
+.admin-event:last-child { border-bottom: 1px solid var(--line); }
+.admin-event > summary { display: flex; justify-content: space-between; gap: 25px; padding: 24px 4px; cursor: pointer; list-style: none; }
+.admin-event > summary::-webkit-details-marker { display: none; }
+.admin-event-summary { display: grid; justify-items: start; gap: 8px; min-width: 0; overflow-wrap: anywhere; }
+.admin-event-summary strong { font-size: 14px; font-weight: 500; }
+.admin-event-summary small { font-size: 11px; margin: 0; }
+.admin-event-title { font-size: 13px; }
+.admin-event-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; flex-shrink: 0; padding-top: 5px; }
+.admin-event-meta time { font-size: 11px; color: var(--muted); }
+.admin-event-toggle { font-size: 11px; text-decoration: underline; text-underline-offset: 4px; }
+.admin-event-toggle::after { content: " +"; }
+.admin-event[open] .admin-event-toggle::after { content: " −"; }
+.admin-event-diff { border: 1px solid var(--line); border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
+.admin-change-heading { display: grid; grid-template-columns: 160px minmax(0, 1fr) minmax(0, 1fr); gap: 20px; background: var(--surface); padding: 12px 16px; font-size: 10px; }
+.admin-event .admin-change-list { margin: 0; }
+.admin-event .admin-change-list > div { grid-template-columns: 160px minmax(0, 1fr); padding: 16px; border-top: 1px solid var(--line); font-size: 12px; }
+.admin-event .admin-change-list dd { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.admin-event .admin-change-list dd > span { white-space: pre-wrap; color: var(--ink); line-height: 1.8; }
+.admin-event .admin-change-list dd > .admin-change-before { color: var(--muted); }
+.admin-event-link { display: inline-block; margin: 0 0 24px 4px; font-size: 12px; }
+.admin-pagination { display: flex; justify-content: space-between; gap: 15px; margin-top: 24px; }
+@media (max-width: 1100px) {
+  .admin-overview-grid { grid-template-columns: 1fr; }
+  .admin-change-heading { grid-template-columns: 115px minmax(0, 1fr) minmax(0, 1fr); gap: 15px; }
+  .admin-event .admin-change-list > div { grid-template-columns: 115px minmax(0, 1fr); gap: 15px; }
+  .admin-event .admin-change-list dd { gap: 15px; }
+}
+@media (max-width: 700px) {
+  .admin-sidebar nav { flex-direction: column; gap: 12px; }
+  .admin-nav-group { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; }
+  .admin-nav-heading { flex-basis: 100%; padding: 0; font-size: 9px; }
+  .admin-workflow-steps { grid-template-columns: 1fr; gap: 20px; }
+  .admin-event > summary { flex-direction: column; gap: 14px; }
+  .admin-event-meta { flex-direction: row; justify-content: space-between; align-items: center; padding: 0; }
+  .admin-event-meta time { font-size: 11px !important; }
+  .admin-change-heading { display: none; }
+  .admin-event .admin-change-list > div { display: block; padding: 16px 12px; }
+  .admin-event .admin-change-list dt { margin-bottom: 12px; color: var(--ink); font-weight: 500; }
+  .admin-event .admin-change-list dd { gap: 12px; }
+  .admin-change-before::before, .admin-change-after::before { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .admin-change-before::before { content: "Before"; }
+  .admin-change-after::before { content: "After"; }
+  .admin-pagination button { flex: 1; }
+}
