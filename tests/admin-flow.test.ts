@@ -42,11 +42,12 @@ test("activity filter defaults and cursor accept documented values", () => {
   assert.equal(parseActivityQuery(new URLSearchParams({ cursor: "9223372036854775807" })).cursor, "9223372036854775807");
 });
 test("activity filters reject unsupported fields, actions and malformed cursors", () => {
-  for (const params of [
+  const invalid: Record<string, string>[] = [
     { type: "auth.users" }, { action: "DROP" }, { cursor: "-1" }, { cursor: "0" },
     { cursor: "1 OR 1=1" }, { cursor: "1.5" }, { cursor: "9223372036854775808" },
     { cursor: "99999999999999999999" }, { cursor: "" },
-  ]) assert.throws(() => parseActivityQuery(new URLSearchParams(params)));
+  ];
+  for (const params of invalid) assert.throws(() => parseActivityQuery(new URLSearchParams(params)));
 });
 test("activity ignores timestamps and version changes while retaining changed product fields", () => {
   const value = entry({ before_data: { name: "Linen shirt", version: 1, updated_at: "old" },
