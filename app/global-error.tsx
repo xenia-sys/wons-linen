@@ -4,8 +4,8 @@ export default function GlobalError({ reset }: { reset: () => void }) {
     <html lang="en">
       <body
         style={{
-          background: "#faf8f4",
-          color: "#32372d",
+          background: "#fffcf4",
+          color: "#2e2a23",
           fontFamily: "Arial, sans-serif",
           padding: "10vh 7vw",
         }}

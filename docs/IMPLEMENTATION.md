@@ -2,6 +2,8 @@
 
 The approved editorial direction is implemented with native Next.js pages. All customer UI is English; the supplied WONS FASHION logo is preserved. Women and Men share the same bag.
 
+The approved Champagne Gold palette is shared by the storefront and product administration: ivory `#FFFCF4`, champagne surfaces `#F4E9CD`, gold accents `#D8C18C`, bronze actions `#8A713D` and charcoal-brown text `#2E2A23`. Secondary text, focus rings and input borders use coordinating warm neutrals. Product colours and semantic success/error states remain independent from the brand palette.
+
 ## Available
 
 - Home, /shop, /women, /men, individual /products/[slug] pages, /bag and /checkout information.

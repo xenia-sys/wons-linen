@@ -1,8 +1,8 @@
 .admin-root {
   font-family: var(--font-sans), Arial, sans-serif;
   font-size: 13px;
-  color: #30372c;
-  background: #f3f3ed;
+  color: var(--ink);
+  background: var(--paper);
   min-height: 100dvh;
 }
 .admin-root h1 {
@@ -18,7 +18,7 @@
   margin: 0 0 18px;
 }
 .admin-root p {
-  color: #68705f;
+  color: var(--muted);
 }
 .admin-root input,
 .admin-root select,
@@ -27,8 +27,8 @@
   width: 100%;
   min-width: 0;
   padding: 11px 12px;
-  border: 1px solid #d7dbce;
-  background: #fffefa;
+  border: 1px solid var(--control-border);
+  background: var(--paper);
   border-radius: 5px;
   font: inherit;
   color: inherit;
@@ -48,7 +48,7 @@
   margin-top: 5px;
   font-size: 10px;
   font-weight: 400;
-  color: #747b6c;
+  color: var(--muted);
 }
 .admin-root button,
 .admin-root .button {
@@ -64,7 +64,7 @@
     Georgia,
     serif;
   letter-spacing: -0.07em;
-  color: #26301f;
+  color: var(--ink);
   line-height: 1.2;
 }
 .admin-wordmark span {
@@ -91,7 +91,7 @@
 .admin-login-story {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(130deg, #c1c7b0, #e0ddca);
+  background: linear-gradient(130deg, var(--surface), var(--accent));
   padding: 55px 12%;
   display: flex;
   flex-direction: column;
@@ -102,7 +102,7 @@
   position: absolute;
   width: 60%;
   height: 80%;
-  border: 1px solid #8c987a44;
+  border: 1px solid #8a713d44;
   border-radius: 50% 50% 0 0;
   right: -20%;
   top: 20%;
@@ -118,9 +118,12 @@
   font-size: clamp(42px, 5vw, 70px);
   margin: 28px 0;
 }
+.admin-login-story .eyebrow {
+  color: #4f4434;
+}
 .admin-login-story > p:last-child {
   max-width: 320px;
-  color: #4e5a40;
+  color: #4f4434;
   line-height: 1.9;
 }
 .admin-login-form {
@@ -161,7 +164,7 @@
   display: block;
   margin: 8px 0 16px;
   font-size: 11px;
-  color: #6f7963;
+  color: var(--muted);
 }
 .admin-workspace {
   display: grid;
@@ -171,18 +174,18 @@
   position: sticky;
   top: 0;
   height: 100dvh;
-  background: #e5e8dc;
+  background: var(--surface);
   padding: 35px 25px 25px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #d2d8c8;
+  border-right: 1px solid var(--line);
 }
 .admin-role {
   align-self: start;
   margin: 20px 0 30px;
   padding: 5px 9px;
   font-size: 9px;
-  background: #d5dccb;
+  background: var(--accent);
   border-radius: 4px;
 }
 .admin-sidebar nav {
@@ -197,8 +200,8 @@
   border-radius: 5px;
 }
 .admin-sidebar nav [aria-current="page"] {
-  background: #33412c;
-  color: #f8f7ef;
+  background: var(--action);
+  color: var(--paper);
 }
 .admin-sidebar-bottom {
   margin-top: auto;
@@ -226,14 +229,14 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
-  border-bottom: 1px solid #d9dece;
+  border-bottom: 1px solid var(--line);
   margin-bottom: 35px;
   padding: 20px 0;
   font-size: 8px;
   letter-spacing: 0.1em;
 }
 .admin-topbar > span:last-child {
-  color: #747d68;
+  color: var(--muted);
 }
 .admin-page-heading {
   display: flex;
@@ -255,10 +258,10 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  border: 1px solid #dce0d3;
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 22px;
-  background: #fafaf5;
+  background: var(--surface-soft);
 }
 .admin-stat-row strong {
   font:
@@ -268,11 +271,11 @@
 }
 .admin-stat-row span {
   font-size: 11px;
-  color: #717b64;
+  color: var(--muted);
 }
 .admin-panel {
-  background: #fffefa;
-  border: 1px solid #dce0d3;
+  background: var(--paper);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 25px;
   margin-bottom: 23px;
@@ -319,15 +322,15 @@
 }
 .admin-table th {
   padding: 13px 12px;
-  border-bottom: 1px solid #d5dccb;
-  background: #f6f7f0;
+  border-bottom: 1px solid var(--accent);
+  background: var(--surface-soft);
   font-size: 9px;
   font-weight: 500;
-  color: #6a755d;
+  color: var(--muted);
 }
 .admin-table td {
   padding: 17px 12px;
-  border-bottom: 1px solid #e8ebdf;
+  border-bottom: 1px solid var(--line);
 }
 .admin-table tr:last-child td {
   border-bottom: 0;
@@ -349,19 +352,19 @@
   padding: 5px 10px;
   font-size: 9px;
   text-transform: capitalize;
-  background: #ecefe5;
+  background: var(--surface-soft);
 }
 .admin-badge.status-published {
   background: #ddebd3;
   color: #3c562e;
 }
 .admin-badge.status-hidden {
-  background: #eeede8;
-  color: #76786f;
+  background: var(--surface-soft);
+  color: var(--muted);
 }
 .admin-badge.status-preview {
-  background: #f2e9d4;
-  color: #7b672b;
+  background: var(--surface);
+  color: #705b31;
 }
 .admin-empty {
   padding: 35px 15px;
@@ -411,8 +414,8 @@
 }
 .admin-upload-label {
   position: relative;
-  border: 1px solid #bfcbb2;
-  background: #edf2e6;
+  border: 1px solid var(--control-border);
+  background: var(--surface);
   border-radius: 5px;
   padding: 11px 16px;
   cursor: pointer;
@@ -429,7 +432,7 @@
   padding: 0;
 }
 .admin-upload-label:focus-within {
-  outline: 2px solid #5f7048;
+  outline: 2px solid var(--action);
   outline-offset: 3px;
 }
 .admin-upload-label.disabled {
@@ -443,8 +446,8 @@
 }
 .admin-image-card {
   min-width: 0;
-  background: #f7f8f0;
-  border: 1px solid #e2e7d8;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
   padding: 12px;
   border-radius: 6px;
 }
@@ -453,7 +456,7 @@
   height: auto;
   aspect-ratio: 4/5;
   object-fit: contain;
-  background: #eaece0;
+  background: var(--surface);
   border-radius: 4px;
 }
 .admin-image-card label {
@@ -522,7 +525,7 @@
   font-size: 11px;
 }
 .admin-activity summary small {
-  color: #748166;
+  color: var(--muted);
 }
 .admin-activity time {
   flex-shrink: 0;
@@ -539,7 +542,7 @@
   font-size: 11px;
 }
 .admin-activity dt {
-  color: #7b866f;
+  color: var(--muted);
   text-transform: capitalize;
 }
 .admin-activity dd {
@@ -547,7 +550,7 @@
   overflow-wrap: anywhere;
 }
 .admin-activity dd > span {
-  color: #8a8e81;
+  color: var(--muted);
 }
 .admin-sr-only,
 .sr-only {
@@ -625,7 +628,7 @@
     height: auto;
     padding: 20px;
     border-right: 0;
-    border-bottom: 1px solid #cfd6c4;
+    border-bottom: 1px solid var(--line);
   }
   .admin-sidebar > .admin-wordmark {
     font-size: 32px;
