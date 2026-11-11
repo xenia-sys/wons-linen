@@ -4,6 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useBag } from "./cart-provider";
 import { BagIcon, SearchIcon } from "./icons";
+import { CurrencySelector } from "./currency-selector";
 export function Header() {
   const pathname = usePathname();
   const { count } = useBag();
@@ -50,6 +51,7 @@ export function Header() {
           >
             <SearchIcon />
           </Link>
+          <CurrencySelector />
           <Link
             href="/bag"
             className="bag-link"

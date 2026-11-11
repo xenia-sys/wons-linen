@@ -2,11 +2,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useBag } from "./cart-provider";
-import { MAX_PER_VARIANT, money, subtotal, unitPrice } from "../lib/commerce";
+import { MAX_PER_VARIANT, subtotal, unitPrice } from "../lib/commerce";
+import { useDisplayCurrency } from "./display-currency-provider";
 import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
 export function Bag() {
   const { lines, ready, count, storageAvailable, update, remove } = useBag();
+  const { currency, format } = useDisplayCurrency();
   return (
     <section className="bag-page section-space">
       <div className="section-heading">
@@ -82,7 +84,7 @@ export function Bag() {
                       <p>
                         {line.variant.color} / Size {line.variant.size}
                       </p>
-                      <p>{money(unitPrice(line.variant))}</p>
+                      <p>{format(unitPrice(line.variant))}</p>
                       <div className="quantity-row">
                         <div className="quantity-control">
                           <button
@@ -121,7 +123,7 @@ export function Bag() {
                       </div>
                     </div>
                     <span className="bag-line-total">
-                      {money(unitPrice(line.variant) * line.quantity)}
+                      {format(unitPrice(line.variant) * line.quantity)}
                     </span>
                   </li>
                 );
@@ -140,7 +142,7 @@ export function Bag() {
               <span>
                 Subtotal ({count} {count === 1 ? "item" : "items"})
               </span>
-              <strong>{money(subtotal(lines))}</strong>
+              <strong>{format(subtotal(lines))}</strong>
             </div>
             <div className="summary-line muted">
               <span>Delivery</span>
@@ -151,6 +153,7 @@ export function Bag() {
               <span>To be confirmed</span>
             </div>
             <p className="summary-notice">
+              {currency === "USD" && "USD amounts are estimates converted from VND. "}
               The first edit is a preview. Sample prices are shown; the final
               order total and payment options are not available yet.
             </p>

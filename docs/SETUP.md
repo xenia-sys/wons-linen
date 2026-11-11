@@ -34,6 +34,8 @@ The public-client helper in lib/supabase.ts is for public reads only. Administra
 
 The homepage, Women/Men catalog, product pages, search, category filters, price sorting and bag are native Next.js components. Noto Sans and Noto Serif are self-hosted with their OFL licenses. The original mockup remains at /design-preview.html for design reference only.
 
+The storefront currency selector defaults to VND and remembers the visitor's choice in browser storage. USD is an estimate based on Frankfurter's USD/VND reference rate, fetched on demand by `/api/display-currency` and cached. If the rate is unavailable, the storefront displays VND. Catalog prices, admin pricing, and bag calculations remain in VND.
+
 The bag stores only variant IDs and quantities under wons.bag.v1 in browser localStorage. It revalidates against the current catalog, uses valid sale prices and never trusts a stored price. Preview quantity limits are illustrative; items are not reserved. Checkout is visibly closed and POST /api/checkout always returns 503 CHECKOUT_NOT_OPEN, even if CHECKOUT_ENABLED is changed. No customer order, address or payment is collected. Staff accounts are separate from the public shopping experience.
 
 Before opening purchases: activate and accept staff administration, obtain approved photography, catalog prices, fabric/fit/size data, launch status for Men, shipping/tax/payment/returns decisions and client-care contacts. Implement authoritative checkout with inventory concurrency and idempotency, payment verification and order lifecycle; pass BRD U01–U08. Build/catalog success is not evidence of a completed commerce flow.

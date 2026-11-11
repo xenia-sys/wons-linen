@@ -1,6 +1,9 @@
+"use client";
 import Link from "next/link";
 import { Arrow } from "./icons";
+import { useDisplayCurrency } from "./display-currency-provider";
 export function Footer() {
+  const { currency } = useDisplayCurrency();
   return (
     <footer className="site-footer">
       <div className="footer-top">
@@ -37,7 +40,7 @@ export function Footer() {
           Collection preview · Illustrative styles & prices · Orders are not
           open
         </span>
-        <span>EN / VND</span>
+        <span>{currency === "USD" ? "EN / USD · Estimated prices" : "EN / VND"}</span>
       </div>
     </footer>
   );
