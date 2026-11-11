@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useBag } from "./cart-provider";
-import { BagIcon, SearchIcon } from "./icons";
+import { AccountIcon, BagIcon, SearchIcon } from "./icons";
 import { CurrencySelector } from "./currency-selector";
 export function Header() {
   const pathname = usePathname();
@@ -62,6 +62,11 @@ export function Header() {
             <span className="bag-count" aria-live="polite">
               {count}
             </span>
+          </Link>
+          <Link href="/account" className="account-link" aria-label="My account"
+            aria-current={pathname === "/account" ? "page" : undefined}>
+            <AccountIcon />
+            <span className="account-label">Account</span>
           </Link>
         </div>
       </header>

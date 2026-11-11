@@ -43,14 +43,13 @@ try {
       ),
     );
   }
-  const results = await db.exec(
-    await readFile(
-      new URL("../supabase/tests/product_admin.sql", import.meta.url),
-      "utf8",
-    ),
-  );
-  for (const result of results)
-    for (const row of result.rows) if (row.result) console.log(row.result);
+  for (const name of ["product_admin.sql", "customer_accounts.sql"]) {
+    const results = await db.exec(
+      await readFile(new URL(`../supabase/tests/${name}`, import.meta.url), "utf8"),
+    );
+    for (const result of results)
+      for (const row of result.rows) if (row.result) console.log(row.result);
+  }
   const {
     rows: [counts],
   } = await db.query(`select

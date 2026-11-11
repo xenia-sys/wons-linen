@@ -10,7 +10,7 @@ The approved Champagne Gold palette is shared by the storefront and product admi
 - Category filtering, text search, price sorting, empty results and unavailable size states.
 - Explicit size selection, color-specific variant selection, same-SKU merging, quantity updates/removal and catalog-based sample subtotal.
 - Browser bag persistence and cross-tab updates; malformed/stale data is sanitized.
-- Public Supabase catalog with RLS; staff-only product administration. No customer data or orders tables.
+- Public Supabase catalog with RLS; staff-only product administration. Private customer address and order-summary tables are prepared for the account area.
 - Responsive CSS, keyboard focus, live bag feedback, reduced motion support, local fonts and original SVG concept drawings.
 - Product detail gallery with a large image, vertical desktop thumbnails, horizontal mobile thumbnails, previous/next controls, swipe and an accessible enlarged-image modal. Colour changes reset the matching gallery. Photography can be configured in content/product-images.json; see docs/PRODUCT_IMAGES.md. Current assets remain labelled concept illustrations.
 - Per-image 4:5 framing in Product photography, with bounded pointer/touch dragging, keyboard alternatives, 100–300% zoom and reset. Crops persist in atomic product saves and render consistently in catalog cards and galleries. Originals remain available in the lightbox.
@@ -18,7 +18,7 @@ The approved Champagne Gold palette is shared by the storefront and product admi
 
 ## Deliberately closed before launch
 
-Checkout returns no success state and never accepts payment or creates an order. The POST endpoint fails closed independently of environment configuration. Customer accounts, shipping quotes and payments are not implemented. Staff administration is disabled on preview deployments. The initial catalog still contains demo prices/quantities and concept illustrations.
+Checkout returns no success state and never accepts payment or creates an order. The POST endpoint fails closed independently of environment configuration. The customer account area is implemented behind a launch flag pending verification email delivery. Shipping quotes and payments are not implemented. Staff administration is disabled on preview deployments. The initial catalog still contains demo prices/quantities and concept illustrations.
 
 ## Validation
 

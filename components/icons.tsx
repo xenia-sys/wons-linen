@@ -53,3 +53,11 @@ export function SearchIcon() {
     </svg>
   );
 }
+export function AccountIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="7.5" r="3.6" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M4.8 21v-1.7a7.2 7.2 0 0 1 14.4 0V21" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}

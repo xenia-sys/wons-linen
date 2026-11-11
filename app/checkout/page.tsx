@@ -18,7 +18,7 @@ export default function Checkout() {
       <p>
         Your bag stays on this browser while you explore. Confirmed prices,
         sizing, delivery fees and payment methods will be available before
-        purchases open.
+        purchases open. A WONS account will be optional.
       </p>
       <div className="info-actions">
         <Link href="/bag" className="button dark">
