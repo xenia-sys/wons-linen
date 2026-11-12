@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { selectNewArrivals } from "../lib/new-arrivals.ts";
-import { gallerySwipeDirection } from "../lib/product-gallery.ts";
+import { galleryDragOffset, galleryIndex, gallerySwipeDirection } from "../lib/product-gallery.ts";
 import type { Product } from "../lib/types.ts";
 
 const style = (slug: string, day: number, options: Partial<Product> = {}) => ({
@@ -34,4 +34,16 @@ test("gallery changes one image for a deliberate horizontal swipe", () => {
   assert.equal(gallerySwipeDirection(14, 2), 0);
   assert.equal(gallerySwipeDirection(-85, 100), 0);
   assert.equal(gallerySwipeDirection(75, 60), 0);
+  assert.equal(gallerySwipeDirection(-28, 4, 600), 0);
+  assert.equal(gallerySwipeDirection(-28, 4, 600, -0.6), 1);
+  assert.equal(gallerySwipeDirection(-28, 4, 600, 0.6), 0);
+});
+
+test("gallery follows a drag between images and resists the ends", () => {
+  assert.equal(galleryDragOffset(-120, 500, 0, 3), -120);
+  assert.equal(galleryDragOffset(600, 500, 1, 3), 500);
+  assert.ok(galleryDragOffset(120, 500, 0, 3) < 30);
+  assert.ok(galleryDragOffset(-120, 500, 2, 3) > -30);
+  assert.equal(galleryIndex(-1, 3), 0);
+  assert.equal(galleryIndex(3, 3), 2);
 });

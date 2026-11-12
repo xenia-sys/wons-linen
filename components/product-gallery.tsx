@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent, PointerEvent } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import type { KeyboardEvent, MouseEvent, Ref } from "react";
 import type { Product } from "../lib/types";
-import { gallerySwipeDirection, getProductGallery } from "../lib/product-gallery";
+import { galleryIndex, getProductGallery } from "../lib/product-gallery";
+import { useGalleryDrag } from "./use-gallery-drag";
 import type { GalleryMedia } from "../lib/product-gallery";
 import { imageFramingStyle } from "../lib/image-framing";
 import { GarmentArt } from "./garment-art";
@@ -51,12 +52,14 @@ function GalleryAsset({
   colorHex,
   thumbnail = false,
   enlarged = false,
+  near = true,
 }: {
   media: GalleryMedia;
   product: Product;
   colorHex: string;
   thumbnail?: boolean;
   enlarged?: boolean;
+  near?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   if (media.kind === "photo") {
@@ -75,15 +78,15 @@ function GalleryAsset({
         fill
         sizes={
           thumbnail
-            ? "80px"
+            ? "(max-width: 700px) 100px, 140px"
             : enlarged
               ? "(max-width: 700px) 100vw, 80vw"
               : "(max-width: 700px) calc(100vw - 40px), 46vw"
         }
         className="gallery-photo"
         draggable={false}
-        style={imageFramingStyle(enlarged ? null : media.framing, "contain")}
-        loading={thumbnail ? "lazy" : "eager"}
+        style={imageFramingStyle(enlarged ? null : media.framing, thumbnail ? "cover" : "contain")}
+        loading={thumbnail || !near ? "lazy" : "eager"}
         onError={() => setFailed(true)}
       />
     );
@@ -103,263 +106,152 @@ function GalleryAsset({
   );
 }
 
-export function ProductGallery({
-  product,
-  color,
-  colorHex,
+function GalleryTrack({
+  media, active, product, colorHex, trackRef, enlarged = false,
 }: {
+  media: GalleryMedia[];
+  active: number;
   product: Product;
-  color: string;
   colorHex: string;
+  trackRef: Ref<HTMLSpanElement>;
+  enlarged?: boolean;
+}) {
+  return (
+    <span className="gallery-track" ref={trackRef}
+      style={{ transform: `translate3d(calc(${-active * 100}% + var(--gallery-drag, 0px)), 0, 0)` }}>
+      {media.map((item, index) => (
+        <span className="gallery-slide" key={item.id} aria-hidden={index !== active}>
+          <GalleryAsset media={item} product={product} colorHex={colorHex}
+            enlarged={enlarged} near={Math.abs(index - active) <= 1} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
+export function ProductGallery({ product, color, colorHex }: {
+  product: Product; color: string; colorHex: string;
 }) {
   const media = getProductGallery(product, color);
-  const [active, setActive] = useState(0);
+  const [selection, setActive] = useState(0);
   const [enlarged, setEnlarged] = useState(false);
+  const active = galleryIndex(selection, media.length);
   const current = media[active];
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const thumbnailRail = useRef<HTMLDivElement>(null);
   const thumbnails = useRef<(HTMLButtonElement | null)[]>([]);
-  const pointer = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
-  const suppressClick = useRef(false);
   const titleId = useId();
   const stageId = useId();
   const hintId = useId();
   const multiple = media.length > 1;
+  const mainDrag = useGalleryDrag(active, media.length, setActive);
+  const lightboxDrag = useGalleryDrag(active, media.length, setActive);
+  const framed = media.some(item => item.kind === "photo" && item.framing);
+  const artClass = "art-" + product.category.toLowerCase();
+
+  useEffect(() => {
+    const rail = thumbnailRail.current;
+    const selected = thumbnails.current[active];
+    if (!rail || !selected) return;
+    const viewport = rail.getBoundingClientRect();
+    const card = selected.getBoundingClientRect();
+    const offset = card.left < viewport.left ? card.left - viewport.left
+      : card.right > viewport.right ? card.right - viewport.right : 0;
+    if (offset) rail.scrollTo({ left: rail.scrollLeft + offset,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+  }, [active]);
 
   function move(delta: number) {
-    setActive((index) => (index + delta + media.length) % media.length);
+    setActive(index => galleryIndex(index + delta, media.length));
   }
-  function keyboardIndex(event: KeyboardEvent, index: number) {
-    if (event.key === "ArrowRight" || event.key === "ArrowDown")
-      return (index + 1) % media.length;
-    if (event.key === "ArrowLeft" || event.key === "ArrowUp")
-      return (index - 1 + media.length) % media.length;
-    if (event.key === "Home") return 0;
-    if (event.key === "End") return media.length - 1;
-    return null;
+
+  function browseWithKeyboard(event: KeyboardEvent, focusThumbnail = false) {
+    const key = event.key;
+    const next = key === "ArrowRight" ? galleryIndex(active + 1, media.length)
+      : key === "ArrowLeft" ? galleryIndex(active - 1, media.length)
+      : key === "Home" ? 0 : key === "End" ? media.length - 1 : null;
+    if (next === null || !multiple) return;
+    event.preventDefault();
+    setActive(next);
+    if (focusThumbnail) thumbnails.current[next]?.focus({ preventScroll: true });
   }
-  function startSwipe(event: PointerEvent<HTMLElement>) {
-    if (!event.isPrimary) {
-      if (event.pointerType === "touch" && pointer.current) {
-        pointer.current = null;
-        suppressClick.current = true;
-      }
-      return;
-    }
-    if (event.button !== 0) return;
-    suppressClick.current = false;
-    pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-  function updateSwipe(event: PointerEvent<HTMLElement>) {
-    const start = pointer.current;
-    if (start?.id === event.pointerId && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8)
-      start.moved = true;
-  }
-  function cancelSwipe(event: PointerEvent<HTMLElement>) {
-    if (pointer.current?.id !== event.pointerId) return;
-    pointer.current = null;
-    suppressClick.current = true;
-  }
-  function endSwipe(event: PointerEvent<HTMLElement>) {
-    const start = pointer.current;
-    if (start?.id !== event.pointerId) return;
-    pointer.current = null;
-    const dx = event.clientX - start.x;
-    const dy = event.clientY - start.y;
-    suppressClick.current = start.moved || Math.hypot(dx, dy) > 8;
-    const direction = gallerySwipeDirection(dx, dy);
-    if (direction) move(direction);
-  }
-  const swipeEvents = multiple ? {
-    onPointerDown: startSwipe,
-    onPointerMove: updateSwipe,
-    onPointerUp: endSwipe,
-    onPointerCancel: cancelSwipe,
-    onLostPointerCapture: cancelSwipe,
-  } : {};
+
   function openImage(event: MouseEvent<HTMLButtonElement>) {
-    if (event.detail > 0 && suppressClick.current) return;
+    if (event.detail > 0 && mainDrag.suppressClick.current) return;
     setEnlarged(true);
     dialogRef.current?.showModal();
   }
+
   return (
-    <section
-      className="product-gallery"
-      aria-label={`${product.name} image gallery`}
-    >
-      <div className={`gallery-layout${multiple ? " has-thumbnails" : ""}`}>
-        <div
-          id={stageId}
-          className={`gallery-stage art-${product.category.toLowerCase()}`}
-          style={current.kind === "photo" && current.framing ? { aspectRatio: "4 / 5" } : undefined}
-        >
-          <button
-            type="button"
-            className={`gallery-open${multiple ? " gallery-swipe" : ""}`}
+    <section className="product-gallery" aria-label={`${product.name} image gallery`}>
+      <div className="gallery-layout">
+        <div id={stageId} className={`gallery-stage ${artClass}`}
+          style={framed ? { aspectRatio: "4 / 5" } : undefined}>
+          <button type="button" className={`gallery-open${multiple ? " gallery-swipe" : ""}`}
             aria-label={`Enlarge image ${active + 1}: ${current.label}`}
-            aria-describedby={multiple ? hintId : undefined}
-            aria-haspopup="dialog"
-            onClick={openImage}
-            {...swipeEvents}
-          >
-            <GalleryAsset
-              key={current.id}
-              media={current}
-              product={product}
-              colorHex={colorHex}
-            />
-            <span className="gallery-expand" aria-hidden="true">
-              <ExpandIcon />
-            </span>
+            aria-describedby={multiple ? hintId : undefined} aria-haspopup="dialog"
+            onClick={openImage} onKeyDown={browseWithKeyboard} {...mainDrag.handlers}>
+            <GalleryTrack media={media} active={active} product={product} colorHex={colorHex} trackRef={mainDrag.track} />
+            <span className="gallery-expand" aria-hidden="true"><ExpandIcon /></span>
           </button>
-          {multiple && (
-            <div
-              className="gallery-navigation"
-              role="group"
-              aria-label="Change product image"
-            >
-              <button
-                type="button"
-                aria-label="Previous image"
-                onClick={() => move(-1)}
-              >
-                <Chevron previous />
-              </button>
-              <span aria-hidden="true">
-                {String(active + 1).padStart(2, "0")} /{" "}
-                {String(media.length).padStart(2, "0")}
-              </span>
-              <button
-                type="button"
-                aria-label="Next image"
-                onClick={() => move(1)}
-              >
-                <Chevron />
-              </button>
-            </div>
-          )}
         </div>
         {multiple && (
-          <div
-            className="gallery-thumbnails"
-            role="group"
-            aria-label="Product image thumbnails"
-          >
-            {media.map((item, index) => (
-              <button
-                key={item.id}
-                type="button"
-                ref={(node) => {
-                  thumbnails.current[index] = node;
-                }}
-                className={`gallery-thumbnail art-${product.category.toLowerCase()}`}
-                aria-label={`View image ${index + 1}: ${item.label}`}
-                aria-pressed={index === active}
-                aria-controls={stageId}
-                onClick={() => setActive(index)}
-                onKeyDown={(event) => {
-                  const next = keyboardIndex(event, index);
-                  if (next === null) return;
-                  event.preventDefault();
-                  setActive(next);
-                  thumbnails.current[next]?.focus();
-                }}
-              >
-                <GalleryAsset
-                  media={item}
-                  product={product}
-                  colorHex={colorHex}
-                  thumbnail
-                />
-                <span className="gallery-thumbnail-number" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </button>
-            ))}
+          <div className="gallery-navigation" role="group" aria-label="Change product image">
+            <button type="button" className="gallery-arrow" aria-label="Previous image"
+              aria-controls={stageId} disabled={active === 0} onClick={() => move(-1)}>
+              <Chevron previous />
+            </button>
+            <div className="gallery-thumbnails" ref={thumbnailRail} role="group" aria-label="Product image thumbnails">
+              {media.map((item, index) => (
+                <button key={item.id} type="button" ref={node => { thumbnails.current[index] = node; }}
+                  className={`gallery-thumbnail ${artClass}`} aria-label={`View image ${index + 1}: ${item.label}`}
+                  aria-pressed={index === active} aria-controls={stageId} onClick={() => setActive(index)}
+                  onKeyDown={event => browseWithKeyboard(event, true)}>
+                  <GalleryAsset media={item} product={product} colorHex={colorHex} thumbnail />
+                </button>
+              ))}
+            </div>
+            <button type="button" className="gallery-arrow" aria-label="Next image"
+              aria-controls={stageId} disabled={active === media.length - 1} onClick={() => move(1)}>
+              <Chevron />
+            </button>
           </div>
         )}
       </div>
       <div className="gallery-caption">
         <p role="status" aria-live="polite">
+          {multiple && <span className="gallery-count">{active + 1} / {media.length} · </span>}
           {current.label} <span>— {color}</span>
         </p>
-        <span>
-          {current.kind === "illustration" ? "ILLUSTRATED STUDY" : "WONS LINEN"}
-        </span>
+        <span>{current.kind === "illustration" ? "ILLUSTRATED STUDY" : "WONS LINEN"}</span>
       </div>
       {multiple && <p id={hintId} className="gallery-swipe-hint">Swipe or drag to browse. Select an image to enlarge it.</p>}
-      {current.kind === "illustration" && (
-        <p className="gallery-preview-note">
-          Concept illustrations. Product photography will follow.
-        </p>
-      )}
-      <dialog
-        className="gallery-lightbox"
-        ref={dialogRef}
-        aria-labelledby={titleId}
-        onClose={() => setEnlarged(false)}
-        onClick={(event) => {
+      {current.kind === "illustration" && <p className="gallery-preview-note">Concept illustrations. Product photography will follow.</p>}
+      <dialog className="gallery-lightbox" ref={dialogRef} aria-labelledby={titleId}
+        onClose={() => setEnlarged(false)} onClick={event => {
           if (event.target === event.currentTarget) dialogRef.current?.close();
-        }}
-        onKeyDown={(event) => {
-          const next = keyboardIndex(event, active);
-          if (next !== null) {
-            event.preventDefault();
-            setActive(next);
-          }
-        }}
-      >
+        }} onKeyDown={browseWithKeyboard}>
         <div className="lightbox-content">
           <div className="lightbox-heading">
             <div>
               <p className="eyebrow">WONS LINEN / {color.toUpperCase()}</p>
               <h2 id={titleId}>{product.name}</h2>
             </div>
-            <button
-              type="button"
-              className="lightbox-close"
-              aria-label="Close enlarged image"
-              onClick={() => dialogRef.current?.close()}
-            >
-              ×
-            </button>
+            <button type="button" className="lightbox-close" aria-label="Close enlarged image"
+              onClick={() => dialogRef.current?.close()}>×</button>
           </div>
-          <div
-            className={`lightbox-image art-${product.category.toLowerCase()}${multiple ? " gallery-swipe" : ""}`}
-            {...swipeEvents}
-          >
-            {enlarged && (
-              <GalleryAsset
-                key={current.id}
-                media={current}
-                product={product}
-                colorHex={colorHex}
-                enlarged
-              />
-            )}
+          <div className={`lightbox-image ${artClass}${multiple ? " gallery-swipe" : ""}`} {...lightboxDrag.handlers}>
+            {enlarged && <GalleryTrack media={media} active={active} product={product} colorHex={colorHex}
+              trackRef={lightboxDrag.track} enlarged />}
           </div>
           <div className="lightbox-footer">
-            <button
-              type="button"
-              aria-label="Previous enlarged image"
-              disabled={!multiple}
-              onClick={() => move(-1)}
-            >
+            <button type="button" aria-label="Previous enlarged image" disabled={active === 0} onClick={() => move(-1)}>
               <Chevron previous />
             </button>
             <p role="status" aria-live="polite">
-              {active + 1} / {media.length}{" "}
-              <span>
-                · {current.label}
-                {current.kind === "illustration" ? " · Illustration" : ""}
-              </span>
+              {active + 1} / {media.length} <span>· {current.label}{current.kind === "illustration" ? " · Illustration" : ""}</span>
             </p>
-            <button
-              type="button"
-              aria-label="Next enlarged image"
-              disabled={!multiple}
-              onClick={() => move(1)}
-            >
+            <button type="button" aria-label="Next enlarged image" disabled={active === media.length - 1} onClick={() => move(1)}>
               <Chevron />
             </button>
           </div>
