@@ -1,3 +1,5 @@
+import { storefrontImageSlots } from "./storefront-images.ts";
+
 export type ActivityEntry = {
   id: number;
   actor_email: string | null;
@@ -15,6 +17,7 @@ export const activityTypes = [
   { value: "products", label: "Products & visibility" },
   { value: "variants", label: "Prices, variants & availability" },
   { value: "product_images", label: "Product images" },
+  { value: "storefront_images", label: "Storefront images" },
   { value: "staff_members", label: "Team & permissions" },
 ];
 export function parseActivityQuery(params: URLSearchParams) {
@@ -36,11 +39,12 @@ export const activityFieldLabels: Record<string, string> = {
   color_hex: "Colour code", size: "Size", alt: "Image description",
   display_name: "Name", email: "Email", role: "Role", active: "Access enabled",
   is_demo: "Demo product", sort_order: "Display order",
-  framing: "Image framing",
+  framing: "Image framing", storage_path: "Image file",
 };
 export function activityChanges(entry: ActivityEntry) {
   return [...new Set([...Object.keys(entry.before_data ?? {}), ...Object.keys(entry.after_data ?? {})])]
-    .filter(key => !["id", "product_id", "version", "created_at", "updated_at", "storage_path"].includes(key)
+    .filter(key => !["id", "product_id", "version", "created_at", "updated_at"].includes(key)
+      && (key !== "storage_path" || entry.entity_type === "storefront_images")
       && JSON.stringify(entry.before_data?.[key]) !== JSON.stringify(entry.after_data?.[key]));
 }
 function field(entry: ActivityEntry, key: string): string {
@@ -48,12 +52,14 @@ function field(entry: ActivityEntry, key: string): string {
   return typeof value === "string" ? value : "";
 }
 export function activityTitle(entry: ActivityEntry) {
+  if (entry.entity_type === "storefront_images") return storefrontImageSlots.find(slot => slot.id === entry.entity_id)?.label ?? "Homepage cover";
   if (entry.entity_type === "staff_members") return field(entry, "display_name") || field(entry, "email") || "Team member";
   if (entry.entity_type === "products") return field(entry, "name") || entry.product?.name || "Product";
   if (entry.entity_type === "variants") return [entry.product?.name, field(entry, "sku")].filter(Boolean).join(" · ") || "Product variant";
   return entry.product?.name || field(entry, "alt") || "Product image";
 }
 export function activityAction(entry: ActivityEntry) {
+  if (entry.entity_type === "storefront_images") return entry.action === "DELETE" ? "Default cover restored" : "Cover published";
   const changed = activityChanges(entry);
   if (entry.entity_type === "staff_members") {
     if (entry.action === "INSERT") return "Access approved";
@@ -96,7 +102,7 @@ export function activityValue(key: string, value: unknown): string {
   return String(value);
 }
 export function activityProductId(entry: ActivityEntry): string | null {
-  if (entry.entity_type === "staff_members") return null;
+  if (entry.entity_type === "staff_members" || entry.entity_type === "storefront_images") return null;
   const value = entry.entity_type === "products" ? entry.entity_id : entry.after_data?.product_id ?? entry.before_data?.product_id;
   return typeof value === "string" ? value : null;
 }

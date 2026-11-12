@@ -1,10 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCatalog } from "../lib/catalog";
+import { getStorefrontImages } from "../lib/storefront-content";
+import { storefrontImageUrl } from "../lib/storefront-images";
 import { GarmentArt } from "../components/garment-art";
 import { ProductCard } from "../components/product-card";
 import { Arrow } from "../components/icons";
 export default async function Home() {
-  const products = await getCatalog();
+  const [products, covers] = await Promise.all([getCatalog(), getStorefrontImages()]);
+  const heroCover = covers["home-hero"];
+  const womenCover = covers["home-women"];
+  const menCover = covers["home-men"];
   return (
     <>
       <section className="hero" aria-labelledby="hero-title">
@@ -28,7 +34,10 @@ export default async function Home() {
             </Link>
           </div>
         </div>
-        <div
+        {heroCover ? <div className="hero-scene hero-scene-photo">
+          <Image src={storefrontImageUrl(heroCover.storage_path)} alt={heroCover.alt} fill
+            sizes="(max-width: 700px) 100vw, 60vw" className="home-cover-image" loading="eager" />
+        </div> : <div
           className="hero-scene"
           role="img"
           aria-label="Illustrated linen shirt and trousers in a sunlit, neutral setting"
@@ -42,7 +51,7 @@ export default async function Home() {
             <GarmentArt category="Shirts" color="#eee7d7" />
           </div>
           <span className="scene-caption">AN ILLUSTRATED LINEN STUDY</span>
-        </div>
+        </div>}
         <div className="hero-bottom">
           <span>FOR HER. FOR HIM. FOR EVERYDAY.</span>
           <span>01 — THE FIRST EDIT</span>
@@ -81,9 +90,12 @@ export default async function Home() {
       </section>
       <section className="department-stories">
         <Link href="/women" className="department-story women-story">
-          <div className="story-art">
+          {womenCover ? <div className="story-photo">
+            <Image src={storefrontImageUrl(womenCover.storage_path)} alt={womenCover.alt} fill
+              sizes="(max-width: 700px) 100vw, 50vw" className="home-cover-image" />
+          </div> : <div className="story-art">
             <GarmentArt category="Dresses" color="#b7a08a" />
-          </div>
+          </div>}
           <div className="story-copy">
             <span className="eyebrow">THE WOMEN’S EDIT</span>
             <h2>
@@ -97,9 +109,12 @@ export default async function Home() {
           </div>
         </Link>
         <Link href="/men" className="department-story men-story">
-          <div className="story-art">
+          {menCover ? <div className="story-photo">
+            <Image src={storefrontImageUrl(menCover.storage_path)} alt={menCover.alt} fill
+              sizes="(max-width: 700px) 100vw, 50vw" className="home-cover-image" />
+          </div> : <div className="story-art">
             <GarmentArt category="Shirts" color="#e7e0cf" />
-          </div>
+          </div>}
           <div className="story-copy">
             <span className="eyebrow">INTRODUCING THE MEN’S EDIT</span>
             <h2>

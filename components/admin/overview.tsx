@@ -20,6 +20,7 @@ export function AdminOverview() {
     <div className="admin-overview-grid">
       <section className="admin-panel admin-task-card"><span className="admin-badge">STORE OPERATIONS</span><h2>Products</h2><p>Upload photos, edit descriptions and variants, set regular or sale prices, and publish or hide products.</p><Link className="button dark" href="/admin/products">Manage products →</Link></section>
       {profile.role === "owner" && <>
+        <section className="admin-panel admin-task-card"><span className="admin-badge">OWNER ONLY</span><h2>Storefront images</h2><p>Update the main homepage cover and the covers for the Women and Men collections on the homepage.</p><Link className="underlined-link" href="/admin/storefront">Manage storefront images →</Link></section>
         <section className="admin-panel admin-task-card"><span className="admin-badge">OWNER ONLY</span><h2>Team & access</h2><p>Approve individual staff emails, assign Owner or Marketing Editor access, and disable access when needed.</p><Link className="underlined-link" href="/admin/team">Manage team →</Link></section>
         <section className="admin-panel admin-task-card"><span className="admin-badge">OWNER ONLY</span><h2>Activity history</h2><p>See who changed a product, price, image or staff permission. Compare the values before and after each change.</p><Link className="underlined-link" href="/admin/activity">Review activity →</Link></section>
       </>}

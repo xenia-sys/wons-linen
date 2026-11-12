@@ -796,9 +796,53 @@
 .admin-workflow-steps li { padding-left: 5px; line-height: 1.8; }
 .admin-workflow-steps p { margin: 10px 0 0; font-size: 12px; }
 .admin-access-summary p { line-height: 1.8; }
+.admin-cover-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  align-items: start; gap: 16px;
+}
+.admin-cover-card { display: flex; flex-direction: column; gap: 12px; }
+.admin-cover-card h2 { font-size: 24px; }
+.admin-cover-card p { margin: 0; }
+.admin-cover-card .admin-upload-label { align-self: flex-start; }
+.admin-cover-preview {
+  display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden;
+  background: var(--surface); border-radius: 5px; color: var(--muted); font-size: 12px;
+}
+.admin-cover-preview img { width: 100%; height: 100%; min-height: 0; object-fit: cover; }
+.admin-cover-card .admin-actions { margin-top: 0; }
 .admin-activity-panel .admin-filters { margin-bottom: 15px; }
 .admin-activity-panel button:not(.button), .admin-page-heading > button {
   min-height: 44px; padding: 10px 16px; border: 1px solid var(--control-border); background: var(--surface-soft); font-size: 12px;
+}
+.admin-activity-filter { flex: 1 1 180px; min-width: 0; }
+.admin-activity-filter:first-child { flex: 2 1 240px; }
+.admin-activity-filter > span { display: block; margin-bottom: 6px; }
+.admin-activity-filter details { position: relative; }
+.admin-activity-filter details[open] { z-index: 4; }
+.admin-activity-filter summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  min-height: 44px; padding: 9px 12px; cursor: pointer; list-style: none;
+  border: 1px solid var(--control-border); border-radius: 5px; background: var(--paper);
+  overflow-wrap: anywhere;
+}
+.admin-activity-filter summary::-webkit-details-marker { display: none; }
+.admin-activity-filter ul {
+  position: absolute; inset-inline: 0; top: calc(100% + 4px); margin: 0; padding: 4px;
+  list-style: none; border: 1px solid var(--line); border-radius: 5px; background: var(--paper);
+  box-shadow: 0 8px 20px #2e2a231a;
+}
+.admin-activity-panel .admin-activity-filter li button:not(.button) {
+  display: block; width: 100%; text-align: start; padding: 8px; border: 0;
+  background: transparent; white-space: normal; overflow-wrap: anywhere;
+}
+.admin-activity-panel .admin-activity-filter li button:not(.button):is(:hover, [aria-pressed="true"]) {
+  background: var(--surface);
+}
+.admin-activity-filter :is(summary, button):focus-visible {
+  outline: none; box-shadow: inset 0 -1px 0 var(--action-hover);
+}
+@media (forced-colors: active) {
+  .admin-activity-filter :is(summary, button):focus-visible { outline: 1px solid Highlight; }
 }
 .admin-activity-state { padding: 40px 0; max-width: 650px; line-height: 1.8; }
 .admin-activity-state h2 { margin-bottom: 12px; }

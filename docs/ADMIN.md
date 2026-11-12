@@ -38,7 +38,9 @@ Production Auth URLs are configured. The founder's confirmed account demonstrate
 
 ## Product workflow
 
-Create a new product as **Hidden**, add at least one variant and save. Then upload front, back, styling and detail photos. Set English image descriptions, optional matching colours and gallery order; the first image is the catalog cover. Save again to attach the gallery. The UI compresses supported images to WebP, up to 2000 pixels on the longest edge and 3 MB after processing. Up to 20 images can be linked to a product.
+Create a new product as **Hidden**, add at least one variant and save. Then upload front, back, styling and detail photos. Set English image descriptions and optional matching colours. Choose **Set as cover** to move a photo to the first gallery position, then choose **Save product** to attach the gallery. The UI compresses supported images to WebP, up to 2000 pixels on the longest edge and 3 MB after processing. Up to 20 images can be linked to a product.
+
+To replace a homepage cover, sign in as Owner and go to **Storefront images**. Choose an image for **Homepage main cover**, **Women cover** or **Men cover**, add a short image description and select **Publish image**. Each slot can be restored to the original WONS artwork independently. The upload uses a dedicated public Storage bucket in the existing WONS project; restoring the artwork removes the cover from the homepage and leaves the previously published file in Storage. Cover publication and restoration appear in **Activity history**.
 
 Set each variant's regular price and optional lower sale price. Clear Sale price to end the discount. The catalog, product detail and bag use the effective price from the current database catalog; stored bag prices are ignored. Publish after confirming the product's images and content. Published non-demo products require variants and photography. New public page loads reflect saved changes; already open pages need a reload. Hidden products are excluded from public catalog queries and product links.
 

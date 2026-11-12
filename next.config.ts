@@ -7,6 +7,11 @@ const config: NextConfig = {
         hostname: "imgjlzoodxggihhljojf.supabase.co",
         pathname: "/storage/v1/object/public/product-images/**",
       },
+      {
+        protocol: "https",
+        hostname: "imgjlzoodxggihhljojf.supabase.co",
+        pathname: "/storage/v1/object/public/storefront-images/**",
+      },
     ],
   },
 };

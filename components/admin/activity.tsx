@@ -5,8 +5,13 @@ import { adminFetch } from "../../lib/admin-browser";
 import { activityAction, activityChanges, activityFieldLabels, activityTitle, activityTypes, activityValue } from "../../lib/admin-activity";
 import type { ActivityEntry } from "../../lib/admin-activity";
 import { useStaff } from "./admin-shell";
+import { ActivityFilter } from "./activity-filter";
 type ActivityResponse = { activity: ActivityEntry[]; nextCursor: string | null };
 const dateFormat = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Ho_Chi_Minh" });
+const activityActions = [
+  { value: "all", label: "All actions" }, { value: "INSERT", label: "Created / added" },
+  { value: "UPDATE", label: "Updated" }, { value: "DELETE", label: "Removed" },
+];
 export function Activity() {
   const profile = useStaff();
   const [entries, setEntries] = useState<ActivityEntry[]>([]);
@@ -54,8 +59,8 @@ export function Activity() {
     </div>
     <section className="admin-panel admin-activity-panel" aria-busy={loading}>
       <div className="admin-filters">
-        <label>Area<select value={type} onChange={event => filter(event.target.value, action)}>{activityTypes.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
-        <label>Action<select value={action} onChange={event => filter(type, event.target.value)}><option value="all">All actions</option><option value="INSERT">Created / added</option><option value="UPDATE">Updated</option><option value="DELETE">Removed</option></select></label>
+        <ActivityFilter label="Area" value={type} options={activityTypes} onChange={value => filter(value, action)} />
+        <ActivityFilter label="Action" value={action} options={activityActions} onChange={value => filter(type, value)} />
         {(type !== "all" || action !== "all") && <button onClick={() => filter("all", "all")}>Clear filters</button>}
       </div>
       <p className="admin-help">Times are shown in Vietnam time (GMT+7). {cursor ? "Earlier activity." : "Newest activity first."}</p>
@@ -79,6 +84,7 @@ export function Activity() {
               {fields.length ? <div className="admin-event-diff"><div className="admin-change-heading" aria-hidden="true"><span>Field</span><span>Before</span><span>After</span></div><dl className="admin-change-list">{fields.map(key => <div key={key}><dt>{activityFieldLabels[key] ?? key.replaceAll("_", " ")}</dt><dd><span className="admin-change-before" aria-label="Before">{activityValue(key, entry.before_data?.[key])}</span><span className="admin-change-after" aria-label="After">{activityValue(key, entry.after_data?.[key])}</span></dd></div>)}</dl></div> : <p className="admin-help">Saved without changing the tracked content fields.</p>}
               {entry.product && <Link className="underlined-link admin-event-link" href={"/admin/products/" + entry.product.id}>Open product →</Link>}
               {entry.entity_type === "staff_members" && <Link className="underlined-link admin-event-link" href="/admin/team">Manage team access →</Link>}
+              {entry.entity_type === "storefront_images" && <Link className="underlined-link admin-event-link" href="/admin/storefront">Manage storefront images →</Link>}
             </details>;
           })}
         </div>
