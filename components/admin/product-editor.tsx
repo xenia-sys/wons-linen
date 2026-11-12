@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PhotoFraming } from "./photo-framing";
 import { useRouter } from "next/navigation";
-import { adminFetch } from "../../lib/admin-browser";
+import { adminFetch, AdminRequestError } from "../../lib/admin-browser";
 import { parseProductDraft } from "../../lib/admin-validation";
 import { prepareImage } from "../../lib/prepare-image";
+import { PRODUCT_IMAGE_ACCEPT, PRODUCT_IMAGE_LIMIT, uploadProductPhotoBatch } from "../../lib/product-photo-upload";
 import { formatDisplayPrice, parseUsdQuote } from "../../lib/display-currency";
 import { money, percentagePrice } from "../../lib/commerce";
 import type {
@@ -83,6 +84,10 @@ export function ProductEditor({ id }: { id?: string }) {
   const [discountPercent, setDiscountPercent] = useState<number | null>(null);
   const [quote, setQuote] = useState<ReturnType<typeof parseUsdQuote>>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
+  const [photoProgress, setPhotoProgress] = useState("");
+  const [photoResult, setPhotoResult] = useState<Awaited<ReturnType<typeof uploadProductPhotoBatch>> | null>(null);
+  const uploadingPhotos = useRef(false);
+  const galleryFull = draft.images.length >= PRODUCT_IMAGE_LIMIT;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -159,6 +164,7 @@ export function ProductEditor({ id }: { id?: string }) {
         body: JSON.stringify(payload),
       });
       setDirty(false);
+      setPhotoResult(null);
       if (!id) {
         router.replace(`/admin/products/${result.id}`);
       } else {
@@ -173,43 +179,40 @@ export function ProductEditor({ id }: { id?: string }) {
       setBusy(false);
     }
   }
-  async function upload(files: FileList | null) {
-    if (!files?.length || !draft.id) return;
-    if (draft.images.length + files.length > 20) {
-      setError("Use up to 20 images per product.");
-      return;
-    }
+  async function upload(files: File[]) {
+    const productId = draft.id;
+    if (!files.length || !productId || uploadingPhotos.current || busy) return;
+    uploadingPhotos.current = true;
     setUploading(true);
     setError("");
+    setNotice("");
+    setPhotoResult(null);
     try {
-      for (const [index, file] of Array.from(files).entries()) {
-        setNotice(`Processing image ${index + 1} of ${files.length}…`);
-        const optimized = await prepareImage(file);
-        const body = new FormData();
-        body.set("product_id", draft.id);
-        body.set("file", optimized);
-        const result = await adminFetch("/upload", { method: "POST", body });
-        setDraft((prev) => ({
-          ...prev,
-          images: [
-            ...prev.images,
-            {
-              storage_path: result.storage_path,
+      setPhotoResult(await uploadProductPhotoBatch(files, draft.images.length, {
+        progress: (file, index) => setPhotoProgress(`Uploading ${index + 1} of ${files.length}: ${file.name}`),
+        stopOnError: error => error instanceof AdminRequestError && (error.status === 401 || error.status === 403),
+        upload: async (file) => {
+          const optimized = await prepareImage(file, { productPhoto: true });
+          const body = new FormData();
+          body.set("product_id", productId);
+          body.set("file", optimized);
+          const { storage_path } = await adminFetch("/upload", { method: "POST", body });
+          setDraft(prev => ({
+            ...prev,
+            images: [...prev.images, {
+              storage_path,
               alt: `${prev.name}, product view ${prev.images.length + 1}`,
               color: null,
               framing: null,
-            },
-          ],
-        }));
-        setDirty(true);
-      }
-      setNotice(
-        "Images uploaded. Add descriptions, set their order and save the product.",
-      );
-    } catch (e) {
-      setError((e as Error).message);
+            }],
+          }));
+          setDirty(true);
+        },
+      }));
     } finally {
+      uploadingPhotos.current = false;
       setUploading(false);
+      setPhotoProgress("");
     }
   }
   if (loading) return <p role="status">Loading product…</p>;
@@ -330,25 +333,38 @@ export function ProductEditor({ id }: { id?: string }) {
                 <div>
                   <h2>Product photography</h2>
                   <p>
-                    {draft.images.length}/20 images · Set a cover for the storefront cards.
+                    {draft.images.length}/{PRODUCT_IMAGE_LIMIT} images · Set a cover for the storefront cards.
                   </p>
                 </div>
                 <label
-                  className={`admin-upload-label${!id || uploading ? " disabled" : ""}`}
+                  className={`admin-upload-label${!id || uploading || busy || galleryFull ? " disabled" : ""}`}
                 >
-                  {uploading ? "Uploading…" : "+ Upload images"}
+                  {uploading ? "Uploading…" : galleryFull ? "Gallery full" : "+ Upload images"}
                   <input
                     type="file"
-                    accept="image/jpeg,image/png,image/webp,image/avif"
+                    accept={PRODUCT_IMAGE_ACCEPT}
                     multiple
-                    disabled={!id || uploading || busy}
+                    disabled={!id || uploading || busy || galleryFull}
                     onChange={(e) => {
-                      void upload(e.target.files);
-                      e.target.value = "";
+                      const files = Array.from(e.currentTarget.files ?? []);
+                      e.currentTarget.value = "";
+                      void upload(files);
                     }}
                   />
                 </label>
               </div>
+              {photoProgress && <p className="admin-photo-feedback" role="status">{photoProgress}</p>}
+              {photoResult && <div className="admin-photo-feedback">
+                {photoResult.added > 0 && <p className="admin-success" role="status">
+                  {photoResult.added} {photoResult.added === 1 ? "image" : "images"} added. Select <strong>Save product</strong> to publish gallery changes.
+                </p>}
+                {photoResult.failed.length > 0 && <div className="admin-error" role="alert">
+                  <p>{photoResult.failed.length === 1 ? "One file could not be uploaded:" : `${photoResult.failed.length} files could not be uploaded:`}</p>
+                  <ul>{photoResult.failed.map((file, i) => <li key={i}><strong>{file.name}</strong>: {file.message}</li>)}</ul>
+                  {photoResult.interrupted > 0 && <p>Upload paused. Select the remaining files after checking your store access.</p>}
+                </div>}
+                {photoResult.overLimit > 0 && <p role="status">The gallery is full. {photoResult.overLimit} {photoResult.overLimit === 1 ? "file was" : "files were"} skipped.</p>}
+              </div>}
               {!id && (
                 <p className="admin-help">
                   Save this product as Hidden first, then upload its images.
@@ -433,7 +449,8 @@ export function ProductEditor({ id }: { id?: string }) {
                 ))}
               </div>
               <p className="admin-help">
-                Images are resized and exported as WebP before upload. Save the
+                Select JPG, PNG, WebP or AVIF photos up to 40 MB each. HEIC works in browsers that can open it.
+                Images are resized before upload. Save the
                 product to publish gallery changes, including image framing. Removing a gallery image
                 retains the original file.
               </p>

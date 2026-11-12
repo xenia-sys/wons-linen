@@ -38,7 +38,7 @@ reset role;
 select set_config('request.jwt.claims',current_setting('wons.test.editor'),true);
 set local role authenticated;
 do $$
-declare p jsonb; result jsonb; changed integer; pid uuid:=current_setting('wons.test.pid')::uuid; vid uuid:=current_setting('wons.test.vid')::uuid; path text;
+declare p jsonb; result jsonb; changed integer; pid uuid:=current_setting('wons.test.pid')::uuid; vid uuid:=current_setting('wons.test.vid')::uuid; path text; extra_images jsonb;
 begin
   if private.staff_role()<>'marketing_editor' then raise exception 'Editor role mismatch';end if;
   if not exists(select 1 from public.products where id=pid and status='hidden') then raise exception 'Editor cannot read hidden product';end if;
@@ -79,6 +79,20 @@ begin
   p:=jsonb_set(p,'{images,0,framing}','null');
   result:=public.admin_save_product(p);
   if exists(select 1 from public.product_images where product_id=pid and framing is not null) then raise exception 'Crop reset failed';end if;
+  with uploaded as (
+    insert into storage.objects(bucket_id,name)
+    select 'product-images',pid::text||'/'||gen_random_uuid()::text||'.webp' from generate_series(1,19)
+    returning name
+  )
+  select jsonb_agg(jsonb_build_object('storage_path',name,'alt','Fixture image','color',null)) into extra_images from uploaded;
+  p:=jsonb_set(jsonb_set(p,'{version}',result->'version'),'{images}',(p->'images')||extra_images);
+  result:=public.admin_save_product(p);
+  if (select count(*) from public.product_images where product_id=pid) <> 20
+    or not exists(select 1 from public.product_images where product_id=pid and sort_order=0 and storage_path=path)
+    then raise exception 'The RPC could not save 20 images and preserve the cover'; end if;
+  p:=jsonb_set(jsonb_set(p,'{version}',result->'version'),'{images}',(p->'images')||jsonb_build_array(extra_images->0));
+  begin perform public.admin_save_product(p);raise exception 'A 21-image gallery saved';exception when check_violation then null;end;
+  if (select count(*) from public.product_images where product_id=pid) <> 20 then raise exception 'Oversize gallery changed existing images'; end if;
   update public.products set status='hidden' where id=pid;
   if (select status from public.products where id=pid)<>'hidden' then raise exception 'Editor could not hide product';end if;
 end $$;
@@ -105,5 +119,5 @@ set local role authenticated;
 do $$ begin if private.staff_role() is not null then raise exception 'Revoked session retained access';end if;end $$;
 reset role;
 set constraints all immediate;
-select 'PASS: guest/customer denial, hidden rows, Marketing publish/hide/prices/upload policy, no role escalation, Owner team/history, last Owner, stale/atomic save, disabled staff and revoked sessions' as result;
+select 'PASS: guest/customer denial, Marketing publish/hide/prices/upload policy, 20-image galleries, Owner team/history, last Owner, stale/atomic save and revoked sessions' as result;
 rollback;

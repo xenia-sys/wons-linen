@@ -444,6 +444,14 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+.admin-photo-feedback {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.admin-photo-feedback p { margin: 0; }
+.admin-photo-feedback ul { margin: 6px 0 0; padding-inline-start: 20px; }
 .admin-image-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,5 +1,6 @@
 import { parseImageFraming } from "./image-framing.ts";
 import type { ImageFraming } from "./image-framing.ts";
+import { PRODUCT_IMAGE_LIMIT } from "./product-photo-upload.ts";
 export type StaffRole = "owner" | "marketing_editor";
 export type AdminVariant = {
   id?: string;
@@ -122,8 +123,8 @@ export function parseProductDraft(input: unknown): ProductDraft {
       variants.length
   )
     throw Error("Every SKU and colour/size combination must be unique.");
-  if (!Array.isArray(p.images) || p.images.length > 20)
-    throw Error("Use up to 20 product images.");
+  if (!Array.isArray(p.images) || p.images.length > PRODUCT_IMAGE_LIMIT)
+    throw Error(`Use up to ${PRODUCT_IMAGE_LIMIT} product images.`);
   const images = p.images.map((value) => {
     const v = record(value);
     const path = text(v.storage_path, "Image path", 200);
