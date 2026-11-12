@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { staffAuth } from "../../lib/admin-browser";
+import { OrderInboxBadge } from "./order-inbox";
 import { adminLoginPath, adminNavigation, adminNextPath, adminSectionName, canOpenAdminSection, staffRoleLabel, STAFF_AUTH_REQUIRED, STAFF_ACCESS_CHANGED } from "../../lib/admin-navigation";
 import type { StaffRole } from "../../lib/admin-validation";
 type Profile = { email: string; role: StaffRole };
@@ -155,7 +156,7 @@ export function AdminShell({ enabled, children }: { enabled: boolean; children: 
             const items = navigation.filter(item => item.group === group);
             return items.length ? <div className="admin-nav-group" key={group}>
               <p className="admin-nav-heading">{group}</p>
-              {items.map(item => <Link key={item.href} href={item.href} aria-current={(path === item.href || (item.href === "/admin/products" && path.startsWith("/admin/products/"))) ? "page" : undefined}>{item.label}</Link>)}
+              {items.map(item => <Link key={item.href} href={item.href} aria-current={(path === item.href || (item.href === "/admin/products" && path.startsWith("/admin/products/"))) ? "page" : undefined}>{item.label}{item.href === "/admin/orders" && <OrderInboxBadge />}</Link>)}
             </div> : null;
           })}
         </nav>
@@ -164,7 +165,7 @@ export function AdminShell({ enabled, children }: { enabled: boolean; children: 
       <main className="admin-content" id="admin-main" tabIndex={-1}>
         <div className="admin-topbar"><nav aria-label="Breadcrumb"><Link href="/admin">WONS Admin</Link><span> / {adminSectionName(path)}</span></nav><span>{staffRoleLabel(profile.role)} workspace</span></div>
         {canOpenAdminSection(profile.role, path) ? children : <section className="admin-panel admin-route-denied">
-          <p className="eyebrow">OWNER TOOLS</p><h1>Owner access required.</h1><p>Your Marketing Editor account can manage products, images, prices and publication. Team access and activity history are managed by the Owner.</p><Link className="button dark" href="/admin/products">Go to products</Link>
+          <p className="eyebrow">OWNER TOOLS</p><h1>Owner access required.</h1><p>Your Marketing Editor account can manage products, images, prices and publication. Orders, team access and activity history are managed by the Owner.</p><Link className="button dark" href="/admin/products">Go to products</Link>
         </section>}
       </main>
     </div>

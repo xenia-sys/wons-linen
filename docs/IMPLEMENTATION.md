@@ -18,7 +18,7 @@ The approved Champagne Gold palette is shared by the storefront and product admi
 
 ## Deliberately closed before launch
 
-The guest checkout preview shows the bag, contact and address fields, optional billing and notes, and an on-page review. Details are neither submitted nor saved. It never accepts payment or creates an order. The POST endpoint fails closed independently of environment configuration. The customer account area is implemented behind a launch flag pending verification email delivery. Shipping quotes and payments are not implemented. Staff administration is disabled on preview deployments. The initial catalog still contains demo prices/quantities and concept illustrations.
+Guest checkout supports Vietnam delivery with free shipping and taxes included. Eligible production orders are saved with a price snapshot and stock reservation. The Owner inbox shows new orders and supports confirmation and cancellation. There is no online payment collection or notification email. Demo items and preview deployments cannot create orders. The customer account area remains behind a launch flag pending verification email delivery, and guest orders are not linked by email.
 
 ## Validation
 

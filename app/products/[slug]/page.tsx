@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getCatalog } from "../../../lib/catalog";
 import { ProductDetail } from "../../../components/product-detail";
 import { ProductCard } from "../../../components/product-card";
+import { checkoutGatewaySecret } from "../../../lib/checkout-config";
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -20,7 +21,7 @@ export default async function ProductPage({ params }: Props) {
   );
   return (
     <>
-      <ProductDetail key={product.id} product={product} />
+      <ProductDetail key={product.id} product={product} canOrder={Boolean(checkoutGatewaySecret()) && product.status === "published" && !product.is_demo} />
       <section className="related section-space">
         <div className="section-heading">
           <h2>A little more to love.</h2>

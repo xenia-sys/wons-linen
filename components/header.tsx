@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useBag } from "./cart-provider";
 import { AccountIcon, BagIcon, SearchIcon } from "./icons";
 import { CurrencySelector } from "./currency-selector";
-export function Header() {
+export function Header({ ordersOpen }: { ordersOpen: boolean }) {
   const pathname = usePathname();
   const { count } = useBag();
   return (
@@ -14,7 +14,7 @@ export function Header() {
         Skip to content
       </a>
       <div className="announcement">
-        THE FIRST EDIT <span>—</span> A WONS LINEN PREVIEW
+        THE FIRST EDIT <span>—</span> {ordersOpen ? "FREE SHIPPING WITHIN VIETNAM" : "A WONS LINEN PREVIEW"}
       </div>
       <header className="site-header">
         <nav aria-label="Collections" className="main-nav">

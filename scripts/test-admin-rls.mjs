@@ -43,7 +43,7 @@ try {
       ),
     );
   }
-  for (const name of ["product_admin.sql", "customer_accounts.sql"]) {
+  for (const name of ["product_admin.sql", "customer_accounts.sql", "guest_orders.sql"]) {
     const results = await db.exec(
       await readFile(new URL(`../supabase/tests/${name}`, import.meta.url), "utf8"),
     );
@@ -56,12 +56,14 @@ try {
     (select count(*)::integer from public.products) as products,
     (select count(*)::integer from public.variants) as variants,
     (select count(*)::integer from auth.users) as auth_users,
-    (select count(*)::integer from public.staff_members) as staff`);
+    (select count(*)::integer from public.staff_members) as staff,
+    (select count(*)::integer from public.wons_orders) as orders`);
   if (
     counts.products !== 6 ||
     counts.variants !== 42 ||
     counts.auth_users !== 0 ||
-    counts.staff !== 0
+    counts.staff !== 0 ||
+    counts.orders !== 0
   )
     throw Error("Fixtures did not roll back.");
   console.log(

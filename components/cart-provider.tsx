@@ -15,6 +15,7 @@ type BagContext = {
   add: (id: string) => void;
   update: (id: string, quantity: number) => void;
   remove: (id: string) => void;
+  consume: (lines: CartLine[]) => void;
   count: number;
 };
 const CartContext = createContext<BagContext | null>(null);
@@ -71,6 +72,13 @@ export function CartProvider({
         update: (id, quantity) =>
           commit(setQuantity(cart, products, id, quantity)),
         remove: (id) => commit(cart.filter((line) => line.variantId !== id)),
+        consume: (purchased) => {
+          const quantities = new Map(purchased.map(line => [line.variantId, line.quantity]));
+          commit(cart.flatMap(line => {
+            const quantity = line.quantity - (quantities.get(line.variantId) ?? 0);
+            return quantity > 0 ? [{ ...line, quantity }] : [];
+          }));
+        },
       }}
     >
       {children}

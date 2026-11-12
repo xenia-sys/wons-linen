@@ -18,18 +18,19 @@ const pages: Record<
     title: "A little care, in every detail.",
     eyebrow: "CLIENT CARE",
     paragraphs: [
-      "This is the WONS collection preview. You can explore styles, choose preview colours and sizes, and save a selection in your bag. Orders and payments are not open yet.",
+      "You can explore styles, choose colours and sizes, and save a selection in your bag. Preview products cannot be ordered. WONS contacts customers to confirm eligible orders and arrange payment.",
       "Confirmed garment measurements, fabric composition and care instructions will be listed with each style before launch. Preview sizes are not a final fitting guide.",
-      "Delivery areas, shipping rates, payment methods, returns and a direct client care contact are being prepared. These details will be available before any purchase can be placed.",
+      "Shipping is free within Vietnam. Product prices include taxes and fees. No online payment is collected during checkout.",
     ],
   },
   privacy: {
     title: "Your visit, thoughtfully.",
     eyebrow: "PRIVACY & YOUR BAG",
     paragraphs: [
-      "The preview bag stores only product variant identifiers and quantities in your browser’s local storage. It stays on this device until you remove the items or clear this site’s browser data. Use sample details in checkout: the site does not submit or save the details entered there, and no payment information is requested.",
+      "The bag stores only product variant identifiers and quantities in your browser’s local storage. It stays on this device until you remove the items or clear this site’s browser data. Details entered for preview products are not submitted or saved by WONS.",
+      "When you place an order for available products, WONS saves your contact details, billing and delivery addresses, order items and any notes to process the order. Access to the order inbox is restricted to the store Owner. We use a coded request identifier to limit repeated submissions. No card or payment details are requested at checkout.",
       "The collection is loaded from WONS’s Supabase catalog and the website is hosted on Vercel. Requests pass through these services to deliver the website; hosting services may process technical request information. This preview does not include an advertising tracker or newsletter form.",
-      "A complete store privacy policy, retention details and contact for privacy requests will be published before orders and customer accounts are enabled.",
+      "Customer accounts are optional. An order placed as a guest is not automatically linked to an account.",
     ],
   },
 };

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Arrow } from "./icons";
 import { useDisplayCurrency } from "./display-currency-provider";
-export function Footer() {
+export function Footer({ ordersOpen }: { ordersOpen: boolean }) {
   const { currency } = useDisplayCurrency();
   return (
     <footer className="site-footer">
@@ -37,8 +37,7 @@ export function Footer() {
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} WONS LINEN</span>
         <span>
-          Collection preview · Illustrative styles & prices · Orders are not
-          open
+          {ordersOpen ? "Free shipping within Vietnam" : "Collection preview · Illustrative styles & prices"}
         </span>
         <span>{currency === "USD" ? "EN / USD · Estimated prices" : "EN / VND"}</span>
       </div>

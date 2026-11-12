@@ -6,9 +6,10 @@ import { MAX_PER_VARIANT, subtotal, unitPrice } from "../lib/commerce";
 import { useDisplayCurrency } from "./display-currency-provider";
 import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
-export function Bag() {
+export function Bag({ enabled }: { enabled: boolean }) {
   const { lines, ready, count, storageAvailable, update, remove } = useBag();
   const { currency, format } = useDisplayCurrency();
+  const canOrder = enabled && lines.every(line => line.product.status === "published" && !line.product.is_demo);
   return (
     <section className="bag-page section-space">
       <div className="section-heading">
@@ -146,21 +147,20 @@ export function Bag() {
             </div>
             <div className="summary-line muted">
               <span>Delivery</span>
-              <span>To be confirmed</span>
+              <span>Free shipping within Vietnam</span>
             </div>
             <div className="summary-line muted">
               <span>Taxes & fees</span>
-              <span>To be confirmed</span>
+              <span>Included in product prices</span>
             </div>
             <p className="summary-notice">
               {currency === "USD" && "USD amounts are estimates converted from VND. "}
-              The first edit is a preview. Sample prices are shown; the final
-              order total and payment options are not available yet.
+              {canOrder ? "WONS will contact you to confirm your order and arrange payment." : "Your bag includes items that are not available to order. You can still preview checkout."}
             </p>
             <Link href="/checkout" className="button dark">
               Continue to checkout <Arrow />
             </Link>
-            <p className="secure-note">Orders and payments are not open.</p>
+            <p className="secure-note">{canOrder ? "No payment is collected at checkout." : "Preview items cannot be ordered."}</p>
           </aside>
         </div>
       )}

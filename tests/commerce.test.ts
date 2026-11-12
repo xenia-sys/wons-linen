@@ -180,7 +180,7 @@ test("checkout fails closed even if an environment flag is switched on", async (
   const previous = process.env.CHECKOUT_ENABLED;
   try {
     process.env.CHECKOUT_ENABLED = "true";
-    const response = await POST();
+    const response = await POST(new Request("https://wons.test/api/checkout", { method: "POST" }));
     assert.equal(response.status, 503);
     assert.equal((await response.json()).code, "CHECKOUT_NOT_OPEN");
   } finally {

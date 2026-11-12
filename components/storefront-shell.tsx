@@ -7,9 +7,11 @@ import { Header } from "./header";
 import { Footer } from "./footer";
 export function StorefrontShell({
   products,
+  ordersOpen,
   children,
 }: {
   products: Product[];
+  ordersOpen: boolean;
   children: React.ReactNode;
 }) {
   const path = usePathname();
@@ -17,11 +19,11 @@ export function StorefrontShell({
   return (
     <DisplayCurrencyProvider>
       <CartProvider products={products}>
-        <Header />
+        <Header ordersOpen={ordersOpen} />
         <main id="main" tabIndex={-1}>
           {children}
         </main>
-        <Footer />
+        <Footer ordersOpen={ordersOpen} />
       </CartProvider>
     </DisplayCurrencyProvider>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getCatalog } from "../lib/catalog";
 import { StorefrontShell } from "../components/storefront-shell";
+import { checkoutGatewaySecret } from "../lib/checkout-config";
 import "./globals.css";
 const sans = localFont({
   src: [
@@ -36,7 +37,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body>
-        <StorefrontShell products={products}>{children}</StorefrontShell>
+        <StorefrontShell products={products} ordersOpen={Boolean(checkoutGatewaySecret()) && products.some(p => p.status === "published" && !p.is_demo)}>{children}</StorefrontShell>
       </body>
     </html>
   );

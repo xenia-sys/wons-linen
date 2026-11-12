@@ -7,7 +7,7 @@ import { ProductPrice } from "./product-price";
 import { useBag } from "./cart-provider";
 import { ProductGallery } from "./product-gallery";
 import { Arrow } from "./icons";
-export function ProductDetail({ product }: { product: Product }) {
+export function ProductDetail({ product, canOrder }: { product: Product; canOrder: boolean }) {
   const colors = [
     ...new Map(product.variants.map((v) => [v.color, v.color_hex])).entries(),
   ];
@@ -59,7 +59,7 @@ export function ProductDetail({ product }: { product: Product }) {
           </p>
           <p className="product-description">{product.description}</p>
           <span className="preview-pill">
-            {product.is_demo
+            {canOrder ? "Free shipping within Vietnam" : product.is_demo
               ? "Collection preview · Sample price"
               : "Collection preview · Orders are not open"}
           </span>
@@ -149,7 +149,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   ? "Preview quantity limit reached"
                   : variant?.available_quantity === 0
                     ? "Unavailable"
-                    : "Add to preview bag"}
+                    : canOrder ? "Add to bag" : "Add to preview bag"}
             <Arrow />
           </button>
           <div className="added-status" role="status">
@@ -166,8 +166,7 @@ export function ProductDetail({ product }: { product: Product }) {
             )}
           </div>
           <p className="detail-disclaimer">
-            Try the bag experience. No stock is reserved and no order or payment
-            can be placed.
+            {canOrder ? "Items are reserved when you place an order. WONS will contact you to confirm." : "Try the bag experience. This item is not available to order."}
           </p>
           <div className="product-accordions">
             <details>
