@@ -432,8 +432,13 @@
   padding: 0;
 }
 .admin-upload-label:focus-within {
-  outline: 2px solid var(--action);
-  outline-offset: 3px;
+  box-shadow: inset 0 -1px 0 var(--action-hover);
+}
+@media (forced-colors: active) {
+  .admin-upload-label:focus-within {
+    outline: 1px solid Highlight;
+    outline-offset: 1px;
+  }
 }
 .admin-upload-label.disabled {
   opacity: 0.45;

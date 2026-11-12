@@ -124,13 +124,6 @@
   resize: vertical;
 }
 
-.checkout-field input:focus,
-.checkout-field textarea:focus {
-  outline: none;
-  border-color: var(--action-hover);
-  background: var(--surface-soft);
-}
-
 .checkout-country {
   margin-top: 12px;
   color: var(--muted);
