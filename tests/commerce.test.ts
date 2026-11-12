@@ -176,15 +176,18 @@ test("price sorting does not mutate the original catalog", () => {
   );
   assert.equal(products[0].id, "women");
 });
-test("checkout fails closed even if an environment flag is switched on", async () => {
+test("the legacy checkout flag cannot open orders without a gateway credential", async () => {
   const previous = process.env.CHECKOUT_ENABLED;
+  const gateway = process.env.WONS_ORDER_GATEWAY_SECRET;
   try {
     process.env.CHECKOUT_ENABLED = "true";
+    delete process.env.WONS_ORDER_GATEWAY_SECRET;
     const response = await POST(new Request("https://wons.test/api/checkout", { method: "POST" }));
     assert.equal(response.status, 503);
     assert.equal((await response.json()).code, "CHECKOUT_NOT_OPEN");
   } finally {
     if (previous === undefined) delete process.env.CHECKOUT_ENABLED;
     else process.env.CHECKOUT_ENABLED = previous;
+    if (gateway !== undefined) process.env.WONS_ORDER_GATEWAY_SECRET = gateway;
   }
 });
