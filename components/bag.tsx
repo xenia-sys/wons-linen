@@ -158,7 +158,7 @@ export function Bag() {
               order total and payment options are not available yet.
             </p>
             <Link href="/checkout" className="button dark">
-              Checkout information <Arrow />
+              Continue to checkout <Arrow />
             </Link>
             <p className="secure-note">Orders and payments are not open.</p>
           </aside>

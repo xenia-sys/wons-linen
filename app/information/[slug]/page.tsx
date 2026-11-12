@@ -27,7 +27,7 @@ const pages: Record<
     title: "Your visit, thoughtfully.",
     eyebrow: "PRIVACY & YOUR BAG",
     paragraphs: [
-      "The preview bag stores only product variant identifiers and quantities in your browser’s local storage. It stays on this device until you remove the items or clear this site’s browser data. No name, delivery address or payment details are collected by a checkout form in this preview.",
+      "The preview bag stores only product variant identifiers and quantities in your browser’s local storage. It stays on this device until you remove the items or clear this site’s browser data. Use sample details in checkout: the site does not submit or save the details entered there, and no payment information is requested.",
       "The collection is loaded from WONS’s Supabase catalog and the website is hosted on Vercel. Requests pass through these services to deliver the website; hosting services may process technical request information. This preview does not include an advertising tracker or newsletter form.",
       "A complete store privacy policy, retention details and contact for privacy requests will be published before orders and customer accounts are enabled.",
     ],

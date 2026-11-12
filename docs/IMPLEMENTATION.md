@@ -6,7 +6,7 @@ The approved Champagne Gold palette is shared by the storefront and product admi
 
 ## Available
 
-- Home, /shop, /women, /men, individual /products/[slug] pages, /bag and /checkout information.
+- Home, /shop, /women, /men, individual /products/[slug] pages, /bag and the guest checkout preview at /checkout.
 - Category filtering, text search, price sorting, empty results and unavailable size states.
 - Explicit size selection, color-specific variant selection, same-SKU merging, quantity updates/removal and catalog-based sample subtotal.
 - Browser bag persistence and cross-tab updates; malformed/stale data is sanitized.
@@ -18,7 +18,7 @@ The approved Champagne Gold palette is shared by the storefront and product admi
 
 ## Deliberately closed before launch
 
-Checkout returns no success state and never accepts payment or creates an order. The POST endpoint fails closed independently of environment configuration. The customer account area is implemented behind a launch flag pending verification email delivery. Shipping quotes and payments are not implemented. Staff administration is disabled on preview deployments. The initial catalog still contains demo prices/quantities and concept illustrations.
+The guest checkout preview shows the bag, contact and address fields, optional billing and notes, and an on-page review. Details are neither submitted nor saved. It never accepts payment or creates an order. The POST endpoint fails closed independently of environment configuration. The customer account area is implemented behind a launch flag pending verification email delivery. Shipping quotes and payments are not implemented. Staff administration is disabled on preview deployments. The initial catalog still contains demo prices/quantities and concept illustrations.
 
 ## Validation
 
