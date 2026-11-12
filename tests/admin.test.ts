@@ -63,6 +63,15 @@ test("sale prices must be positive whole VND values below the regular price", ()
   p.variants[0].sale_price_vnd = null as unknown as number;
   assert.equal(parseProductDraft(p).variants[0].sale_price_vnd, null);
 });
+test("New Arrivals placement is saved separately from the main department", () => {
+  const featured = parseProductDraft({ ...draft(), new_arrival: true });
+  assert.equal(featured.department, "Men");
+  assert.equal(featured.new_arrival, true);
+  assert.equal(parseProductDraft({ ...draft(), new_arrival: false }).new_arrival, false);
+  assert.equal(parseProductDraft({ ...draft(), new_arrival: null }).new_arrival, null);
+  assert.ok(!Object.hasOwn(parseProductDraft(draft()), "new_arrival"));
+  assert.throws(() => parseProductDraft({ ...draft(), new_arrival: "true" }), /New Arrivals/);
+});
 test("existing products require a version; quantities and regular prices are validated", () => {
   assert.throws(() => parseProductDraft({ ...draft(), version: undefined }));
   for (const [field, value] of [

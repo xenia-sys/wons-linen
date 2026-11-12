@@ -35,7 +35,7 @@ export function parseActivityQuery(params: URLSearchParams) {
 }
 export const activityFieldLabels: Record<string, string> = {
   name: "Product name", slug: "Product URL", description: "Description",
-  department: "Department", category: "Category", status: "Website visibility",
+  department: "Department", new_arrival: "New Arrivals", category: "Category", status: "Website visibility",
   price_vnd: "Regular price", sale_price_vnd: "Sale price",
   available_quantity: "Available quantity", sku: "SKU", color: "Colour",
   color_hex: "Colour code", size: "Size", alt: "Image description",
@@ -98,6 +98,7 @@ export function activityAction(entry: ActivityEntry) {
   return changed.length ? "Product updated" : "Product saved";
 }
 export function activityValue(key: string, value: unknown): string {
+  if (key === "new_arrival") return value === true ? "Featured" : value === false ? "Excluded" : "Automatic";
   if (value === null || value === undefined || value === "") return "—";
   if (key === "percent_off") return value + "%";
   if (key === "product_ids" && Array.isArray(value)) return `${value.length} ${value.length === 1 ? "product" : "products"}`;

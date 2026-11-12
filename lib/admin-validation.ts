@@ -26,6 +26,7 @@ export type ProductDraft = {
   slug: string;
   description: string;
   department: "Women" | "Men";
+  new_arrival?: boolean | null;
   category: "Shirts" | "Dresses" | "Trousers" | "Sets";
   status: "hidden" | "preview" | "published";
   is_demo: boolean;
@@ -83,6 +84,8 @@ export function parseProductDraft(input: unknown): ProductDraft {
     throw Error("Choose a valid department, category and visibility.");
   if (typeof p.is_demo !== "boolean" || (p.status === "preview" && !p.is_demo))
     throw Error("Only demo products can use Preview status.");
+  if (p.new_arrival != null && typeof p.new_arrival !== "boolean")
+    throw Error("Choose a valid New Arrivals option.");
   if (
     !Array.isArray(p.variants) ||
     p.variants.length < 1 ||
@@ -158,6 +161,7 @@ export function parseProductDraft(input: unknown): ProductDraft {
     slug,
     description: text(p.description, "Description", 10000, false),
     department: p.department as ProductDraft["department"],
+    ...(p.new_arrival !== undefined ? { new_arrival: p.new_arrival as boolean | null } : {}),
     category: p.category as ProductDraft["category"],
     status: p.status as ProductDraft["status"],
     is_demo: p.is_demo,

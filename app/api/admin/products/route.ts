@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const products = db
       .from("products")
       .select(
-        "id,slug,name,department,category,status,is_demo,version,updated_at,variants(id,price_vnd,sale_price_vnd),product_images(id,storage_path,sort_order)",
+        "id,slug,name,department,new_arrival,category,status,is_demo,version,updated_at,variants(id,price_vnd,sale_price_vnd),product_images(id,storage_path,sort_order)",
       )
       .order("updated_at", { ascending: false });
     const [{ data, error }, pricing] = await Promise.all([products, db.rpc("current_wons_discount_pricing")]);
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   try {
     const { db } = await authorizedStaff(request);
     const draft = parseProductDraft(await adminJson(request));
-    const { data, error } = await db.rpc("admin_save_product", {
+    const { data, error } = await db.rpc("admin_save_product_with_arrival", {
       payload: draft,
     });
     if (error) throw databaseError(error);

@@ -25,6 +25,7 @@ do $$ begin
   if exists(select 1 from public.products where id=current_setting('wons.test.pid')::uuid) then raise exception 'Anon read hidden product';end if;
   begin insert into public.staff_members(email,role) values('outsider@example.invalid','owner');raise exception 'Anon self-enrolled';exception when insufficient_privilege then null;end;
   begin perform public.admin_save_product('{}');raise exception 'Anon called admin write';exception when insufficient_privilege then null;end;
+  begin perform public.admin_save_product_with_arrival('{"new_arrival":true}');raise exception 'Anon set collection placement';exception when insufficient_privilege then null;end;
 end $$;
 reset role;
 select set_config('request.jwt.claims',current_setting('wons.test.visitor'),true);
@@ -33,6 +34,7 @@ do $$ begin
   if private.staff_role() is not null then raise exception 'User metadata granted staff access';end if;
   begin update public.variants set price_vnd=1 where id=current_setting('wons.test.vid')::uuid; if found then raise exception 'Customer changed a price';end if;exception when insufficient_privilege then null;end;
   begin perform public.admin_save_product('{}');raise exception 'Customer saved product';exception when insufficient_privilege then null;end;
+  begin perform public.admin_save_product_with_arrival('{"new_arrival":true}');raise exception 'Customer set collection placement';exception when insufficient_privilege then null;end;
 end $$;
 reset role;
 select set_config('request.jwt.claims',current_setting('wons.test.editor'),true);
@@ -93,6 +95,19 @@ begin
   p:=jsonb_set(jsonb_set(p,'{version}',result->'version'),'{images}',(p->'images')||jsonb_build_array(extra_images->0));
   begin perform public.admin_save_product(p);raise exception 'A 21-image gallery saved';exception when check_violation then null;end;
   if (select count(*) from public.product_images where product_id=pid) <> 20 then raise exception 'Oversize gallery changed existing images'; end if;
+  -- Reload the database IDs just as the product editor does after saving.
+  p:=jsonb_set(p,'{images}',(select jsonb_agg(jsonb_build_object('id',id,'storage_path',storage_path,'alt',alt,'color',color,'framing',framing) order by sort_order) from public.product_images where product_id=pid))||'{"new_arrival":true}'::jsonb;
+  result:=public.admin_save_product_with_arrival(p);
+  if not exists(select 1 from public.products where id=pid and new_arrival and department='Women') then
+    raise exception 'New Arrivals changed or did not preserve the main department'; end if;
+  p:=jsonb_set(p-'new_arrival','{version}',result->'version');
+  result:=public.admin_save_product(p);
+  if (select new_arrival from public.products where id=pid) is distinct from true then
+    raise exception 'Legacy form cleared New Arrivals'; end if;
+  p:=jsonb_set(p,'{version}',result->'version')||'{"new_arrival":false}'::jsonb;
+  result:=public.admin_save_product_with_arrival(p);
+  if (select new_arrival from public.products where id=pid) is distinct from false then
+    raise exception 'Editor could not remove the New Arrivals selection'; end if;
   update public.products set status='hidden' where id=pid;
   if (select status from public.products where id=pid)<>'hidden' then raise exception 'Editor could not hide product';end if;
 end $$;
@@ -119,5 +134,5 @@ set local role authenticated;
 do $$ begin if private.staff_role() is not null then raise exception 'Revoked session retained access';end if;end $$;
 reset role;
 set constraints all immediate;
-select 'PASS: guest/customer denial, Marketing publish/hide/prices/upload policy, 20-image galleries, Owner team/history, last Owner, stale/atomic save and revoked sessions' as result;
+select 'PASS: guest/customer denial, Marketing publication, pricing and New Arrivals, 20-image galleries, Owner team/history, stale/atomic save and revoked sessions' as result;
 rollback;

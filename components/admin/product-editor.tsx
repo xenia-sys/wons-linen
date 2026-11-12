@@ -29,6 +29,7 @@ const empty = (): ProductDraft => ({
   slug: "",
   description: "",
   department: "Women",
+  new_arrival: null,
   category: "Shirts",
   status: "hidden",
   is_demo: false,
@@ -47,6 +48,7 @@ function fromRecord(p: ProductRecord): ProductDraft {
     slug: p.slug,
     description: p.description,
     department: p.department,
+    new_arrival: p.new_arrival ?? null,
     category: p.category,
     status: p.status,
     is_demo: p.is_demo,
@@ -85,6 +87,7 @@ export function ProductEditor({ id }: { id?: string }) {
   const [quote, setQuote] = useState<ReturnType<typeof parseUsdQuote>>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
   const [photoProgress, setPhotoProgress] = useState("");
+  const [coverNotice, setCoverNotice] = useState("");
   const [photoResult, setPhotoResult] = useState<Awaited<ReturnType<typeof uploadProductPhotoBatch>> | null>(null);
   const uploadingPhotos = useRef(false);
   const galleryFull = draft.images.length >= PRODUCT_IMAGE_LIMIT;
@@ -134,6 +137,7 @@ export function ProductEditor({ id }: { id?: string }) {
     setDraft((prev) => ({ ...prev, ...next }));
     setDirty(true);
     setNotice("");
+    setCoverNotice("");
   }
   function variant(index: number, next: Partial<AdminVariant>) {
     patch({
@@ -156,6 +160,7 @@ export function ProductEditor({ id }: { id?: string }) {
     event.preventDefault();
     setError("");
     setNotice("");
+    setCoverNotice("");
     setBusy(true);
     try {
       const payload = parseProductDraft(draft);
@@ -186,6 +191,7 @@ export function ProductEditor({ id }: { id?: string }) {
     setUploading(true);
     setError("");
     setNotice("");
+    setCoverNotice("");
     setPhotoResult(null);
     try {
       setPhotoResult(await uploadProductPhotoBatch(files, draft.images.length, {
@@ -248,18 +254,7 @@ export function ProductEditor({ id }: { id?: string }) {
               View storefront ↗
             </Link>
           )}
-          <button className="button dark" disabled={busy || uploading}>
-            {busy ? "Saving…" : "Save product"}
-          </button>
         </div>
-      </div>
-      <div className="admin-feedback" aria-live="polite">
-        {error && (
-          <p className="admin-error" role="alert">
-            {error}
-          </p>
-        )}
-        {notice && <p className="admin-success">{notice}</p>}
       </div>
       <fieldset className="admin-fields" disabled={busy || uploading}>
         <div className="admin-editor-layout">
@@ -299,16 +294,17 @@ export function ProductEditor({ id }: { id?: string }) {
                 <label>
                   Department
                   <select
-                    value={draft.department}
-                    onChange={(e) =>
-                      patch({
-                        department: e.target
-                          .value as ProductDraft["department"],
-                      })
-                    }
+                    value={draft.new_arrival ? "New Arrivals" : draft.department}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "New Arrivals") patch({ new_arrival: true });
+                      else if (value === "Women" || value === "Men")
+                        patch({ department: value, new_arrival: draft.new_arrival === true ? false : draft.new_arrival });
+                    }}
                   >
                     <option>Women</option>
                     <option>Men</option>
+                    <option>New Arrivals</option>
                   </select>
                 </label>
                 <label>
@@ -327,6 +323,17 @@ export function ProductEditor({ id }: { id?: string }) {
                   </select>
                 </label>
               </div>
+              {draft.new_arrival && <label>
+                Main department
+                <select value={draft.department} onChange={(e) => {
+                  if (e.target.value === "Women" || e.target.value === "Men")
+                    patch({ department: e.target.value });
+                }}>
+                  <option>Women</option>
+                  <option>Men</option>
+                </select>
+                <small>The product stays in its main department and is featured in New Arrivals when published.</small>
+              </label>}
             </section>
             <section className="admin-panel">
               <div className="admin-panel-heading">
@@ -354,6 +361,7 @@ export function ProductEditor({ id }: { id?: string }) {
                 </label>
               </div>
               {photoProgress && <p className="admin-photo-feedback" role="status">{photoProgress}</p>}
+              {coverNotice && <p className="admin-success admin-photo-feedback" role="status">{coverNotice}</p>}
               {photoResult && <div className="admin-photo-feedback">
                 {photoResult.added > 0 && <p className="admin-success" role="status">
                   {photoResult.added} {photoResult.added === 1 ? "image" : "images"} added. Select <strong>Save product</strong> to publish gallery changes.
@@ -416,7 +424,7 @@ export function ProductEditor({ id }: { id?: string }) {
                     <div className="admin-image-actions">
                       {i > 0 && <button type="button" disabled={busy || uploading} onClick={() => {
                         patch({ images: [img, ...draft.images.filter((_, index) => index !== i)] });
-                        setNotice("Cover selected. Save product to publish it.");
+                        setCoverNotice("Cover selected. Save product to publish it.");
                       }}>Set as cover</button>}
                       <button
                         type="button"
@@ -672,6 +680,17 @@ export function ProductEditor({ id }: { id?: string }) {
           </aside>
         </div>
       </fieldset>
+      <div className="admin-panel admin-product-save">
+        <div className="admin-product-save-feedback">
+          {error ? <p className="admin-error" role="alert">{error}</p>
+            : <p className={notice ? "admin-success" : "admin-help"} role="status">
+              {notice || (dirty ? "Unsaved changes" : "Save your product details when you’re ready.")}
+            </p>}
+        </div>
+        <button type="submit" className="button dark" disabled={busy || uploading}>
+          {busy ? "Saving…" : "Save product"}
+        </button>
+      </div>
     </form>
   );
 }

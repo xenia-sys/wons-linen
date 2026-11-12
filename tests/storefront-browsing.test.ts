@@ -28,6 +28,18 @@ test("preview styles are labeled and disappear when the first real style is publ
   assert.deepEqual(selectNewArrivals([]), { products: [], preview: false });
 });
 
+test("New Arrivals features chosen styles, excludes removed ones, and retains their departments", () => {
+  const featured = style("chosen-style", 1, { department: "Men", new_arrival: true });
+  const automatic = style("newer-style", 11);
+  const removed = style("removed-style", 12, { new_arrival: false });
+  const preview = style("preview-style", 14, { status: "preview", is_demo: true, new_arrival: true });
+  assert.deepEqual(selectNewArrivals([automatic, removed, preview, featured]), {
+    products: [featured, automatic], preview: false,
+  });
+  assert.equal(selectNewArrivals([featured]).products[0].department, "Men");
+  assert.deepEqual(selectNewArrivals([removed, preview]), { products: [], preview: false });
+});
+
 test("gallery changes one image for a deliberate horizontal swipe", () => {
   assert.equal(gallerySwipeDirection(-90, 12), 1);
   assert.equal(gallerySwipeDirection(90, -15), -1);

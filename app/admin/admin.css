@@ -380,6 +380,16 @@
 .admin-editor-layout > aside {
   min-width: 0;
 }
+.admin-product-save {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.admin-product-save-feedback { flex: 1 1 220px; min-width: 0; overflow-wrap: anywhere; }
+.admin-product-save-feedback p { margin: 0; }
+.admin-product-save .button { margin-inline-start: auto; }
 .admin-actions {
   display: flex;
   align-items: center;

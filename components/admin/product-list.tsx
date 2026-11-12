@@ -9,6 +9,7 @@ type Item = {
   slug: string;
   name: string;
   department: string;
+  new_arrival: boolean | null;
   category: string;
   status: string;
   is_demo: boolean;
@@ -39,7 +40,7 @@ export function ProductList() {
   const filtered = products.filter(
     (p) =>
       (status === "All" || p.status === status) &&
-      (department === "All" || p.department === department) &&
+      (department === "All" || (department === "New Arrivals" ? p.new_arrival === true : p.department === department)) &&
       `${p.name} ${p.slug}`.toLowerCase().includes(query.toLowerCase()),
   );
   return (
@@ -92,6 +93,7 @@ export function ProductList() {
               <option>All</option>
               <option>Women</option>
               <option>Men</option>
+              <option>New Arrivals</option>
             </select>
           </label>
           <label>
@@ -141,7 +143,7 @@ export function ProductList() {
                         {p.is_demo ? " · Demo" : ""}
                       </small>
                     </td>
-                    <td>{p.department}</td>
+                    <td>{p.department}{p.new_arrival && <small>New Arrivals</small>}</td>
                     <td>
                       <span className={`admin-badge status-${p.status}`}>
                         {p.status}

@@ -89,7 +89,7 @@ export function Catalog({
         <label className="sort-label">
           Sort by
           <select value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value="featured">{newArrivals ? "Newest first" : "Featured"}</option>
+            <option value="featured">{newArrivals ? "Featured, then newest" : "Featured"}</option>
             <option value="price-asc">Price: low to high</option>
             <option value="price-desc">Price: high to low</option>
           </select>

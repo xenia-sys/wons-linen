@@ -25,6 +25,7 @@ export type Product = {
   slug: string;
   name: string;
   department: Department;
+  new_arrival?: boolean | null;
   category: Category;
   description: string;
   status: "preview" | "published";
