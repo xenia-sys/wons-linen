@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getCatalog } from "../lib/catalog";
+import { getDiscountPricing } from "../lib/discount-pricing";
 import { StorefrontShell } from "../components/storefront-shell";
 import { checkoutGatewaySecret } from "../lib/checkout-config";
 import "./globals.css";
@@ -33,11 +34,11 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const products = await getCatalog();
+  const [products, pricing] = await Promise.all([getCatalog(), getDiscountPricing()]);
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body>
-        <StorefrontShell products={products} ordersOpen={Boolean(checkoutGatewaySecret()) && products.some(p => p.status === "published" && !p.is_demo)}>{children}</StorefrontShell>
+        <StorefrontShell products={products} nextPriceChange={pricing.next_change_at} ordersOpen={Boolean(checkoutGatewaySecret()) && products.some(p => p.status === "published" && !p.is_demo)}>{children}</StorefrontShell>
       </body>
     </html>
   );

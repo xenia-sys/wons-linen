@@ -5,13 +5,18 @@ export function money(amount: number) {
   return `VND ${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(amount)}`;
 }
 export function unitPrice(
-  variant: Pick<Variant, "price_vnd" | "sale_price_vnd">,
+  variant: Pick<Variant, "price_vnd" | "sale_price_vnd" | "discount_percent">,
 ) {
+  if (variant.discount_percent && variant.price_vnd > 0)
+    return percentagePrice(variant.price_vnd, variant.discount_percent);
   return variant.sale_price_vnd != null &&
     variant.sale_price_vnd > 0 &&
     variant.sale_price_vnd < variant.price_vnd
     ? variant.sale_price_vnd
     : variant.price_vnd;
+}
+export function percentagePrice(regular: number, percent: number) {
+  return Math.max(1, Math.floor((regular * (100 - percent) + 50) / 100));
 }
 export function findVariant(products: Product[], variantId: string) {
   for (const product of products) {

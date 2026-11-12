@@ -43,7 +43,7 @@ try {
       ),
     );
   }
-  for (const name of ["product_admin.sql", "customer_accounts.sql", "guest_orders.sql", "storefront_images.sql"]) {
+  for (const name of ["product_admin.sql", "customer_accounts.sql", "guest_orders.sql", "storefront_images.sql", "discount_events.sql"]) {
     const results = await db.exec(
       await readFile(new URL(`../supabase/tests/${name}`, import.meta.url), "utf8"),
     );

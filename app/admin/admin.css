@@ -537,6 +537,29 @@
 .admin-variants select {
   min-width: 65px;
 }
+.admin-usd-price, .admin-variant-offer { display: block; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.admin-variant-offer { margin-top: 6px; color: var(--action-hover); font-size: 11px; font-weight: 600; }
+.admin-discount-editor > h2 { margin-bottom: 18px; }
+.admin-discount-editor fieldset { min-width: 0; padding: 0; margin: 0; border: 0; }
+.admin-discount-editor .admin-discount-enabled { margin-top: 16px; }
+.admin-discount-editor .admin-actions { flex-wrap: wrap; margin-top: 16px; }
+.admin-discount-picker legend { font-weight: 600; margin-bottom: 8px; }
+.admin-discount-picker ul {
+  margin: 0; padding: 0; list-style: none; max-height: 360px; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: 5px;
+}
+.admin-discount-picker ul:empty { display: none; }
+.admin-discount-picker li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 18px; padding: 12px; }
+.admin-discount-picker li + li { border-top: 1px solid var(--line); }
+.admin-discount-picker li label { margin: 0; }
+.admin-discount-picker li small, .admin-discount-card small { display: block; margin-top: 5px; color: var(--muted); text-transform: capitalize; }
+.admin-discount-preview { font-size: 11px; font-variant-numeric: tabular-nums; }
+.admin-discount-preview del { margin-right: 5px; color: var(--muted); }
+.admin-discount-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 275px), 1fr)); gap: 16px; align-items: start; }
+.admin-discount-card { display: grid; gap: 11px; overflow-wrap: anywhere; }
+.admin-discount-card h2, .admin-discount-card p { margin: 0; }
+.admin-discount-card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.admin-discount-card button { justify-self: start; }
 .admin-feedback {
   margin-bottom: 20px;
 }

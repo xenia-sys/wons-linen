@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { adminFetch } from "../../lib/admin-browser";
 import { parseProductDraft } from "../../lib/admin-validation";
 import { prepareImage } from "../../lib/prepare-image";
+import { formatDisplayPrice, parseUsdQuote } from "../../lib/display-currency";
+import { money, percentagePrice } from "../../lib/commerce";
 import type {
   ProductDraft,
   AdminVariant,
@@ -78,12 +80,32 @@ export function ProductEditor({ id }: { id?: string }) {
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [dirty, setDirty] = useState(false);
+  const [discountPercent, setDiscountPercent] = useState<number | null>(null);
+  const [quote, setQuote] = useState<ReturnType<typeof parseUsdQuote>>(null);
+  const [quoteLoading, setQuoteLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/api/display-currency", { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(6000)]) })
+      .then(async response => {
+        if (response.ok && !controller.signal.aborted) setQuote(parseUsdQuote(await response.json()));
+      })
+      .catch(() => {})
+      .finally(() => { if (!controller.signal.aborted) setQuoteLoading(false); });
+    return () => controller.abort();
+  }, []);
+
+  async function loadRecord(productId: string) {
+    const result = await adminFetch(`/products/${productId}`);
+    setDraft(fromRecord(result.product));
+    setDiscountPercent(result.discountPercent);
+  }
   async function load() {
     if (!id) return;
     setLoading(true);
     setError("");
     try {
-      setDraft(fromRecord((await adminFetch(`/products/${id}`)).product));
+      await loadRecord(id);
       setDirty(false);
     } catch (e) {
       setError((e as Error).message);
@@ -142,7 +164,7 @@ export function ProductEditor({ id }: { id?: string }) {
       } else {
         // Reload database IDs for newly added variants and gallery images so
         // another save updates those records instead of inserting duplicates.
-        setDraft(fromRecord((await adminFetch(`/products/${id}`)).product));
+        await loadRecord(id);
         setNotice("Product saved. The storefront now uses these changes.");
       }
     } catch (e) {
@@ -421,7 +443,7 @@ export function ProductEditor({ id }: { id?: string }) {
                 <div>
                   <h2>Variants & pricing</h2>
                   <p>
-                    Prices in VND. Leave Sale price empty for regular pricing.
+                    Set the base price in VND. USD is a reference conversion. Schedule offers in <Link href="/admin/discount-events" className="underlined-link">Discount events</Link>.
                   </p>
                 </div>
                 <button
@@ -458,8 +480,8 @@ export function ProductEditor({ id }: { id?: string }) {
                         "Colour",
                         "Swatch",
                         "Size",
-                        "Regular price",
-                        "Sale price",
+                        "Price (VND)",
+                        "Price (USD)",
                         "Available quantity",
                         "",
                       ].map((c, i) => (
@@ -515,34 +537,22 @@ export function ProductEditor({ id }: { id?: string }) {
                         </td>
                         <td>
                           <input
-                            aria-label={`Regular price for variant ${i + 1}`}
+                            aria-label={`Price in VND for variant ${i + 1}`}
                             type="number"
                             required
                             min={1}
                             step={1}
                             value={v.price_vnd || ""}
-                            onChange={(e) =>
-                              variant(i, { price_vnd: Number(e.target.value) })
-                            }
+                            onChange={(e) => {
+                              const price_vnd = Number(e.target.value);
+                              variant(i, { price_vnd, sale_price_vnd: v.sale_price_vnd !== null && v.sale_price_vnd >= price_vnd ? null : v.sale_price_vnd });
+                            }}
                           />
+                          {discountPercent && v.price_vnd > 0 ? <small className="admin-variant-offer">{money(percentagePrice(v.price_vnd, discountPercent))} (−{discountPercent}%)</small> : null}
                         </td>
                         <td>
-                          <input
-                            aria-label={`Sale price for variant ${i + 1}`}
-                            type="number"
-                            min={1}
-                            max={v.price_vnd - 1}
-                            step={1}
-                            value={v.sale_price_vnd ?? ""}
-                            onChange={(e) =>
-                              variant(i, {
-                                sale_price_vnd:
-                                  e.target.value === ""
-                                    ? null
-                                    : Number(e.target.value),
-                              })
-                            }
-                          />
+                          <span className="admin-usd-price">{quote && v.price_vnd > 0 ? formatDisplayPrice(v.price_vnd, quote) : quoteLoading ? "Loading…" : !quote ? "Unavailable" : "—"}</span>
+                          {quote && discountPercent && v.price_vnd > 0 ? <small className="admin-variant-offer">{formatDisplayPrice(percentagePrice(v.price_vnd, discountPercent), quote)}</small> : null}
                         </td>
                         <td>
                           <input

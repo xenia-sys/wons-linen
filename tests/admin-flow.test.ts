@@ -9,7 +9,7 @@ function entry(values: Partial<ActivityEntry> = {}): ActivityEntry {
     action: "UPDATE", before_data: null, after_data: null, created_at: "2026-10-22T01:00:00Z", ...values };
 }
 test("admin deep links preserve only approved local destinations", () => {
-  for (const path of ["/admin", "/admin/activity", "/admin/team", "/admin/orders", "/admin/storefront", "/admin/products", "/admin/products/new", "/admin/products/" + productId]) {
+  for (const path of ["/admin", "/admin/activity", "/admin/team", "/admin/orders", "/admin/storefront", "/admin/discount-events", "/admin/products", "/admin/products/new", "/admin/products/" + productId]) {
     assert.equal(adminNextPath(path, "owner"), path);
   }
   assert.equal(adminNextPath("/admin/activity/?source=mail#latest"), "/admin/activity");
@@ -32,7 +32,7 @@ test("Marketing deep links cannot open Owner sections", () => {
   }
 });
 test("navigation exposes operations to Marketing and additional Owner tools to Owner", () => {
-  assert.deepEqual(adminNavigation("marketing_editor").map(item => item.href), ["/admin", "/admin/products"]);
+  assert.deepEqual(adminNavigation("marketing_editor").map(item => item.href), ["/admin", "/admin/products", "/admin/discount-events"]);
   assert.deepEqual(adminNavigation("owner").filter(item => item.group === "Owner tools").map(item => item.href), ["/admin/storefront", "/admin/team", "/admin/activity"]);
   assert.ok(adminNavigation("owner").some(item => item.href === "/admin/orders"));
 });

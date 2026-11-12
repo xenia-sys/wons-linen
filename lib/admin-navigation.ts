@@ -15,7 +15,7 @@ export function canOpenAdminSection(role: StaffRole, path: string) {
 export function adminNextPath(value: unknown, role?: StaffRole): string {
   if (typeof value !== "string" || /[\\\u0000-\u001f\u007f]/.test(value)) return "/admin";
   const path = value.split(/[?#]/)[0].replace(/\/$/, "");
-  const allowed = ["/admin", "/admin/products", "/admin/products/new", "/admin/team", "/admin/activity", "/admin/orders", "/admin/storefront"].includes(path)
+  const allowed = ["/admin", "/admin/products", "/admin/products/new", "/admin/team", "/admin/activity", "/admin/orders", "/admin/storefront", "/admin/discount-events"].includes(path)
     || /^\/admin\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(path);
   if (!allowed) return "/admin";
   return role && !canOpenAdminSection(role, path) ? "/admin/products" : path;
@@ -24,6 +24,7 @@ export function adminLoginPath(path: string) {
   return "/admin/login?next=" + encodeURIComponent(adminNextPath(path));
 }
 export function adminSectionName(path: string) {
+  if (path === "/admin/discount-events") return "Discount events";
   if (path === "/admin/activity") return "Activity history";
   if (path === "/admin/storefront") return "Storefront images";
   if (path === "/admin/orders") return "Orders";
@@ -40,6 +41,7 @@ export function adminNavigation(role: StaffRole) {
   const items = [
     { href: "/admin", label: "Overview", group: "Store operations" },
     { href: "/admin/products", label: "Products", group: "Store operations" },
+    { href: "/admin/discount-events", label: "Discount events", group: "Store operations" },
   ];
   return role === "owner" ? [...items,
     { href: "/admin/orders", label: "Orders", group: "Store operations" },

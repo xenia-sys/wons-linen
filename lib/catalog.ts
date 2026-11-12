@@ -2,8 +2,9 @@ import { cache } from "react";
 import { createPublicSupabaseClient } from "./supabase";
 import type { Product } from "./types";
 import productImages from "../content/product-images.json";
+import { getDiscountPricing } from "./discount-pricing";
 export const getCatalog = cache(async (): Promise<(Product & { created_at: string })[]> => {
-  const { data, error } = await createPublicSupabaseClient()
+  const catalog = createPublicSupabaseClient()
     .from("products")
     .select(
       "id,slug,name,department,category,description,status,is_demo,sort_order,created_at,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order,framing)",
@@ -11,6 +12,7 @@ export const getCatalog = cache(async (): Promise<(Product & { created_at: strin
     .in("status", ["preview", "published"])
     .order("sort_order")
     .abortSignal(AbortSignal.timeout(8000));
+  const [{ data, error }, pricing] = await Promise.all([catalog, getDiscountPricing()]);
   if (error)
     throw new Error(
       "The WONS collection could not be loaded. Please try again shortly.",
@@ -42,7 +44,7 @@ export const getCatalog = cache(async (): Promise<(Product & { created_at: strin
               framing: i.framing,
             }))
         : (productImages[p.slug as keyof typeof productImages] ?? []),
-      variants: [...p.variants].sort(
+      variants: p.variants.map(variant => ({ ...variant, discount_percent: pricing.rates[p.id] })).sort(
         (a, b) =>
           a.color.localeCompare(b.color) ||
           ["XS", "S", "M", "L", "XL", "XXL"].indexOf(a.size) -

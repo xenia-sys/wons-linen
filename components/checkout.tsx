@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { money, subtotal, unitPrice } from "../lib/commerce";
 import { addressLines, COD_LABEL, ORDER_COUNTRY, orderReference, type OrderAddress, type OrderDetails, type OrderItem, type OrderReceipt } from "../lib/orders";
@@ -154,6 +155,7 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
   lines: ResolvedLine[]; test: boolean; canOrder: boolean;
   complete: (receipt: OrderReceipt, items: OrderItem[]) => void;
 }) {
+  const router = useRouter();
   const items = lines.map(line => ({ variantId: line.variantId, quantity: line.quantity, price: unitPrice(line.variant) }));
   const [separateDelivery, setSeparateDelivery] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
@@ -216,6 +218,10 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
       });
       const result = await response.json();
       if (!response.ok) {
+        if (result.code === "BAG_CHANGED") {
+          requestId.current = null;
+          router.refresh();
+        }
         setError({ message: result.message ?? "We could not confirm your order.", code: result.code });
         return;
       }

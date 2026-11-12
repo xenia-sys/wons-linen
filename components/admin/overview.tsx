@@ -18,7 +18,8 @@ export function AdminOverview() {
       </section>
     )}
     <div className="admin-overview-grid">
-      <section className="admin-panel admin-task-card"><span className="admin-badge">STORE OPERATIONS</span><h2>Products</h2><p>Upload photos, edit descriptions and variants, set regular or sale prices, and publish or hide products.</p><Link className="button dark" href="/admin/products">Manage products →</Link></section>
+      <section className="admin-panel admin-task-card"><span className="admin-badge">STORE OPERATIONS</span><h2>Products</h2><p>Upload photos, edit descriptions and variants, set VND prices, and publish or hide products.</p><Link className="button dark" href="/admin/products">Manage products →</Link></section>
+      <section className="admin-panel admin-task-card"><span className="admin-badge">STORE OPERATIONS</span><h2>Discount events</h2><p>Schedule a percentage discount for selected products and preview their event prices.</p><Link className="underlined-link" href="/admin/discount-events">Manage discount events →</Link></section>
       {profile.role === "owner" && <>
         <section className="admin-panel admin-task-card"><span className="admin-badge">OWNER ONLY</span><h2>Storefront images</h2><p>Update the main homepage cover and the covers for the Women and Men collections on the homepage.</p><Link className="underlined-link" href="/admin/storefront">Manage storefront images →</Link></section>
         <section className="admin-panel admin-task-card"><span className="admin-badge">OWNER ONLY</span><h2>Team & access</h2><p>Approve individual staff emails, assign Owner or Marketing Editor access, and disable access when needed.</p><Link className="underlined-link" href="/admin/team">Manage team →</Link></section>
@@ -33,6 +34,6 @@ export function AdminOverview() {
         <li><strong>Publish when ready</strong><p>Choose Published and save. Choose Hidden to withdraw it from the storefront.</p></li>
       </ol>
     </section>
-    <section className="admin-panel admin-access-summary"><h2>Your access</h2><p>{profile.role === "owner" ? "You can manage the complete collection and orders, grant or revoke staff permissions, and review activity history." : "You can manage products, images, descriptions, variants, availability, regular and sale prices, and publication. Orders and COD tests require an Owner account."}</p></section>
+    <section className="admin-panel admin-access-summary"><h2>Your access</h2><p>{profile.role === "owner" ? "You can manage the complete collection, discount events and orders, grant or revoke staff permissions, and review activity history." : "You can manage products, prices, discount events and publication. Orders and COD tests require an Owner account."}</p></section>
   </>;
 }

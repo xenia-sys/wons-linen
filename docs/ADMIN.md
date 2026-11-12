@@ -7,7 +7,7 @@ Production entry: https://wons-linen.vercel.app/admin/login. All staff UI is Eng
 | Create products; edit descriptions, Women/Men, categories and display order | Yes              | Yes   |
 | Upload, reorder and remove product gallery images; edit alt text and colour | Yes              | Yes   |
 | Publish or hide products                                                    | Yes              | Yes   |
-| Change regular and sale prices in VND                                       | Yes              | Yes   |
+| Edit base prices in VND and schedule discount events                       | Yes              | Yes   |
 | Manage variant sizes, colours, SKUs and availability                        | Yes              | Yes   |
 | Grant, change or disable team access                                        | No               | Yes   |
 | Read change history                                                         | No               | Yes   |
@@ -42,7 +42,9 @@ Create a new product as **Hidden**, add at least one variant and save. Then uplo
 
 To replace a homepage cover, sign in as Owner and go to **Storefront images**. Choose an image for **Homepage main cover**, **Women cover** or **Men cover**, add a short image description and select **Publish image**. Each slot can be restored to the original WONS artwork independently. The upload uses a dedicated public Storage bucket in the existing WONS project; restoring the artwork removes the cover from the homepage and leaves the previously published file in Storage. Cover publication and restoration appear in **Activity history**.
 
-Set each variant's regular price and optional lower sale price. Clear Sale price to end the discount. The catalog, product detail and bag use the effective price from the current database catalog; stored bag prices are ignored. Publish after confirming the product's images and content. Published non-demo products require variants and photography. New public page loads reflect saved changes; already open pages need a reload. Hidden products are excluded from public catalog queries and product links.
+Set each variant’s base price in **Price (VND)**. **Price (USD)** shows an estimate from the same reference rate as the storefront; the COD total remains in VND. The **Discount events** page lets Owner and Marketing Editor choose products, set a whole percentage from 1 to 99, and schedule the start and end in Vietnam time. **Save event** activates its schedule; clear **Enable this event** and save to pause it. Each selected product’s variants receive the same percentage off their own base prices. The highest active percentage applies when events overlap. Hidden products remain hidden.
+
+Discounted amounts are rounded to whole VND and checked against the current event schedule at checkout. An old cart price must be reviewed again before placing an order. An existing order keeps its submitted price. The per-variant manual sale price field was removed from the editor; legacy values, if any, are retained outside discount events. Published non-demo products still require variants and photography.
 
 In **Product photography**, choose **Adjust framing** on an image. Drag with a mouse or finger to move it inside a 4:5 frame; use arrow keys or the horizontal/vertical sliders as alternatives. Zoom from 100% to 300% to create more room to move. Dragging stops at the image edges so no blank border appears. **Reset to centre** restores centred 100% zoom, and **Show full image** removes custom framing. Choose **Done adjusting**, then **Save product**. Framing is saved individually per image and is shared by the catalog cover and product gallery (including mobile); the enlarged lightbox shows the original full image. Existing unframed images keep their previous presentation. Source files are unchanged. Owner and Marketing Editor can both edit framing, and changes appear in Activity history as **Image reframed**.
 

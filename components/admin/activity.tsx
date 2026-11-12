@@ -85,6 +85,7 @@ export function Activity() {
               {entry.product && <Link className="underlined-link admin-event-link" href={"/admin/products/" + entry.product.id}>Open product →</Link>}
               {entry.entity_type === "staff_members" && <Link className="underlined-link admin-event-link" href="/admin/team">Manage team access →</Link>}
               {entry.entity_type === "storefront_images" && <Link className="underlined-link admin-event-link" href="/admin/storefront">Manage storefront images →</Link>}
+              {entry.entity_type === "discount_events" && <Link className="underlined-link admin-event-link" href="/admin/discount-events">Manage discount events →</Link>}
             </details>;
           })}
         </div>

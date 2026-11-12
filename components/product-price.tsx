@@ -5,7 +5,7 @@ import { useDisplayCurrency } from "./display-currency-provider";
 export function ProductPrice({
   variant,
 }: {
-  variant: Pick<Variant, "price_vnd" | "sale_price_vnd">;
+  variant: Pick<Variant, "price_vnd" | "sale_price_vnd" | "discount_percent">;
 }) {
   const { format } = useDisplayCurrency();
   const price = unitPrice(variant);
@@ -18,7 +18,7 @@ export function ProductPrice({
             <span className="sr-only">Regular price </span>
             {format(variant.price_vnd)}
           </del>
-          <span className="sale-label">Sale</span>
+          <span className="sale-label">{variant.discount_percent ? `−${variant.discount_percent}%` : "Sale"}</span>
         </>
       )}
     </span>

@@ -1,4 +1,5 @@
 import { storefrontImageSlots } from "./storefront-images.ts";
+import { VIETNAM_TIME_ZONE } from "./discount-events.ts";
 
 export type ActivityEntry = {
   id: number;
@@ -18,6 +19,7 @@ export const activityTypes = [
   { value: "variants", label: "Prices, variants & availability" },
   { value: "product_images", label: "Product images" },
   { value: "storefront_images", label: "Storefront images" },
+  { value: "discount_events", label: "Discount events" },
   { value: "staff_members", label: "Team & permissions" },
 ];
 export function parseActivityQuery(params: URLSearchParams) {
@@ -40,6 +42,8 @@ export const activityFieldLabels: Record<string, string> = {
   display_name: "Name", email: "Email", role: "Role", active: "Access enabled",
   is_demo: "Demo product", sort_order: "Display order",
   framing: "Image framing", storage_path: "Image file",
+  percent_off: "Discount", starts_at: "Starts (Vietnam time)", ends_at: "Ends (Vietnam time)",
+  enabled: "Event enabled", product_ids: "Selected products",
 };
 export function activityChanges(entry: ActivityEntry) {
   return [...new Set([...Object.keys(entry.before_data ?? {}), ...Object.keys(entry.after_data ?? {})])]
@@ -52,6 +56,7 @@ function field(entry: ActivityEntry, key: string): string {
   return typeof value === "string" ? value : "";
 }
 export function activityTitle(entry: ActivityEntry) {
+  if (entry.entity_type === "discount_events") return field(entry, "name") || "Discount event";
   if (entry.entity_type === "storefront_images") return storefrontImageSlots.find(slot => slot.id === entry.entity_id)?.label ?? "Homepage cover";
   if (entry.entity_type === "staff_members") return field(entry, "display_name") || field(entry, "email") || "Team member";
   if (entry.entity_type === "products") return field(entry, "name") || entry.product?.name || "Product";
@@ -61,6 +66,11 @@ export function activityTitle(entry: ActivityEntry) {
 export function activityAction(entry: ActivityEntry) {
   if (entry.entity_type === "storefront_images") return entry.action === "DELETE" ? "Default cover restored" : "Cover published";
   const changed = activityChanges(entry);
+  if (entry.entity_type === "discount_events") {
+    if (entry.action === "INSERT") return "Discount event created";
+    if (changed.includes("enabled")) return entry.after_data?.enabled ? "Discount event enabled" : "Discount event paused";
+    return "Discount event updated";
+  }
   if (entry.entity_type === "staff_members") {
     if (entry.action === "INSERT") return "Access approved";
     if (changed.includes("active")) return entry.after_data?.active ? "Access enabled" : "Access disabled";
@@ -89,6 +99,10 @@ export function activityAction(entry: ActivityEntry) {
 }
 export function activityValue(key: string, value: unknown): string {
   if (value === null || value === undefined || value === "") return "—";
+  if (key === "percent_off") return value + "%";
+  if (key === "product_ids" && Array.isArray(value)) return `${value.length} ${value.length === 1 ? "product" : "products"}`;
+  if ((key === "starts_at" || key === "ends_at") && typeof value === "string")
+    return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: VIETNAM_TIME_ZONE }).format(new Date(value));
   if (key === "framing" && typeof value === "object") {
     const frame = value as { x: number; y: number; zoom: number };
     return `Position ${frame.x}% / ${frame.y}% · Zoom ${Math.round(frame.zoom * 100)}%`;
@@ -102,7 +116,7 @@ export function activityValue(key: string, value: unknown): string {
   return String(value);
 }
 export function activityProductId(entry: ActivityEntry): string | null {
-  if (entry.entity_type === "staff_members" || entry.entity_type === "storefront_images") return null;
+  if (["staff_members", "storefront_images", "discount_events"].includes(entry.entity_type)) return null;
   const value = entry.entity_type === "products" ? entry.entity_id : entry.after_data?.product_id ?? entry.before_data?.product_id;
   return typeof value === "string" ? value : null;
 }

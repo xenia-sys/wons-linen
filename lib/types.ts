@@ -9,6 +9,7 @@ export type Variant = {
   size: string;
   price_vnd: number;
   sale_price_vnd?: number | null;
+  discount_percent?: number;
   available_quantity: number;
 };
 export type ProductImage = {
