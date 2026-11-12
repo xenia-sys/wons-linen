@@ -826,6 +826,12 @@
     font-size: 12px;
     scroll-margin-top: 30px;
   }
+  .search-field input:focus {
+    outline: none;
+  }
+  .search-field:focus-within {
+    border-bottom-color: var(--action-hover);
+  }
   .result-count {
     margin-left: auto;
     font-size: 10px;
