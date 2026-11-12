@@ -2,10 +2,21 @@
 import Link from "next/link";
 import { useStaff } from "./admin-shell";
 import { staffRoleLabel } from "../../lib/admin-navigation";
+import { StartCodTest } from "./start-cod-test";
 export function AdminOverview() {
   const profile = useStaff();
   return <>
     <div className="admin-page-heading"><div><p className="eyebrow">YOUR WONS WORKSPACE</p><h1>Store overview</h1><p>Signed in as {staffRoleLabel(profile.role)}. Choose what you want to manage.</p></div><Link className="button dark" href="/admin/products/new">+ New product</Link></div>
+    {profile.role === "owner" && (
+      <section className="admin-panel" aria-labelledby="admin-cod-test">
+        <h2 id="admin-cod-test">Test a COD order</h2>
+        <p>Try checkout with sample details, then find the order marked Test in your inbox.</p>
+        <div className="admin-actions">
+          <StartCodTest />
+          <Link className="underlined-link" href="/admin/orders">Open Orders →</Link>
+        </div>
+      </section>
+    )}
     <div className="admin-overview-grid">
       <section className="admin-panel admin-task-card"><span className="admin-badge">STORE OPERATIONS</span><h2>Products</h2><p>Upload photos, edit descriptions and variants, set regular or sale prices, and publish or hide products.</p><Link className="button dark" href="/admin/products">Manage products →</Link></section>
       {profile.role === "owner" && <>
@@ -21,6 +32,6 @@ export function AdminOverview() {
         <li><strong>Publish when ready</strong><p>Choose Published and save. Choose Hidden to withdraw it from the storefront.</p></li>
       </ol>
     </section>
-    <section className="admin-panel admin-access-summary"><h2>Your access</h2><p>{profile.role === "owner" ? "You can manage the complete collection, grant or revoke staff permissions, and review activity history." : "You can manage products, images, descriptions, variants, availability, regular and sale prices, and publication. The Owner manages staff permissions and activity history."}</p></section>
+    <section className="admin-panel admin-access-summary"><h2>Your access</h2><p>{profile.role === "owner" ? "You can manage the complete collection and orders, grant or revoke staff permissions, and review activity history." : "You can manage products, images, descriptions, variants, availability, regular and sale prices, and publication. Orders and COD tests require an Owner account."}</p></section>
   </>;
 }

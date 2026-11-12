@@ -5,6 +5,7 @@ import { adminFetch } from "../../lib/admin-browser";
 import { money } from "../../lib/commerce";
 import { addressLines, COD_LABEL, orderReference, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
 import { notifyOrdersChanged, useOrderRefresh } from "./order-inbox";
+import { StartCodTest } from "./start-cod-test";
 
 const statusLabels: Record<OrderStatus, string> = {
   pending: "Awaiting confirmation", confirmed: "Confirmed", cancelled: "Cancelled",
@@ -23,8 +24,6 @@ export function AdminOrders() {
   const [detailError, setDetailError] = useState("");
   const [busy, setBusy] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
-  const [startingTest, setStartingTest] = useState(false);
-  const [testError, setTestError] = useState("");
   const detailTitle = useRef<HTMLHeadingElement>(null);
   const opening = useRef<AbortController>(null);
   const load = useCallback(async (signal: AbortSignal) => {
@@ -46,18 +45,6 @@ export function AdminOrders() {
   function navigate(cursor: number | null) {
     setLoading(true);
     setBefore(cursor);
-  }
-
-  async function startTest() {
-    setStartingTest(true);
-    setTestError("");
-    try {
-      await adminFetch("/orders/test-checkout", { method: "POST" });
-      window.location.assign("/checkout?test=1");
-    } catch (error) {
-      setTestError(error instanceof Error ? error.message : "Could not start test checkout.");
-      setStartingTest(false);
-    }
   }
 
   async function openOrder(id: string) {
@@ -106,12 +93,9 @@ export function AdminOrders() {
         <h1>Orders</h1>
         <p>New orders appear automatically while this workspace is open. Confirm real orders with the customer and collect cash on delivery.</p>
         <div className="admin-actions">
-          <button type="button" onClick={() => void startTest()} disabled={startingTest}>
-            {startingTest ? "Starting test…" : "Start COD test"}
-          </button>
+          <StartCodTest />
           <span>Use a sample item and sample details. Test orders do not change stock.</span>
         </div>
-        {testError && <p role="alert">{testError}</p>}
       </header>
       <section className="admin-panel" aria-label="Order inbox">
         <div className="admin-panel-heading">
