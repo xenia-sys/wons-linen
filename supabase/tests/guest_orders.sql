@@ -30,6 +30,8 @@ begin
   perform set_config('wons.test.variant', vid::text,true);
   select * into demo from public.variants where available_quantity>0 and id<>vid limit 1;
   perform set_config('wons.test.demo', jsonb_build_object('variantId',demo.id,'quantity',1,'price',demo.price_vnd)::text,true);
+  perform set_config('wons.test.demo_stock',demo.available_quantity::text,true);
+  perform set_config('wons.test.demo_order',gen_random_uuid()::text,true);
   perform set_config('wons.test.payload', jsonb_build_object(
     'id',gen_random_uuid(),'email','sample@example.invalid','phone','0900000000','billing',address,
     'delivery',address || '{"street":"Other test street"}','notes','Fixture only',
@@ -44,6 +46,7 @@ declare
   payload jsonb := current_setting('wons.test.payload')::jsonb;
   receipt jsonb;
   altered jsonb;
+  test_body jsonb;
 begin
   begin perform public.submit_wons_order(repeat('b',64),payload,null);
     raise exception 'Wrong gateway authorized'; exception when insufficient_privilege then null; end;
@@ -57,6 +60,15 @@ begin
   altered := jsonb_set(payload,'{items}',jsonb_build_array(current_setting('wons.test.demo')::jsonb));
   begin perform public.submit_wons_order(repeat('a',64),altered,null);
     raise exception 'Demo item ordered'; exception when sqlstate 'WN001' then null; end;
+  test_body := altered || jsonb_build_object('test',true,'id',current_setting('wons.test.demo_order'));
+  receipt := public.submit_wons_order(repeat('a',64),test_body,null);
+  if (receipt->>'total_vnd')::bigint is distinct from (current_setting('wons.test.demo')::jsonb->>'price')::bigint
+    or public.submit_wons_order(repeat('a',64),test_body,null) <> receipt then
+    raise exception 'Test order price or retry incorrect';
+  end if;
+  begin perform public.submit_wons_order(repeat('a',64),
+    jsonb_set(payload || jsonb_build_object('test',true,'id',gen_random_uuid()),'{items,0,quantity}','1'),null);
+    raise exception 'Real product accepted in test checkout'; exception when sqlstate 'WN001' then null; end;
   receipt := public.submit_wons_order(repeat('a',64),payload,repeat('c',64));
   if (receipt->>'total_vnd')::bigint is distinct from 1580000::bigint or not (receipt ? 'order_number') or receipt ? 'email' then
     raise exception 'Receipt total incorrect';
@@ -88,12 +100,21 @@ do $$
 declare
   oid uuid := (current_setting('wons.test.payload')::jsonb->>'id')::uuid;
   vid uuid := current_setting('wons.test.variant')::uuid;
+  tid uuid := current_setting('wons.test.demo_order')::uuid;
+  demo_vid uuid := (current_setting('wons.test.demo')::jsonb->>'variantId')::uuid;
+  demo_stock int := current_setting('wons.test.demo_stock')::int;
 begin
-  if (select count(id) from public.wons_orders) <> 1 or
+  if (select count(id) from public.wons_orders) <> 2 or
     not exists(select id from public.wons_orders where id=oid and status='pending' and seen_at is null
-      and total_vnd=1580000 and delivery_vnd=0 and delivery->>'street'='Other test street' and email='sample@example.invalid') then
+      and not is_test and payment_method='cod' and total_vnd=1580000 and delivery_vnd=0 and delivery->>'street'='Other test street' and email='sample@example.invalid')
+    or not exists(select id from public.wons_orders where id=tid and is_test and payment_method='cod' and seen_at is null) then
     raise exception 'Owner inbox missing or has incorrect order data';
   end if;
+  if (select available_quantity from public.variants where id=demo_vid) <> demo_stock then raise exception 'Test reserved stock'; end if;
+  if public.manage_wons_order(tid,'confirm') <> 'confirmed' or public.manage_wons_order(tid,'cancel') <> 'cancelled' then
+    raise exception 'Test order status did not update';
+  end if;
+  if (select available_quantity from public.variants where id=demo_vid) <> demo_stock then raise exception 'Test cancellation restocked samples'; end if;
   if (select available_quantity from public.variants where id=vid) <> 0 then raise exception 'Stock was not reserved'; end if;
   if (select p.version from public.products p join public.variants v on v.product_id=p.id where v.id=vid) <> 2 then
     raise exception 'Stale product editor not invalidated';
@@ -109,4 +130,4 @@ begin
   if (select available_quantity from public.variants where id=vid) <> 2 then raise exception 'Stock was not returned exactly once'; end if;
 end $$;
 rollback;
-select 'PASS: guest gateway, Vietnam, authoritative price, demo rejection, retry, inventory, Owner inbox/RLS, unread, confirmation and restock' as result;
+select 'PASS: guest gateway, COD, guarded test orders, unchanged demo stock, retry, real reservations, Owner inbox/RLS and cancellation' as result;

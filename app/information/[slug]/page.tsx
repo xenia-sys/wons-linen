@@ -18,9 +18,9 @@ const pages: Record<
     title: "A little care, in every detail.",
     eyebrow: "CLIENT CARE",
     paragraphs: [
-      "You can explore styles, choose colours and sizes, and save a selection in your bag. Preview products cannot be ordered. WONS contacts customers to confirm eligible orders and arrange payment.",
+      "You can explore styles, choose colours and sizes, and save a selection in your bag. Preview products cannot be ordered. WONS contacts customers to confirm eligible orders.",
       "Confirmed garment measurements, fabric composition and care instructions will be listed with each style before launch. Preview sizes are not a final fitting guide.",
-      "Shipping is free within Vietnam. Product prices include taxes and fees. No online payment is collected during checkout.",
+      "Shipping is free within Vietnam. Product prices include taxes and fees. The only payment method is cash on delivery (COD).",
     ],
   },
   privacy: {

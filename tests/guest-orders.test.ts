@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseOrder } from "../lib/orders.ts";
 import { POST } from "../app/api/checkout/route.ts";
+import { createTestCheckoutCookie, TEST_CHECKOUT_COOKIE, TEST_CHECKOUT_SECONDS, testCheckoutAllowed } from "../lib/test-checkout.ts";
 
 const address = { firstName: " Sample ", lastName: "Guest", street: "Test street", city: "Sample City" };
 const payload = {
@@ -29,14 +30,24 @@ test("checkout rejects duplicate items, fractional quantities and excessive tota
   }
 });
 
+test("the Owner test grant expires and cannot be modified or reused with a different key", () => {
+  const now = 1794460000000;
+  const key = "a".repeat(64);
+  const token = createTestCheckoutCookie(key, now);
+  assert.ok(testCheckoutAllowed(token, key, now + 1000));
+  assert.equal(testCheckoutAllowed(token, key, now + TEST_CHECKOUT_SECONDS * 1000), false);
+  assert.equal(testCheckoutAllowed(token.replace(/^\d/, "2"), key, now), false);
+  assert.equal(testCheckoutAllowed(token, "b".repeat(64), now), false);
+});
+
 test("guest endpoint blocks preview, checks origin and returns only the database receipt", async () => {
   const keys = ["VERCEL_ENV", "WONS_ORDER_GATEWAY_SECRET", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"];
   const originals = keys.map(key => process.env[key]);
   const actualFetch = globalThis.fetch;
   const site = "https://wons.test";
-  const request = (origin = site) => new Request(site + "/api/checkout", {
-    method: "POST", headers: { "Content-Type": "application/json", Origin: origin },
-    body: JSON.stringify(payload),
+  const request = (origin = site, body: Record<string, unknown> = payload, cookie = "") => new Request(site + "/api/checkout", {
+    method: "POST", headers: { "Content-Type": "application/json", Origin: origin, Cookie: cookie },
+    body: JSON.stringify(body),
   });
   try {
     process.env.WONS_ORDER_GATEWAY_SECRET = "a".repeat(64);
@@ -56,6 +67,20 @@ test("guest endpoint blocks preview, checks origin and returns only the database
     const response = await POST(request());
     assert.equal(response.status, 201);
     assert.deepEqual(await response.json(), { order_number: 1, total_vnd: 1580000 });
+    const sample = { ...payload, test: true, items: [{ ...payload.items[0], quantity: 1 }] };
+    const denied = await POST(request(site, sample));
+    assert.equal(denied.status, 403);
+    assert.equal((await denied.json()).code, "TEST_SESSION_REQUIRED");
+    const cookie = `${TEST_CHECKOUT_COOKIE}=${createTestCheckoutCookie("a".repeat(64))}`;
+    globalThis.fetch = async (_url, options) => {
+      const body = JSON.parse(String(options?.body));
+      assert.equal(body.order_data.test, true);
+      assert.equal(body.order_data.items[0].quantity, 1);
+      return Response.json({ order_number: 2, total_vnd: 790000 });
+    };
+    const testOrder = await POST(request(site, sample, cookie));
+    assert.equal(testOrder.status, 201);
+    assert.deepEqual(await testOrder.json(), { order_number: 2, total_vnd: 790000 });
     globalThis.fetch = async () => Response.json({ code: "WN001", message: "private database detail" }, { status: 400 });
     const changed = await POST(request());
     assert.equal(changed.status, 409);

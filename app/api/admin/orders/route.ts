@@ -1,7 +1,7 @@
 import { adminError, AdminError, adminJson, authorizedStaff } from "../../../../lib/admin-server";
 import { ORDER_UUID } from "../../../../lib/orders";
 
-const SUMMARY = "id,order_number,created_at,seen_at,status,item_count,total_vnd";
+const SUMMARY = "id,order_number,created_at,seen_at,status,item_count,total_vnd,payment_method,is_test";
 const LIMIT = 30;
 const headers = { "Cache-Control": "no-store" };
 

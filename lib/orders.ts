@@ -1,6 +1,7 @@
 import { MAX_PER_VARIANT } from "./commerce.ts";
 
 export const ORDER_COUNTRY = "Vietnam";
+export const COD_LABEL = "Cash on delivery (COD)";
 export const ORDER_MAX_ITEMS = 30;
 export const ORDER_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export type OrderAddress = {
@@ -29,6 +30,8 @@ export type OrderSummary = OrderReceipt & {
   seen_at: string | null;
   status: OrderStatus;
   item_count: number;
+  payment_method: "cod";
+  is_test: boolean;
 };
 export type StoredOrder = OrderSummary & {
   email: string;

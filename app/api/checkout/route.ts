@@ -1,6 +1,7 @@
 import { createHmac } from "node:crypto";
 import { checkoutGatewaySecret } from "../../../lib/checkout-config.ts";
 import { parseOrder } from "../../../lib/orders.ts";
+import { testCheckoutAllowed, testCheckoutCookie } from "../../../lib/test-checkout.ts";
 
 const headers = { "Cache-Control": "no-store" };
 const MAX_BODY = 24000;
@@ -43,8 +44,13 @@ export async function POST(request: Request) {
     return failure("INVALID_ORDER", "Check your order details and try again.", 400);
 
   let order;
+  let test = false;
   try {
-    order = parseOrder(await readBody(request));
+    const body = await readBody(request);
+    test = body?.test === true;
+    if (test && !testCheckoutAllowed(testCheckoutCookie(request), secret))
+      return failure("TEST_SESSION_REQUIRED", "Start a new COD test from WONS Admin → Orders.", 403);
+    order = parseOrder(body);
   } catch (error) {
     return failure("INVALID_ORDER", error instanceof SyntaxError
       ? "Check your order details and try again."
@@ -60,7 +66,7 @@ export async function POST(request: Request) {
     const response = await fetch(new URL("/rest/v1/rpc/submit_wons_order", supabaseUrl), {
       method: "POST",
       headers: { apikey: publishableKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ gateway_secret: secret, order_data: order, client_key: clientKey }),
+      body: JSON.stringify({ gateway_secret: secret, order_data: test ? { ...order, test: true } : order, client_key: clientKey }),
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(12000),

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 import { money } from "../../lib/commerce";
-import { addressLines, orderReference, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
+import { addressLines, COD_LABEL, orderReference, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
 import { notifyOrdersChanged, useOrderRefresh } from "./order-inbox";
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -23,6 +23,8 @@ export function AdminOrders() {
   const [detailError, setDetailError] = useState("");
   const [busy, setBusy] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [startingTest, setStartingTest] = useState(false);
+  const [testError, setTestError] = useState("");
   const detailTitle = useRef<HTMLHeadingElement>(null);
   const opening = useRef<AbortController>(null);
   const load = useCallback(async (signal: AbortSignal) => {
@@ -44,6 +46,18 @@ export function AdminOrders() {
   function navigate(cursor: number | null) {
     setLoading(true);
     setBefore(cursor);
+  }
+
+  async function startTest() {
+    setStartingTest(true);
+    setTestError("");
+    try {
+      await adminFetch("/orders/test-checkout", { method: "POST" });
+      window.location.assign("/checkout?test=1");
+    } catch (error) {
+      setTestError(error instanceof Error ? error.message : "Could not start test checkout.");
+      setStartingTest(false);
+    }
   }
 
   async function openOrder(id: string) {
@@ -90,7 +104,14 @@ export function AdminOrders() {
       <header className="admin-order-heading">
         <p className="eyebrow">STORE OPERATIONS</p>
         <h1>Orders</h1>
-        <p>New orders appear automatically while this workspace is open. Contact the customer to confirm the order and arrange payment.</p>
+        <p>New orders appear automatically while this workspace is open. Confirm real orders with the customer and collect cash on delivery.</p>
+        <div className="admin-actions">
+          <button type="button" onClick={() => void startTest()} disabled={startingTest}>
+            {startingTest ? "Starting test…" : "Start COD test"}
+          </button>
+          <span>Use a sample item and sample details. Test orders do not change stock.</span>
+        </div>
+        {testError && <p role="alert">{testError}</p>}
       </header>
       <section className="admin-panel" aria-label="Order inbox">
         <div className="admin-panel-heading">
@@ -108,7 +129,7 @@ export function AdminOrders() {
                     <td><button type="button" className="admin-order-link" disabled={busy} onClick={() => void openOrder(order.id)}>{orderReference(order.order_number)}</button>
                       {!order.seen_at && <span className="admin-order-new">New</span>}</td>
                     <td>{date.format(new Date(order.created_at))}</td>
-                    <td>{statusLabels[order.status]}</td>
+                    <td>{statusLabels[order.status]}{order.is_test && <span className="admin-order-new">Test</span>}</td>
                     <td>{order.item_count}</td>
                     <td>{money(order.total_vnd)}</td>
                   </tr>
@@ -127,7 +148,7 @@ export function AdminOrders() {
         <section className="admin-panel admin-order-detail" aria-labelledby="admin-order-detail">
           <div className="admin-panel-heading">
             <div>
-              <p className="eyebrow">{statusLabels[detail.status]}</p>
+              <p className="eyebrow">{detail.is_test ? "TEST ORDER · " : ""}{statusLabels[detail.status]}</p>
               <h2 id="admin-order-detail" ref={detailTitle} tabIndex={-1}>{orderReference(detail.order_number)}</h2>
             </div>
             <button type="button" disabled={busy} onClick={() => setDetail(null)}>Close details</button>
@@ -146,12 +167,13 @@ export function AdminOrders() {
               ))}</tbody>
             </table>
           </div>
-          <p className="admin-order-total"><strong>{money(detail.total_vnd)}</strong> · Free shipping · Taxes included. No payment collected online.</p>
+          {detail.is_test && <p role="note"><strong>Test order. Do not ship or collect payment.</strong></p>}
+          <p className="admin-order-total"><strong>{money(detail.total_vnd)}</strong> · {COD_LABEL} · Free shipping · Taxes included.</p>
           {detail.status !== "cancelled" && (
             <div className="admin-actions">
               {detail.status === "pending" && <button type="button" className="button dark" disabled={busy || cancelConfirm} onClick={() => void changeStatus("confirm")}>Confirm order</button>}
               {cancelConfirm ? <>
-                <p>Cancel this order and return the reserved items to stock?</p>
+                <p>{detail.is_test ? "Cancel this test order?" : "Cancel this order and return the reserved items to stock?"}</p>
                 <button type="button" disabled={busy} onClick={() => void changeStatus("cancel")}>Yes, cancel order</button>
                 <button type="button" disabled={busy} onClick={() => setCancelConfirm(false)}>Keep order</button>
               </> : <button type="button" disabled={busy} onClick={() => setCancelConfirm(true)}>Cancel order</button>}
