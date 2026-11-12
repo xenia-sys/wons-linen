@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useId, useRef, useState } from "react";
-import type { KeyboardEvent, TouchEvent } from "react";
+import type { KeyboardEvent, MouseEvent, PointerEvent } from "react";
 import type { Product } from "../lib/types";
-import { getProductGallery } from "../lib/product-gallery";
+import { gallerySwipeDirection, getProductGallery } from "../lib/product-gallery";
 import type { GalleryMedia } from "../lib/product-gallery";
 import { imageFramingStyle } from "../lib/image-framing";
 import { GarmentArt } from "./garment-art";
@@ -81,6 +81,7 @@ function GalleryAsset({
               : "(max-width: 700px) calc(100vw - 40px), 46vw"
         }
         className="gallery-photo"
+        draggable={false}
         style={imageFramingStyle(enlarged ? null : media.framing, "contain")}
         loading={thumbnail ? "lazy" : "eager"}
         onError={() => setFailed(true)}
@@ -117,10 +118,11 @@ export function ProductGallery({
   const current = media[active];
   const dialogRef = useRef<HTMLDialogElement>(null);
   const thumbnails = useRef<(HTMLButtonElement | null)[]>([]);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const lastSwipe = useRef(0);
+  const pointer = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
   const titleId = useId();
   const stageId = useId();
+  const hintId = useId();
   const multiple = media.length > 1;
 
   function move(delta: number) {
@@ -135,25 +137,48 @@ export function ProductGallery({
     if (event.key === "End") return media.length - 1;
     return null;
   }
-  function startSwipe(event: TouchEvent) {
-    touchStart.current =
-      event.touches.length === 1
-        ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
-        : null;
-  }
-  function endSwipe(event: TouchEvent) {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start || !event.changedTouches[0] || !multiple) return;
-    const dx = event.changedTouches[0].clientX - start.x;
-    const dy = event.changedTouches[0].clientY - start.y;
-    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      move(dx < 0 ? 1 : -1);
-      lastSwipe.current = Date.now();
+  function startSwipe(event: PointerEvent<HTMLElement>) {
+    if (!event.isPrimary) {
+      if (event.pointerType === "touch" && pointer.current) {
+        pointer.current = null;
+        suppressClick.current = true;
+      }
+      return;
     }
+    if (event.button !== 0) return;
+    suppressClick.current = false;
+    pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
   }
-  function openImage() {
-    if (Date.now() - lastSwipe.current < 350) return;
+  function updateSwipe(event: PointerEvent<HTMLElement>) {
+    const start = pointer.current;
+    if (start?.id === event.pointerId && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8)
+      start.moved = true;
+  }
+  function cancelSwipe(event: PointerEvent<HTMLElement>) {
+    if (pointer.current?.id !== event.pointerId) return;
+    pointer.current = null;
+    suppressClick.current = true;
+  }
+  function endSwipe(event: PointerEvent<HTMLElement>) {
+    const start = pointer.current;
+    if (start?.id !== event.pointerId) return;
+    pointer.current = null;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    suppressClick.current = start.moved || Math.hypot(dx, dy) > 8;
+    const direction = gallerySwipeDirection(dx, dy);
+    if (direction) move(direction);
+  }
+  const swipeEvents = multiple ? {
+    onPointerDown: startSwipe,
+    onPointerMove: updateSwipe,
+    onPointerUp: endSwipe,
+    onPointerCancel: cancelSwipe,
+    onLostPointerCapture: cancelSwipe,
+  } : {};
+  function openImage(event: MouseEvent<HTMLButtonElement>) {
+    if (event.detail > 0 && suppressClick.current) return;
     setEnlarged(true);
     dialogRef.current?.showModal();
   }
@@ -167,18 +192,15 @@ export function ProductGallery({
           id={stageId}
           className={`gallery-stage art-${product.category.toLowerCase()}`}
           style={current.kind === "photo" && current.framing ? { aspectRatio: "4 / 5" } : undefined}
-          onTouchStart={startSwipe}
-          onTouchEnd={endSwipe}
-          onTouchCancel={() => {
-            touchStart.current = null;
-          }}
         >
           <button
             type="button"
-            className="gallery-open"
+            className={`gallery-open${multiple ? " gallery-swipe" : ""}`}
             aria-label={`Enlarge image ${active + 1}: ${current.label}`}
+            aria-describedby={multiple ? hintId : undefined}
             aria-haspopup="dialog"
             onClick={openImage}
+            {...swipeEvents}
           >
             <GalleryAsset
               key={current.id}
@@ -265,6 +287,7 @@ export function ProductGallery({
           {current.kind === "illustration" ? "ILLUSTRATED STUDY" : "WONS LINEN"}
         </span>
       </div>
+      {multiple && <p id={hintId} className="gallery-swipe-hint">Swipe or drag to browse. Select an image to enlarge it.</p>}
       {current.kind === "illustration" && (
         <p className="gallery-preview-note">
           Concept illustrations. Product photography will follow.
@@ -302,12 +325,8 @@ export function ProductGallery({
             </button>
           </div>
           <div
-            className={`lightbox-image art-${product.category.toLowerCase()}`}
-            onTouchStart={startSwipe}
-            onTouchEnd={endSwipe}
-            onTouchCancel={() => {
-              touchStart.current = null;
-            }}
+            className={`lightbox-image art-${product.category.toLowerCase()}${multiple ? " gallery-swipe" : ""}`}
+            {...swipeEvents}
           >
             {enlarged && (
               <GalleryAsset

@@ -17,6 +17,9 @@ export function Footer({ ordersOpen }: { ordersOpen: boolean }) {
         </div>
         <div className="footer-column">
           <p className="eyebrow">THE COLLECTION</p>
+          <Link href="/new-arrivals">
+            New Arrivals <Arrow />
+          </Link>
           <Link href="/women">
             Women <Arrow />
           </Link>

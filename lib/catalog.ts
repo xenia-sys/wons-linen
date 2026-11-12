@@ -2,11 +2,11 @@ import { cache } from "react";
 import { createPublicSupabaseClient } from "./supabase";
 import type { Product } from "./types";
 import productImages from "../content/product-images.json";
-export const getCatalog = cache(async (): Promise<Product[]> => {
+export const getCatalog = cache(async (): Promise<(Product & { created_at: string })[]> => {
   const { data, error } = await createPublicSupabaseClient()
     .from("products")
     .select(
-      "id,slug,name,department,category,description,status,is_demo,sort_order,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order,framing)",
+      "id,slug,name,department,category,description,status,is_demo,sort_order,created_at,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order,framing)",
     )
     .in("status", ["preview", "published"])
     .order("sort_order")
@@ -17,6 +17,7 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
     );
   return (
     data as unknown as (Product & {
+      created_at: string;
       product_images: {
         id: string;
         storage_path: string;

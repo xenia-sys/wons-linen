@@ -34,6 +34,8 @@ The public-client helper in lib/supabase.ts is for public reads only. Administra
 
 The homepage, Women/Men catalog, product pages, search, category filters, price sorting and bag are native Next.js components. Noto Sans and Noto Serif are self-hosted with their OFL licenses. The original mockup remains at /design-preview.html for design reference only.
 
+**New Arrivals** shows up to 12 published, non-demo styles, newest by date added to the catalog. Editing a style does not move it to the top. If no real styles are published, the page shows the existing preview styles with a sample-price notice. Product galleries support mouse drag and touch swipe on the main image and in the enlarged view, alongside arrows and thumbnails.
+
 The storefront currency selector defaults to VND and remembers the visitor's choice in browser storage. USD is an estimate based on Frankfurter's USD/VND reference rate, fetched on demand by `/api/display-currency` and cached. If the rate is unavailable, the storefront displays VND. Catalog prices, admin pricing, and bag calculations remain in VND.
 
 The bag stores only variant IDs and quantities under wons.bag.v1 in browser localStorage. It revalidates against the current catalog, uses valid sale prices and never trusts a stored price. Guests can preview checkout using sample items. In production, only published non-demo variants can be ordered. Orders reserve stock and go to the Owner inbox for manual confirmation; no online payment is collected. Customer account activation is documented in [CUSTOMER-ACCOUNTS.md](CUSTOMER-ACCOUNTS.md); account access is optional and separate from staff administration.

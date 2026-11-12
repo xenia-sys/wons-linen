@@ -2,32 +2,55 @@
 import { useState } from "react";
 import Link from "next/link";
 import { filterProducts } from "../lib/commerce";
-import type { Product } from "../lib/types";
+import type { Department, Product } from "../lib/types";
 import { ProductCard } from "./product-card";
 import { SearchIcon } from "./icons";
 export function Catalog({
   products,
   department = "All",
+  collection,
+  preview = false,
 }: {
   products: Product[];
-  department?: string;
+  department?: Department | "All";
+  collection?: "new-arrivals";
+  preview?: boolean;
 }) {
+  const newArrivals = collection === "new-arrivals";
+  const [arrivalDepartment, setArrivalDepartment] = useState<Department | "All">("All");
+  const currentDepartment = newArrivals ? arrivalDepartment : department;
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
   const categories = [
     ...new Set(
       products
-        .filter((p) => department === "All" || p.department === department)
+        .filter((p) => currentDepartment === "All" || p.department === currentDepartment)
         .map((p) => p.category),
     ),
   ];
-  const filtered = filterProducts(products, department, category, query, sort);
+  const filtered = filterProducts(products, currentDepartment, category, query, sort);
   const hasFilters =
-    category !== "All" || query.length > 0 || sort !== "featured";
+    category !== "All" || query.length > 0 || sort !== "featured" || arrivalDepartment !== "All";
+  function clearFilters() {
+    setArrivalDepartment("All");
+    setCategory("All");
+    setQuery("");
+    setSort("featured");
+  }
   return (
     <section className="catalog-section" aria-label="Collection products">
-      <div className="catalog-departments">
+      {newArrivals && preview && <p className="arrival-preview" role="note">Collection preview · Sample prices</p>}
+      {newArrivals ? (
+        <div className="catalog-departments" role="group" aria-label="Filter new arrivals by department">
+          {(["All", "Women", "Men"] as const).map(option => (
+            <button key={option} type="button" aria-pressed={arrivalDepartment === option}
+              onClick={() => { setArrivalDepartment(option); setCategory("All"); }}>
+              {option === "All" ? "All new arrivals" : option}
+            </button>
+          ))}
+        </div>
+      ) : <div className="catalog-departments">
         <Link
           href="/shop"
           aria-current={department === "All" ? "page" : undefined}
@@ -46,7 +69,7 @@ export function Catalog({
         >
           Men
         </Link>
-      </div>
+      </div>}
       <div className="catalog-toolbar">
         <div
           className="category-tabs"
@@ -66,7 +89,7 @@ export function Catalog({
         <label className="sort-label">
           Sort by
           <select value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value="featured">Featured</option>
+            <option value="featured">{newArrivals ? "Newest first" : "Featured"}</option>
             <option value="price-asc">Price: low to high</option>
             <option value="price-desc">Price: high to low</option>
           </select>
@@ -91,11 +114,7 @@ export function Catalog({
         {hasFilters && (
           <button
             className="text-button"
-            onClick={() => {
-              setQuery("");
-              setCategory("All");
-              setSort("featured");
-            }}
+            onClick={clearFilters}
           >
             Clear filters
           </button>
@@ -110,23 +129,16 @@ export function Catalog({
       ) : (
         <div className="empty-state">
           <p className="eyebrow">A FRESH START</p>
-          <h2>No styles found.</h2>
-          <p>Try another search or explore the whole collection.</p>
-          <button
-            className="button dark"
-            onClick={() => {
-              setQuery("");
-              setCategory("All");
-            }}
-          >
-            View all styles
-          </button>
+          <h2>{newArrivals && !products.length ? "More styles are on the way." : "No styles found."}</h2>
+          <p>{newArrivals && !products.length ? "Explore the WONS collection while you wait." : "Try another search or clear your filters."}</p>
+          {hasFilters ? <button className="button dark" onClick={clearFilters}>Clear filters</button>
+            : <Link className="button dark" href="/shop">Shop all styles</Link>}
         </div>
       )}
-      <p className="catalog-note">
+      {!newArrivals && <p className="catalog-note">
         A first look at WONS. Styles, colours and prices are illustrative;
         product photography will follow.
-      </p>
+      </p>}
     </section>
   );
 }

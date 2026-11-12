@@ -19,6 +19,7 @@ export function Header({ ordersOpen }: { ordersOpen: boolean }) {
       <header className="site-header">
         <nav aria-label="Collections" className="main-nav">
           {[
+            ["New Arrivals", "/new-arrivals"],
             ["Shop All", "/shop"],
             ["Women", "/women"],
             ["Men", "/men"],

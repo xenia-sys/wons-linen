@@ -219,6 +219,7 @@
     padding: 12px 0;
     font-size: 12px;
     position: relative;
+    white-space: nowrap;
   }
   .main-nav a::after {
     content: "";
@@ -800,18 +801,28 @@
   }
   .catalog-departments {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 36px;
     padding-bottom: 24px;
     border-bottom: 1px solid var(--line);
   }
-  .catalog-departments a {
+  .catalog-departments a,
+  .catalog-departments button {
     font-size: 12px;
     padding: 10px 0;
+    border: 0;
     border-bottom: 1px solid transparent;
   }
-  .catalog-departments [aria-current="page"] {
+  .catalog-departments [aria-current="page"],
+  .catalog-departments [aria-pressed="true"] {
     border-color: var(--ink);
+  }
+  .arrival-preview {
+    margin: 0 0 14px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
   }
   .catalog-toolbar {
     display: flex;
@@ -958,6 +969,19 @@
   }
   .gallery-open:focus-visible {
     outline-offset: -5px;
+  }
+  .gallery-swipe {
+    user-select: none;
+    touch-action: pan-y pinch-zoom;
+  }
+  @media (pointer: fine) {
+    .gallery-swipe { cursor: grab; }
+    .gallery-swipe:active { cursor: grabbing; }
+  }
+  .gallery-swipe-hint {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 11px;
   }
   .gallery-illustration {
     display: block;
@@ -1497,7 +1521,7 @@
   }
   @media (max-width: 1050px) {
     .main-nav {
-      gap: 18px;
+      gap: clamp(9px, 1.5vw, 18px);
     }
     .header-actions {
       gap: 12px;
@@ -1615,11 +1639,13 @@
       grid-column: 1/3;
       grid-row: 2;
       justify-content: space-between;
-      gap: 20px;
+      gap: clamp(3px, 2vw, 16px);
       padding: 3px 0 7px;
     }
     .main-nav a {
       padding: 8px 6px;
+      display: grid;
+      place-items: center;
       min-height: 44px;
       text-align: center;
       flex: 1;
