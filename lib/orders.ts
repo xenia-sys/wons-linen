@@ -23,7 +23,10 @@ export type OrderDetails = {
 };
 export type OrderItem = { variantId: string; quantity: number; price: number };
 export type OrderReceipt = { order_number: number; total_vnd: number };
-export type OrderStatus = "pending" | "confirmed" | "cancelled";
+export const ORDER_FLOW = ["pending", "confirmed", "packed", "shipped", "delivered", "completed"] as const;
+export type OrderStatus = (typeof ORDER_FLOW)[number] | "cancelled";
+export const ORDER_ACTIONS = ["seen", "confirm", "pack", "ship", "deliver", "complete", "cancel"] as const;
+export type OrderAction = (typeof ORDER_ACTIONS)[number];
 export type OrderSummary = OrderReceipt & {
   id: string;
   created_at: string;

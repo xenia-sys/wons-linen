@@ -1,5 +1,5 @@
 import { adminError, AdminError, adminJson, authorizedStaff } from "../../../../lib/admin-server";
-import { ORDER_UUID } from "../../../../lib/orders";
+import { ORDER_ACTIONS, ORDER_FLOW, ORDER_UUID } from "../../../../lib/orders";
 
 const SUMMARY = "id,order_number,created_at,seen_at,status,item_count,total_vnd,payment_method,is_test";
 const LIMIT = 30;
@@ -24,9 +24,15 @@ export async function GET(request: Request) {
       return Response.json({ count }, { headers });
     }
     const before = search.get("before");
+    const status = search.get("status");
     if (before !== null && (!/^\d{1,15}$/.test(before) || Number(before) < 1))
       throw new AdminError("Invalid order cursor.");
     let query = db.from("wons_orders").select(SUMMARY).order("order_number", { ascending: false }).limit(LIMIT + 1);
+    if (status !== null) {
+      if (![...ORDER_FLOW, "cancelled"].some((value) => value === status))
+        throw new AdminError("Invalid order status.");
+      query = query.eq("status", status);
+    }
     if (before) query = query.lt("order_number", Number(before));
     const { data, error } = await query;
     if (error) throw new AdminError("Could not load orders.", 503);
@@ -41,7 +47,7 @@ export async function PATCH(request: Request) {
   try {
     const { db } = await authorizedStaff(request, true);
     const data = await adminJson(request);
-    if (!data || typeof data.id !== "string" || !ORDER_UUID.test(data.id) || !["seen", "confirm", "cancel"].includes(data.action))
+    if (!data || typeof data.id !== "string" || !ORDER_UUID.test(data.id) || !ORDER_ACTIONS.includes(data.action))
       throw new AdminError("Invalid order action.");
     const { data: status, error } = await db.rpc("manage_wons_order", { order_id: data.id, order_action: data.action });
     if (error?.code === "P0002") throw new AdminError("Order not found.", 404);

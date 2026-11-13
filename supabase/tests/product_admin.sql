@@ -53,6 +53,8 @@ begin
   if (select version from public.products where id=pid)<>2 then raise exception 'Failed save was not atomic';end if;
   update public.staff_members set role='owner' where email='wons-editor-rls@example.invalid';get diagnostics changed=row_count;
   if changed<>0 then raise exception 'Editor self-promoted';end if;
+  delete from public.staff_members where email='wons-owner-rls@example.invalid';get diagnostics changed=row_count;
+  if changed<>0 then raise exception 'Editor removed Owner';end if;
   begin insert into public.staff_members(email,role) values('editor-escalation@example.invalid','owner');raise exception 'Editor added owner';exception when insufficient_privilege then null;end;
   if exists(select 1 from public.activity_log) then raise exception 'Editor read owner audit history';end if;
   path:=pid::text||'/'||gen_random_uuid()::text||'.webp';
@@ -133,6 +135,27 @@ delete from auth.sessions where id=(current_setting('wons.test.editor')::jsonb->
 set local role authenticated;
 do $$ begin if private.staff_role() is not null then raise exception 'Revoked session retained access';end if;end $$;
 reset role;
+-- Give the editor a live session again before removal to test immediate access revocation.
+insert into auth.sessions(id,user_id) select (claims->>'session_id')::uuid,(claims->>'sub')::uuid
+from (select current_setting('wons.test.editor')::jsonb as claims) s;
+select set_config('request.jwt.claims',current_setting('wons.test.owner'),true);
+set local role authenticated;
+do $$ begin
+  begin delete from public.staff_members where email='wons-owner-rls@example.invalid';
+    raise exception 'Owner deleted their own membership'; exception when sqlstate 'WN005' then null; end;
+  delete from public.staff_members where email='wons-editor-rls@example.invalid';
+  if not found then raise exception 'Owner could not remove staff'; end if;
+  if not exists(select 1 from public.activity_log where entity_type='staff_members'
+    and action='DELETE' and before_data->>'email'='wons-editor-rls@example.invalid')
+    then raise exception 'Removed staff history missing'; end if;
+end $$;
+select set_config('request.jwt.claims',current_setting('wons.test.editor'),true);
+do $$ begin if private.staff_role() is not null then raise exception 'Removed editor retained access';end if;end $$;
+reset role;
+do $$ begin
+  if not exists(select 1 from auth.users where email='wons-editor-rls@example.invalid')
+    then raise exception 'Removing membership deleted the Auth account'; end if;
+end $$;
 set constraints all immediate;
 select 'PASS: guest/customer denial, Marketing publication, pricing and New Arrivals, 20-image galleries, Owner team/history, stale/atomic save and revoked sessions' as result;
 rollback;

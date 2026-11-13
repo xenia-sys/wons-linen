@@ -115,6 +115,8 @@ begin
     raise exception 'Test order status did not update';
   end if;
   if (select available_quantity from public.variants where id=demo_vid) <> demo_stock then raise exception 'Test cancellation restocked samples'; end if;
+  begin perform public.manage_wons_order(oid,'ship');
+    raise exception 'Order skipped confirmation and packing'; exception when sqlstate 'WN004' then null; end;
   if (select available_quantity from public.variants where id=vid) <> 0 then raise exception 'Stock was not reserved'; end if;
   if (select p.version from public.products p join public.variants v on v.product_id=p.id where v.id=vid) <> 2 then
     raise exception 'Stale product editor not invalidated';
@@ -124,10 +126,44 @@ begin
   perform public.manage_wons_order(oid,'seen');
   if (select seen_at from public.wons_orders where id=oid) is null then raise exception 'Order not marked read'; end if;
   if public.manage_wons_order(oid,'confirm') <> 'confirmed' then raise exception 'Confirmation failed'; end if;
+  if public.manage_wons_order(oid,'pack') <> 'packed' then raise exception 'Packing failed'; end if;
   if public.manage_wons_order(oid,'cancel') <> 'cancelled' then raise exception 'Cancellation failed'; end if;
   begin perform public.manage_wons_order(oid,'cancel');
     raise exception 'Repeated cancellation accepted'; exception when sqlstate 'WN004' then null; end;
   if (select available_quantity from public.variants where id=vid) <> 2 then raise exception 'Stock was not returned exactly once'; end if;
 end $$;
+
+-- A second real order can complete without any extra stock deduction or restoration.
+set local role anon;
+select set_config('request.jwt.claims','{}',true);
+do $$
+declare payload jsonb := current_setting('wons.test.payload')::jsonb;
+  shipped_id uuid := gen_random_uuid();
+begin
+  perform set_config('wons.test.shipped_id',shipped_id::text,true);
+  perform public.submit_wons_order(repeat('a',64),payload || jsonb_build_object(
+    'id',shipped_id, 'phone','0900000001', 'email','second@example.invalid'),null);
+end $$;
+set local role authenticated;
+select set_config('request.jwt.claims',current_setting('wons.test.owner'),true);
+do $$
+declare shipped_id uuid := current_setting('wons.test.shipped_id')::uuid;
+  vid uuid := current_setting('wons.test.variant')::uuid;
+begin
+  if public.manage_wons_order(shipped_id,'confirm') <> 'confirmed'
+    or public.manage_wons_order(shipped_id,'pack') <> 'packed'
+    or public.manage_wons_order(shipped_id,'ship') <> 'shipped'
+    then raise exception 'Could not hand off order'; end if;
+  begin perform public.manage_wons_order(shipped_id,'cancel');
+    raise exception 'Shipped order could be cancelled'; exception when sqlstate 'WN004' then null; end;
+  begin perform public.manage_wons_order(shipped_id,'complete');
+    raise exception 'Undelivered order could complete'; exception when sqlstate 'WN004' then null; end;
+  if public.manage_wons_order(shipped_id,'deliver') <> 'delivered'
+    or public.manage_wons_order(shipped_id,'complete') <> 'completed'
+    or public.manage_wons_order(shipped_id,'seen') <> 'completed'
+    then raise exception 'Could not complete order'; end if;
+  if (select available_quantity from public.variants where id=vid) <> 0 then
+    raise exception 'Fulfillment changed reserved stock'; end if;
+end $$;
 rollback;
-select 'PASS: guest gateway, COD, guarded test orders, unchanged demo stock, retry, real reservations, Owner inbox/RLS and cancellation' as result;
+select 'PASS: guest gateway, COD, guarded test orders, unchanged demo stock, retry, real reservations, Owner inbox/RLS, fulfillment and cancellation' as result;

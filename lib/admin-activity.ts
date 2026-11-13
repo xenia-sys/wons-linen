@@ -77,6 +77,7 @@ export function activityAction(entry: ActivityEntry) {
   }
   if (entry.entity_type === "staff_members") {
     if (entry.action === "INSERT") return "Access approved";
+    if (entry.action === "DELETE") return "Admin access removed";
     if (changed.includes("active")) return entry.after_data?.active ? "Access enabled" : "Access disabled";
     if (changed.includes("role")) return "Role changed";
     return "Team access updated";

@@ -19,6 +19,7 @@ export function Team() {
     [role, setRole] = useState<Member["role"]>("marketing_editor"),
     [active, setActive] = useState(true),
     [busy, setBusy] = useState(false),
+    [removal, setRemoval] = useState<Member | null>(null),
     [message, setMessage] = useState("");
   async function load() {
     try {
@@ -60,6 +61,27 @@ export function Team() {
       setBusy(false);
     }
   }
+  async function remove(member: Member) {
+    if (busy) return;
+    setBusy(true);
+    setMessage("");
+    try {
+      await adminFetch(`/team?id=${member.id}`, { method: "DELETE" });
+      setMembers((current) => current.filter((item) => item.id !== member.id));
+      if (email.trim().toLowerCase() === member.email) {
+        setEmail("");
+        setName("");
+        setRole("marketing_editor");
+        setActive(true);
+      }
+      setRemoval(null);
+      setMessage("Admin access removed.");
+    } catch (error) {
+      setMessage((error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <>
       <div className="admin-page-heading">
@@ -69,9 +91,20 @@ export function Team() {
           <p>{t("Each teammate uses their own verified email account.")}</p>
         </div>
       </div>
-      <div className="admin-editor-layout">
+      <div className="admin-editor-layout admin-team-layout">
         <section className="admin-panel">
           <h2>{t("Approved team")}</h2>
+          {removal && (
+            <div className="admin-team-confirm">
+              <h3>{t("Remove admin access?")}</h3>
+              <p><strong>{removal.display_name || removal.email}</strong>{removal.display_name && <> · {removal.email}</>}</p>
+              <p>{t("This person will lose access to WONS Admin. Their sign-in account and past activity are kept.")}</p>
+              <div className="admin-actions">
+                <button type="button" className="admin-danger-button" disabled={busy} onClick={() => void remove(removal)}>{t("Remove access")}</button>
+                <button type="button" disabled={busy} onClick={() => setRemoval(null)}>{t("Keep access")}</button>
+              </div>
+            </div>
+          )}
           <div className="admin-table-scroll">
             <table className="admin-table">
               <thead>
@@ -80,6 +113,7 @@ export function Team() {
                   <th>{t("Role")}</th>
                   <th>{t("Access")}</th>
                   <th>{t("Edit")}</th>
+                  <th>{t("Remove")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,6 +128,7 @@ export function Team() {
                     <td>
                       <button
                         type="button"
+                        disabled={busy || !!removal}
                         onClick={() => {
                           setEmail(m.email);
                           setName(m.display_name);
@@ -104,6 +139,13 @@ export function Team() {
                           );
                         }}
                       > {t("Edit")} </button>
+                    </td>
+                    <td>
+                      {profile.email.toLowerCase() === m.email ? <span className="muted">{t("Your account")}</span> : (
+                        <button type="button" className="admin-danger-button" disabled={busy || !!removal} onClick={() => { setMessage(""); setRemoval(m); }}>
+                          {t("Remove")}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -142,7 +184,7 @@ export function Team() {
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
               /> {t("Access enabled")} </label>
-            <button className="button dark" disabled={busy}>
+            <button className="button dark" disabled={busy || !!removal}>
               {busy ? t("Saving…") : t("Save access")}
             </button>
           </form>

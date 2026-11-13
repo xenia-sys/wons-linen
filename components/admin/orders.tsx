@@ -4,12 +4,20 @@ import { useAdminLanguage } from "./admin-language";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 import { money } from "../../lib/commerce";
-import { addressLines, COD_LABEL, orderReference, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
+import { addressLines, COD_LABEL, ORDER_FLOW, orderReference, type OrderAction, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
 import { notifyOrdersChanged, useOrderRefresh } from "./order-inbox";
 import { StartCodTest } from "./start-cod-test";
 
 const statusLabels: Record<OrderStatus, string> = {
-  pending: "Awaiting confirmation", confirmed: "Confirmed", cancelled: "Cancelled",
+  pending: "Awaiting confirmation", confirmed: "Confirmed", packed: "Packed",
+  shipped: "Shipped", delivered: "Delivered", completed: "Completed", cancelled: "Cancelled",
+};
+const nextStep: Partial<Record<OrderStatus, { action: OrderAction; label: string }>> = {
+  pending: { action: "confirm", label: "Confirm order" },
+  confirmed: { action: "pack", label: "Mark as packed" },
+  packed: { action: "ship", label: "Mark as shipped" },
+  shipped: { action: "deliver", label: "Mark as delivered" },
+  delivered: { action: "complete", label: "Complete order" },
 };
 
 export function AdminOrders() {
@@ -17,6 +25,7 @@ export function AdminOrders() {
   const date = new Intl.DateTimeFormat(dateLocale, { timeZone: "Asia/Ho_Chi_Minh", dateStyle: "medium", timeStyle: "short" });
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [before, setBefore] = useState<number | null>(null);
+  const [filter, setFilter] = useState<OrderStatus | "">("");
   const [next, setNext] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [listError, setListError] = useState("");
@@ -28,7 +37,10 @@ export function AdminOrders() {
   const opening = useRef<AbortController>(null);
   const load = useCallback(async (signal: AbortSignal) => {
     try {
-      const result = await adminFetch(before ? `/orders?before=${before}` : "/orders", { signal });
+      const params = new URLSearchParams();
+      if (before) params.set("before", String(before));
+      if (filter) params.set("status", filter);
+      const result = await adminFetch(`/orders?${params}`, { signal });
       if (signal.aborted) return;
       setOrders(result.orders);
       setNext(result.before ?? null);
@@ -38,7 +50,7 @@ export function AdminOrders() {
     } finally {
       if (!signal.aborted) setLoading(false);
     }
-  }, [before]);
+  }, [before, filter]);
   useOrderRefresh(load);
   useEffect(() => () => opening.current?.abort(), []);
 
@@ -70,7 +82,7 @@ export function AdminOrders() {
     }
   }
 
-  async function changeStatus(action: "confirm" | "cancel") {
+  async function changeStatus(action: OrderAction) {
     if (!detail || busy) return;
     setBusy(true);
     setDetailError("");
@@ -85,6 +97,9 @@ export function AdminOrders() {
       setBusy(false);
     }
   }
+  const step = detail && nextStep[detail.status];
+  const stage = detail && detail.status !== "cancelled" ? ORDER_FLOW.indexOf(detail.status) : -1;
+  const canCancel = detail && ["pending", "confirmed", "packed"].includes(detail.status);
 
   return (
     <>
@@ -102,8 +117,19 @@ export function AdminOrders() {
           <h2>{before ? t("Earlier orders") : t("Order inbox")}</h2>
           <button type="button" onClick={notifyOrdersChanged}>{t("Refresh")}</button>
         </div>
+        <label className="admin-order-filter">
+          {t("Filter by status")}
+          <select value={filter} onChange={(event) => {
+            setLoading(true);
+            setBefore(null);
+            setFilter(event.target.value as OrderStatus | "");
+          }}>
+            <option value="">{t("All statuses")}</option>
+            {([...ORDER_FLOW, "cancelled"] as const).map((status) => <option key={status} value={status}>{t(statusLabels[status])}</option>)}
+          </select>
+        </label>
         {listError && <p role="alert">{errorText(listError)}</p>}
-        {loading ? <p role="status">{t("Loading orders…")}</p> : !orders.length && !listError ? <p>{t("No orders received yet.")}</p> : orders.length ? (
+        {loading ? <p role="status">{t("Loading orders…")}</p> : !orders.length && !listError ? <p>{t(filter ? "No orders with this status." : "No orders received yet.")}</p> : orders.length ? (
           <div className="admin-table-scroll">
             <table className="admin-table">
               <thead><tr><th>{t("Order")}</th><th>{t("Received (Vietnam time)")}</th><th>{t("Status")}</th><th>{t("Items")}</th><th>{t("Total")}</th></tr></thead>
@@ -113,7 +139,7 @@ export function AdminOrders() {
                     <td><button type="button" className="admin-order-link" disabled={busy} onClick={() => void openOrder(order.id)}>{orderReference(order.order_number)}</button>
                       {!order.seen_at && <span className="admin-order-new">{t("New")}</span>}</td>
                     <td>{date.format(new Date(order.created_at))}</td>
-                    <td>{t(statusLabels[order.status])}{order.is_test && <span className="admin-order-new">{t("Test")}</span>}</td>
+                    <td><span className={`admin-badge admin-order-status status-${order.status}`}>{t(statusLabels[order.status])}</span>{order.is_test && <span className="admin-order-new">{t("Test")}</span>}</td>
                     <td>{order.item_count}</td>
                     <td>{money(order.total_vnd)}</td>
                   </tr>
@@ -137,6 +163,15 @@ export function AdminOrders() {
             </div>
             <button type="button" disabled={busy} onClick={() => setDetail(null)}>{t("Close details")}</button>
           </div>
+          {stage >= 0 && (
+            <ol className="admin-order-progress" aria-label={t("Order progress")}>
+              {ORDER_FLOW.map((status, index) => (
+                <li key={status} aria-current={index === stage ? "step" : undefined} data-reached={index <= stage}>
+                  <span aria-hidden="true">{index + 1}</span>{t(statusLabels[status])}
+                </li>
+              ))}
+            </ol>
+          )}
           <dl className="admin-order-addresses">
             <div><dt>{t("Contact")}</dt><dd>{detail.email}</dd><dd>{detail.phone}</dd></div>
             <div><dt>{t("Ship to")}</dt><dd>{addressLines(detail.delivery).map((line, i) => <span key={i}>{line}</span>)}</dd></div>
@@ -153,14 +188,15 @@ export function AdminOrders() {
           </div>
           {detail.is_test && <p role="note"><strong>{t("Test order. Do not ship or collect payment.")}</strong></p>}
           <p className="admin-order-total"><strong>{money(detail.total_vnd)}</strong> · {t(COD_LABEL)} {t("· Free shipping · Taxes included.")}</p>
-          {detail.status !== "cancelled" && (
+          {detail.status === "delivered" && <p className="admin-help">{t("Complete the order after confirming COD was collected.")}</p>}
+          {(step || canCancel) && (
             <div className="admin-actions">
-              {detail.status === "pending" && <button type="button" className="button dark" disabled={busy || cancelConfirm} onClick={() => void changeStatus("confirm")}>{t("Confirm order")}</button>}
+              {step && <button type="button" className="button dark" disabled={busy || cancelConfirm} onClick={() => void changeStatus(step.action)}>{t(step.label)}</button>}
               {cancelConfirm ? <>
                 <p>{detail.is_test ? t("Cancel this test order?") : t("Cancel this order and return the reserved items to stock?")}</p>
                 <button type="button" disabled={busy} onClick={() => void changeStatus("cancel")}>{t("Yes, cancel order")}</button>
                 <button type="button" disabled={busy} onClick={() => setCancelConfirm(false)}>{t("Keep order")}</button>
-              </> : <button type="button" disabled={busy} onClick={() => setCancelConfirm(true)}>{t("Cancel order")}</button>}
+              </> : canCancel && <button type="button" disabled={busy} onClick={() => setCancelConfirm(true)}>{t("Cancel order")}</button>}
             </div>
           )}
         </section>
