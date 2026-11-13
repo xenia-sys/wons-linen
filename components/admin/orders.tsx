@@ -4,14 +4,10 @@ import { useAdminLanguage } from "./admin-language";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 import { money } from "../../lib/commerce";
-import { addressLines, COD_LABEL, ORDER_FLOW, orderReference, type OrderAction, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
+import { addressLines, COD_LABEL, ORDER_FLOW, ORDER_STATUS_LABELS, orderReference, type OrderAction, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
 import { notifyOrdersChanged, useOrderRefresh } from "./order-inbox";
 import { StartCodTest } from "./start-cod-test";
 
-const statusLabels: Record<OrderStatus, string> = {
-  pending: "Awaiting confirmation", confirmed: "Confirmed", packed: "Packed",
-  shipped: "Shipped", delivered: "Delivered", completed: "Completed", cancelled: "Cancelled",
-};
 const nextStep: Partial<Record<OrderStatus, { action: OrderAction; label: string }>> = {
   pending: { action: "confirm", label: "Confirm order" },
   confirmed: { action: "pack", label: "Mark as packed" },
@@ -125,7 +121,7 @@ export function AdminOrders() {
             setFilter(event.target.value as OrderStatus | "");
           }}>
             <option value="">{t("All statuses")}</option>
-            {([...ORDER_FLOW, "cancelled"] as const).map((status) => <option key={status} value={status}>{t(statusLabels[status])}</option>)}
+            {([...ORDER_FLOW, "cancelled"] as const).map((status) => <option key={status} value={status}>{t(ORDER_STATUS_LABELS[status])}</option>)}
           </select>
         </label>
         {listError && <p role="alert">{errorText(listError)}</p>}
@@ -139,7 +135,7 @@ export function AdminOrders() {
                     <td><button type="button" className="admin-order-link" disabled={busy} onClick={() => void openOrder(order.id)}>{orderReference(order.order_number)}</button>
                       {!order.seen_at && <span className="admin-order-new">{t("New")}</span>}</td>
                     <td>{date.format(new Date(order.created_at))}</td>
-                    <td><span className={`admin-badge admin-order-status status-${order.status}`}>{t(statusLabels[order.status])}</span>{order.is_test && <span className="admin-order-new">{t("Test")}</span>}</td>
+                    <td><span className={`admin-badge admin-order-status status-${order.status}`}>{t(ORDER_STATUS_LABELS[order.status])}</span>{order.is_test && <span className="admin-order-new">{t("Test")}</span>}</td>
                     <td>{order.item_count}</td>
                     <td>{money(order.total_vnd)}</td>
                   </tr>
@@ -158,7 +154,7 @@ export function AdminOrders() {
         <section className="admin-panel admin-order-detail" aria-labelledby="admin-order-detail">
           <div className="admin-panel-heading">
             <div>
-              <p className="eyebrow">{detail.is_test ? t("TEST ORDER ·") : ""} {t(statusLabels[detail.status])}</p>
+              <p className="eyebrow">{detail.is_test ? t("TEST ORDER ·") : ""} {t(ORDER_STATUS_LABELS[detail.status])}</p>
               <h2 id="admin-order-detail" ref={detailTitle} tabIndex={-1}>{orderReference(detail.order_number)}</h2>
             </div>
             <button type="button" disabled={busy} onClick={() => setDetail(null)}>{t("Close details")}</button>
@@ -167,7 +163,7 @@ export function AdminOrders() {
             <ol className="admin-order-progress" aria-label={t("Order progress")}>
               {ORDER_FLOW.map((status, index) => (
                 <li key={status} aria-current={index === stage ? "step" : undefined} data-reached={index <= stage}>
-                  <span aria-hidden="true">{index + 1}</span>{t(statusLabels[status])}
+                  <span aria-hidden="true">{index + 1}</span>{t(ORDER_STATUS_LABELS[status])}
                 </li>
               ))}
             </ol>
