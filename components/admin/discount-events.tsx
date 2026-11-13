@@ -80,7 +80,9 @@ export function DiscountEvents() {
   }
 
   const formatDate = new Intl.DateTimeFormat(dateLocale, { dateStyle: "medium", timeStyle: "short", timeZone: VIETNAM_TIME_ZONE });
-  const matching = products.filter(product => `${product.name} ${product.department} ${t(product.department)}`.toLowerCase().includes(query.trim().toLowerCase()));
+  const matching = products.filter(product =>
+    (product.status !== "archived" || draft?.product_ids.includes(product.id)) &&
+    `${product.name} ${product.department} ${t(product.department)}`.toLowerCase().includes(query.trim().toLowerCase()));
   const eventPricePreview = draft && Number.isInteger(draft.percent_off) && draft.percent_off >= 1 && draft.percent_off <= 99;
   return <>
     <div className="admin-page-heading">

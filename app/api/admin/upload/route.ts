@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       .from("products")
       .select("id")
       .eq("id", id)
+      .neq("status", "archived")
       .maybeSingle();
     if (productError) throw databaseError(productError);
     if (!product)

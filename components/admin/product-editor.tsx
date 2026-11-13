@@ -234,6 +234,55 @@ export function ProductEditor({ id }: { id?: string }) {
   const colors = [
     ...new Set(draft.variants.map((v) => v.color).filter(Boolean)),
   ];
+  const visibilityPanels = (<>
+    <section className="admin-panel">
+      <h2>{t("Visibility")}</h2>
+      <label> {t("Website status")} <select
+          value={draft.status}
+          onChange={(e) =>
+            patch({ status: e.target.value as ProductDraft["status"] })
+          }
+        >
+          <option value="hidden">{t("Hidden — draft")}</option>
+          {draft.is_demo && (
+            <option value="preview">{t("Preview — demo data")}</option>
+          )}
+          <option value="published">{t("Published")}</option>
+        </select>
+      </label>
+      <p className="admin-help"> {t("Hidden products are removed from the public catalog and product links. Published products appear on new page loads after saving.")} </p>
+      <label className="admin-checkbox">
+        <input
+          type="checkbox"
+          checked={draft.is_demo}
+          onChange={(e) =>
+            patch({
+              is_demo: e.target.checked,
+              status:
+                !e.target.checked && draft.status === "preview"
+                  ? "hidden"
+                  : draft.status,
+            })
+          }
+        /> {t("Demo product")} </label>
+      <label> {t("Display order")} <input
+          type="number"
+          min={0}
+          step={1}
+          required
+          value={draft.sort_order}
+          onChange={(e) =>
+            patch({ sort_order: Number(e.target.value) })
+          }
+        />
+      </label>
+    </section>
+    <section className="admin-panel admin-note">
+      <p className="eyebrow">{t("YOUR ACCESS")}</p>
+      <p> {t("You can edit content and images, publish or hide products, and update regular and sale prices.")} </p>
+      <p>{t("Product updates do not open checkout or enable payments.")}</p>
+    </section>
+  </>);
   return (
     <form onSubmit={save}>
       <div className="admin-page-heading">
@@ -255,26 +304,28 @@ export function ProductEditor({ id }: { id?: string }) {
         </div>
       </div>
       <fieldset className="admin-fields" disabled={busy || uploading}>
-        <div className="admin-editor-layout">
+        <div className={id ? "admin-editor-layout" : "admin-editor-layout admin-editor-new"}>
           <div>
             <section className="admin-panel">
               <h2>{t("Product details")}</h2>
-              <label> {t("Product name")} <input
-                  required
-                  maxLength={160}
-                  value={draft.name}
-                  onChange={(e) => patch({ name: e.target.value })}
-                />
-              </label>
-              <label> {t("Product URL")} <input
-                  required
-                  pattern="[a-z0-9]+(-[a-z0-9]+)*"
-                  value={draft.slug}
-                  placeholder="relaxed-linen-shirt"
-                  onChange={(e) => patch({ slug: e.target.value })}
-                />
-                <small>{t("Use lowercase words separated by hyphens.")}</small>
-              </label>
+              <div className={id ? undefined : "admin-form-grid"}>
+                <label> {t("Product name")} <input
+                    required
+                    maxLength={160}
+                    value={draft.name}
+                    onChange={(e) => patch({ name: e.target.value })}
+                  />
+                </label>
+                <label> {t("Product URL")} <input
+                    required
+                    pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                    value={draft.slug}
+                    placeholder="relaxed-linen-shirt"
+                    onChange={(e) => patch({ slug: e.target.value })}
+                  />
+                  <small>{t("Use lowercase words separated by hyphens.")}</small>
+                </label>
+              </div>
               <label> {t("Description")} <textarea
                   rows={6}
                   maxLength={10000}
@@ -584,56 +635,9 @@ export function ProductEditor({ id }: { id?: string }) {
                 </table>
               </div>
             </section>
+            {!id && visibilityPanels}
           </div>
-          <aside>
-            <section className="admin-panel">
-              <h2>{t("Visibility")}</h2>
-              <label> {t("Website status")} <select
-                  value={draft.status}
-                  onChange={(e) =>
-                    patch({ status: e.target.value as ProductDraft["status"] })
-                  }
-                >
-                  <option value="hidden">{t("Hidden — draft")}</option>
-                  {draft.is_demo && (
-                    <option value="preview">{t("Preview — demo data")}</option>
-                  )}
-                  <option value="published">{t("Published")}</option>
-                </select>
-              </label>
-              <p className="admin-help"> {t("Hidden products are removed from the public catalog and product links. Published products appear on new page loads after saving.")} </p>
-              <label className="admin-checkbox">
-                <input
-                  type="checkbox"
-                  checked={draft.is_demo}
-                  onChange={(e) =>
-                    patch({
-                      is_demo: e.target.checked,
-                      status:
-                        !e.target.checked && draft.status === "preview"
-                          ? "hidden"
-                          : draft.status,
-                    })
-                  }
-                /> {t("Demo product")} </label>
-              <label> {t("Display order")} <input
-                  type="number"
-                  min={0}
-                  step={1}
-                  required
-                  value={draft.sort_order}
-                  onChange={(e) =>
-                    patch({ sort_order: Number(e.target.value) })
-                  }
-                />
-              </label>
-            </section>
-            <section className="admin-panel admin-note">
-              <p className="eyebrow">{t("YOUR ACCESS")}</p>
-              <p> {t("You can edit content and images, publish or hide products, and update regular and sale prices.")} </p>
-              <p>{t("Product updates do not open checkout or enable payments.")}</p>
-            </section>
-          </aside>
+          {id && <aside>{visibilityPanels}</aside>}
         </div>
       </fieldset>
       <div className="admin-panel admin-product-save">

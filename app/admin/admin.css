@@ -401,6 +401,7 @@
 .admin-editor-layout > aside {
   min-width: 0;
 }
+.admin-editor-new { grid-template-columns: minmax(0, 1fr); }
 .admin-product-save {
   display: flex;
   flex-wrap: wrap;
@@ -1013,6 +1014,7 @@
   box-shadow: 0 15px 46px #3b2c222e;
 }
 .admin-team-confirm::backdrop { background: #2e251942; }
+.admin-product-confirm { inset: 0; margin: auto; }
 .admin-team-confirm h3 { margin: 0 0 10px; font-size: 19px; }
 .admin-team-confirm p { margin: 0 0 10px; overflow-wrap: anywhere; }
 .admin-team-confirm .admin-actions { justify-content: flex-end; gap: 8px; margin-top: 17px; }

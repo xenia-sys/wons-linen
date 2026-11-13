@@ -17,6 +17,7 @@ export async function GET(
       .from("products")
       .select("*,variants(*),product_images(*)")
       .eq("id", id)
+      .neq("status", "archived")
       .maybeSingle();
     const [{ data, error }, pricing] = await Promise.all([product, db.rpc("current_wons_discount_pricing")]);
     if (error) throw databaseError(error);
@@ -29,4 +30,32 @@ export async function GET(
   } catch (e) {
     return adminError(e);
   }
+}
+
+async function setTrashed(
+  request: Request,
+  params: Promise<{ id: string }>,
+  trash: boolean,
+) {
+  try {
+    const { db } = await authorizedStaff(request, true);
+    const { id } = await params;
+    if (!validId(id)) throw new AdminError("Product not found.", 404);
+    const query = db.from("products").update({ status: trash ? "archived" : "hidden" }).eq("id", id);
+    const { data, error } = await (trash ? query.neq("status", "archived") : query.eq("status", "archived"))
+      .select("id").maybeSingle();
+    if (error) throw databaseError(error);
+    if (!data) throw new AdminError("The product changed. Refresh the list and try again.", 409);
+    return Response.json({ id: data.id }, { headers: { "Cache-Control": "private, no-store" } });
+  } catch (e) {
+    return adminError(e);
+  }
+}
+
+export function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  return setTrashed(request, params, true);
+}
+
+export function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  return setTrashed(request, params, false);
 }

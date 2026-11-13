@@ -96,6 +96,8 @@ export function activityAction(entry: ActivityEntry) {
   }
   if (entry.action === "INSERT") return "Product created";
   if (changed.includes("status")) {
+    if (entry.after_data?.status === "archived") return "Product moved to trash";
+    if (entry.before_data?.status === "archived") return "Product restored";
     if (entry.after_data?.status === "published") return "Product published";
     if (entry.after_data?.status === "hidden") return "Product hidden";
     return "Visibility updated";

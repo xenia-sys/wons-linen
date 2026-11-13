@@ -7,13 +7,15 @@ import {
 import { parseProductDraft } from "../../../../lib/admin-validation";
 export async function GET(request: Request) {
   try {
-    const { db } = await authorizedStaff(request);
-    const products = db
+    const trash = new URL(request.url).searchParams.get("view") === "trash";
+    const { db } = await authorizedStaff(request, trash);
+    const query = db
       .from("products")
       .select(
         "id,slug,name,department,new_arrival,category,status,is_demo,version,updated_at,variants(id,price_vnd,sale_price_vnd),product_images(id,storage_path,sort_order)",
       )
       .order("updated_at", { ascending: false });
+    const products = trash ? query.eq("status", "archived") : query.neq("status", "archived");
     const [{ data, error }, pricing] = await Promise.all([products, db.rpc("current_wons_discount_pricing")]);
     if (error) throw databaseError(error);
     if (pricing.error) throw databaseError(pricing.error);

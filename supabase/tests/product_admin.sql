@@ -112,6 +112,8 @@ begin
     raise exception 'Editor could not remove the New Arrivals selection'; end if;
   update public.products set status='hidden' where id=pid;
   if (select status from public.products where id=pid)<>'hidden' then raise exception 'Editor could not hide product';end if;
+  begin update public.products set status='archived' where id=pid;
+    raise exception 'Editor moved a product to trash'; exception when insufficient_privilege then null; end;
 end $$;
 reset role;
 select set_config('request.jwt.claims',current_setting('wons.test.owner'),true);
@@ -120,6 +122,37 @@ do $$ begin
   if (select count(*) from public.staff_members)<>2 then raise exception 'Owner cannot read team';end if;
   if not exists(select 1 from public.activity_log where entity_type='variants' and after_data->>'sale_price_vnd'='80000') then raise exception 'Price history missing';end if;
   if not exists(select 1 from public.activity_log where entity_type='product_images' and after_data->'framing'->>'x'='23') then raise exception 'Framing history missing';end if;
+  update public.products set status='published' where id=current_setting('wons.test.pid')::uuid;
+  update public.products set status='archived' where id=current_setting('wons.test.pid')::uuid;
+  if not exists(select 1 from public.activity_log where entity_type='products'
+    and entity_id=current_setting('wons.test.pid') and before_data->>'status'='published' and after_data->>'status'='archived')
+    then raise exception 'Product deletion history missing'; end if;
+  begin update public.products set status='published' where id=current_setting('wons.test.pid')::uuid;
+    raise exception 'Restore published a product directly'; exception when check_violation then null; end;
+end $$;
+set local role anon;
+do $$ begin
+  if exists(select 1 from public.products where id=current_setting('wons.test.pid')::uuid)
+    or exists(select 1 from public.variants where product_id=current_setting('wons.test.pid')::uuid)
+    or exists(select 1 from public.product_images where product_id=current_setting('wons.test.pid')::uuid)
+    then raise exception 'Archived product exposed in public catalog'; end if;
+end $$;
+set local role authenticated;
+select set_config('request.jwt.claims',current_setting('wons.test.editor'),true);
+do $$ begin
+  update public.products set status='hidden' where id=current_setting('wons.test.pid')::uuid;
+  if found then raise exception 'Editor restored a trashed product'; end if;
+end $$;
+select set_config('request.jwt.claims',current_setting('wons.test.owner'),true);
+do $$ begin
+  update public.products set status='hidden' where id=current_setting('wons.test.pid')::uuid and status='archived';
+  if not found then raise exception 'Owner could not restore a trashed product'; end if;
+  if not exists(select 1 from public.variants where id=current_setting('wons.test.vid')::uuid)
+    or (select count(*) from public.product_images where product_id=current_setting('wons.test.pid')::uuid) <> 20
+    then raise exception 'Trash lost product data'; end if;
+  if not exists(select 1 from public.activity_log where entity_type='products'
+    and entity_id=current_setting('wons.test.pid') and before_data->>'status'='archived' and after_data->>'status'='hidden')
+    then raise exception 'Product restore history missing'; end if;
   insert into public.staff_members(email,display_name,role) values('wons-new-editor@example.invalid','Pending editor','marketing_editor');
   begin update public.staff_members set active=false where email='wons-owner-rls@example.invalid';raise exception 'Last owner disabled';exception when check_violation then null;end;
   update public.staff_members set active=false where email='wons-editor-rls@example.invalid';
