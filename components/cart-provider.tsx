@@ -12,7 +12,7 @@ type BagContext = {
   lines: ResolvedLine[];
   ready: boolean;
   storageAvailable: boolean;
-  add: (id: string) => void;
+  add: (id: string, quantity: number) => number;
   update: (id: string, quantity: number) => void;
   remove: (id: string) => void;
   consume: (lines: CartLine[]) => void;
@@ -68,7 +68,13 @@ export function CartProvider({
         ready,
         storageAvailable,
         count: lines.reduce((sum, line) => sum + line.quantity, 0),
-        add: (id) => commit(addToCart(cart, products, id)),
+        add: (id, quantity) => {
+          const next = addToCart(cart, products, id, quantity);
+          const before = lines.find(line => line.variantId === id)?.quantity ?? 0;
+          const added = Math.max(0, (next.find(line => line.variantId === id)?.quantity ?? 0) - before);
+          if (added > 0) commit(next);
+          return added;
+        },
         update: (id, quantity) =>
           commit(setQuantity(cart, products, id, quantity)),
         remove: (id) => commit(cart.filter((line) => line.variantId !== id)),

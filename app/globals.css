@@ -77,7 +77,7 @@
   }
   .sale-label {
     font:
-      500 8px var(--font-sans),
+      500 10px var(--font-sans),
       Arial,
       sans-serif;
     text-transform: uppercase;
@@ -168,7 +168,7 @@
     min-height: 44px;
   }
   .eyebrow {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.17em;
     line-height: 1.7;
@@ -179,6 +179,7 @@
   }
 }
 @layer components {
+  .storefront { font-size: 16px; }
   .skip-link {
     position: fixed;
     left: 16px;
@@ -194,7 +195,7 @@
   .announcement {
     padding: 8px 16px;
     text-align: center;
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.16em;
     background: var(--surface);
   }
@@ -217,7 +218,7 @@
   }
   .main-nav a {
     padding: 12px 0;
-    font-size: 12px;
+    font-size: 14px;
     position: relative;
     white-space: nowrap;
   }
@@ -283,7 +284,7 @@
     background: transparent;
     color: var(--ink);
     font: inherit;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
   }
   .currency-select option {
@@ -299,7 +300,7 @@
     padding: 8px 10px;
     border: 1px solid var(--line);
     background: var(--paper);
-    font-size: 11px;
+    font-size: 13px;
   }
   .search-link,
   .bag-link,
@@ -315,7 +316,7 @@
   }
   .bag-link,
   .account-link {
-    font-size: 12px;
+    font-size: 14px;
   }
   .account-link {
     min-width: 44px;
@@ -332,7 +333,7 @@
     height: 22px;
     display: grid;
     place-items: center;
-    font-size: 10px;
+    font-size: 12px;
   }
   .button {
     display: inline-flex;
@@ -341,7 +342,7 @@
     justify-content: space-between;
     min-height: 52px;
     padding: 15px 24px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     border: 1px solid transparent;
     transition:
@@ -401,7 +402,7 @@
   }
   .hero-description {
     color: #4f4434;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.85;
   }
   .hero-buttons {
@@ -415,7 +416,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    font-size: 12px;
+    font-size: 14px;
     padding: 14px 0;
     border-bottom: 1px solid var(--action);
   }
@@ -494,7 +495,7 @@
     position: absolute;
     right: 35px;
     bottom: 75px;
-    font-size: 8px;
+    font-size: 9px;
     letter-spacing: 0.2em;
     color: #4f4434;
     writing-mode: vertical-rl;
@@ -506,7 +507,7 @@
     right: 4.2%;
     display: flex;
     justify-content: space-between;
-    font-size: 8px;
+    font-size: 9px;
     letter-spacing: 0.16em;
     z-index: 2;
     padding-top: 15px;
@@ -551,7 +552,7 @@
     gap: 24px;
     border-bottom: 1px solid var(--action);
     padding: 10px 0;
-    font-size: 12px;
+    font-size: 14px;
   }
   .underlined-link:hover {
     border-color: var(--ink);
@@ -610,7 +611,7 @@
     position: absolute;
     top: 19px;
     left: 19px;
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.07em;
     z-index: 1;
     color: var(--muted);
@@ -619,7 +620,7 @@
     position: absolute;
     left: 19px;
     bottom: 17px;
-    font-size: 7px;
+    font-size: 8px;
     letter-spacing: 0.14em;
     color: var(--muted);
   }
@@ -642,12 +643,12 @@
     margin: 17px 0 5px;
   }
   .product-title-row h3 {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     line-height: 1.5;
   }
   .product-price {
-    font-size: 12px;
+    font-size: 14px;
   }
   .product-colors {
     display: flex;
@@ -655,7 +656,7 @@
     gap: 5px;
     color: var(--muted);
     margin-top: 8px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .product-colors > span:last-child {
     margin-left: 5px;
@@ -667,7 +668,7 @@
     border: 1px solid #8a713d80;
   }
   .catalog-note {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
     text-align: center;
     padding-top: 32px;
@@ -756,7 +757,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 11px;
-    font-size: 12px;
+    font-size: 14px;
   }
   .footer-column .eyebrow {
     margin-bottom: 10px;
@@ -781,7 +782,7 @@
     gap: 20px;
     border-top: 1px solid var(--line);
     padding-top: 20px;
-    font-size: 9px;
+    font-size: 11px;
     color: var(--muted);
   }
   .collection-header {
@@ -793,7 +794,7 @@
     margin: 20px 0;
   }
   .collection-header > p:last-child {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--muted);
   }
   .catalog-section {
@@ -809,7 +810,7 @@
   }
   .catalog-departments a,
   .catalog-departments button {
-    font-size: 12px;
+    font-size: 14px;
     padding: 10px 0;
     border: 0;
     border-bottom: 1px solid transparent;
@@ -821,7 +822,7 @@
   .arrival-preview {
     margin: 0 0 14px;
     text-align: center;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
   }
   .catalog-toolbar {
@@ -839,7 +840,7 @@
   .category-tabs button {
     border-color: transparent;
     padding: 9px 16px;
-    font-size: 11px;
+    font-size: 13px;
   }
   .category-tabs button[aria-pressed="true"] {
     background: var(--ink);
@@ -849,13 +850,13 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 10px;
+    font-size: 12px;
     white-space: nowrap;
   }
   .sort-label select {
     border: 0;
     padding: 8px 18px 8px 8px;
-    font-size: 11px;
+    font-size: 13px;
   }
   .catalog-search-row {
     display: flex;
@@ -876,7 +877,7 @@
     min-width: 0;
     width: 100%;
     padding: 10px 0;
-    font-size: 12px;
+    font-size: 14px;
     scroll-margin-top: 30px;
   }
   .search-field:focus-within {
@@ -884,14 +885,14 @@
   }
   .result-count {
     margin-left: auto;
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     overflow-wrap: anywhere;
   }
   .text-button {
     border: 0;
     padding: 5px 0;
-    font-size: 11px;
+    font-size: 13px;
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -904,7 +905,7 @@
   }
   .empty-state p:not(.eyebrow) {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 15px;
   }
   .empty-state .button {
     margin-top: 28px;
@@ -921,7 +922,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
   }
   .breadcrumbs a:hover {
@@ -990,7 +991,7 @@
   .gallery-swipe-hint {
     margin-top: 6px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 13px;
   }
   .gallery-illustration {
     display: block;
@@ -1083,19 +1084,19 @@
     padding-top: 15px;
   }
   .gallery-caption p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .gallery-caption p > span {
     color: var(--muted);
   }
   .gallery-count { font-variant-numeric: tabular-nums; }
   .gallery-caption > span {
-    font-size: 7px;
+    font-size: 8px;
     letter-spacing: 0.13em;
     color: var(--muted);
   }
   .gallery-preview-note {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin-top: 7px;
   }
@@ -1105,11 +1106,11 @@
     text-align: center;
     height: 100%;
     padding: 12px;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
   }
   .gallery-thumbnail .gallery-image-unavailable {
-    font-size: 8px;
+    font-size: 9px;
     padding: 4px;
   }
   body:has(.gallery-lightbox[open]) {
@@ -1147,7 +1148,7 @@
     margin-top: 4px;
   }
   .lightbox-heading .eyebrow {
-    font-size: 8px;
+    font-size: 9px;
   }
   .lightbox-close {
     flex-shrink: 0;
@@ -1184,7 +1185,7 @@
   }
   .lightbox-footer p {
     text-align: center;
-    font-size: 11px;
+    font-size: 13px;
   }
   .lightbox-footer p span {
     color: var(--muted);
@@ -1198,17 +1199,17 @@
     margin: 15px 0;
   }
   .detail-price {
-    font-size: 15px;
+    font-size: 17px;
   }
   .product-description {
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.85;
     color: var(--muted);
     margin: 24px 0 15px;
   }
   .preview-pill {
     display: inline-block;
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.04em;
     padding: 5px 9px;
     background: var(--surface);
@@ -1220,12 +1221,12 @@
   }
   legend {
     padding: 0;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     margin-bottom: 12px;
   }
   legend span {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 400;
     color: var(--muted);
   }
@@ -1238,7 +1239,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    font-size: 13px;
     padding: 8px 13px;
   }
   .color-options [aria-pressed="true"],
@@ -1261,7 +1262,7 @@
   .size-options button {
     width: 52px;
     padding: 8px;
-    font-size: 12px;
+    font-size: 14px;
   }
   .size-options button:disabled {
     text-decoration: line-through;
@@ -1276,7 +1277,7 @@
     cursor: pointer;
     padding: 16px 0;
     list-style: none;
-    font-size: 12px;
+    font-size: 14px;
   }
   details summary::-webkit-details-marker {
     display: none;
@@ -1286,7 +1287,7 @@
     transform: rotate(45deg);
   }
   details p {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--muted);
     margin-bottom: 18px;
   }
@@ -1298,14 +1299,14 @@
     text-decoration: underline;
     text-underline-offset: 4px;
     padding: 5px 0;
-    font-size: 11px;
+    font-size: 13px;
   }
   .add-button {
     margin-top: 20px;
     width: 100%;
   }
   .added-status {
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 10px;
   }
   .added-status a {
@@ -1314,7 +1315,7 @@
     margin-left: 8px;
   }
   .detail-disclaimer {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin: 14px 0 25px;
   }
@@ -1349,7 +1350,7 @@
     justify-content: space-between;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--line);
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.08em;
     color: var(--muted);
   }
@@ -1375,18 +1376,18 @@
     height: 100%;
   }
   .bag-product-name {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     line-height: 1.5;
     display: block;
   }
   .bag-item-info p {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
     margin-top: 5px;
   }
   .bag-line-total {
-    font-size: 12px;
+    font-size: 14px;
     white-space: nowrap;
   }
   .quantity-row {
@@ -1410,7 +1411,7 @@
   .quantity-control span {
     text-align: center;
     width: 30px;
-    font-size: 12px;
+    font-size: 14px;
   }
   .remove-button {
     padding: 5px 0;
@@ -1418,11 +1419,11 @@
     border: 0;
     text-decoration: underline;
     text-underline-offset: 3px;
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
   }
   .bag-note {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
     margin-top: 20px;
   }
@@ -1440,14 +1441,14 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
-    font-size: 11px;
+    font-size: 13px;
     margin-bottom: 16px;
   }
   .summary-line strong {
     font-weight: 500;
   }
   .summary-notice {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.8;
     color: var(--muted);
     border-top: 1px solid var(--line);
@@ -1462,7 +1463,7 @@
   .secure-note {
     margin-top: 12px;
     text-align: center;
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
   }
   .information-page {
@@ -1477,7 +1478,7 @@
     margin: 20px 0;
     max-width: 600px;
     color: var(--muted);
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.9;
   }
   .information-page > .underlined-link {
@@ -1597,55 +1598,9 @@
       scroll-padding-top: 30px;
     }
     .announcement {
-      font-size: 8px;
+      font-size: 9px;
       padding: 8px;
       letter-spacing: 0.1em;
-    }
-    .site-header {
-      grid-template-columns: 1fr auto;
-      padding: 8px 20px 0;
-      gap: 0 15px;
-    }
-    .logo {
-      grid-column: 1;
-      grid-row: 1;
-      justify-self: start;
-      padding: 6px 0;
-    }
-    .logo-crop {
-      width: 105px;
-      height: 52px;
-    }
-    .logo-crop img {
-      width: 147px;
-      height: 147px;
-      left: -21px;
-      top: -48px;
-    }
-    .header-actions {
-      grid-column: 2;
-      grid-row: 1;
-      gap: 10px;
-    }
-    .bag-link {
-      gap: 8px;
-      min-width: 52px;
-    }
-    .main-nav {
-      grid-column: 1/3;
-      grid-row: 2;
-      justify-content: space-between;
-      gap: clamp(3px, 2vw, 16px);
-      padding: 3px 0 7px;
-    }
-    .main-nav a {
-      padding: 8px 6px;
-      display: grid;
-      place-items: center;
-      min-height: 44px;
-      text-align: center;
-      flex: 1;
-      font-size: 12px;
     }
     .hero {
       min-height: 750px;
@@ -1659,7 +1614,7 @@
       margin: 20px 0 17px;
     }
     .hero-description {
-      font-size: 12px;
+      font-size: 14px;
     }
     .hero-buttons {
       margin-top: 24px;
@@ -1669,11 +1624,11 @@
       padding: 13px 17px;
       min-height: 48px;
       gap: 17px;
-      font-size: 11px;
+      font-size: 13px;
     }
     .hero-men {
       gap: 12px;
-      font-size: 11px;
+      font-size: 13px;
     }
     .hero-scene {
       width: 100%;
@@ -1708,7 +1663,7 @@
       top: 7px;
     }
     .scene-caption {
-      font-size: 7px;
+      font-size: 8px;
       bottom: 36px;
       right: 20px;
     }
@@ -1716,7 +1671,7 @@
       left: 25px;
       right: 25px;
       bottom: 15px;
-      font-size: 7px;
+      font-size: 8px;
       gap: 10px;
       letter-spacing: 0.08em;
       padding-top: 13px;
@@ -1727,7 +1682,7 @@
     }
     .intro-strip .eyebrow {
       max-width: 90px;
-      font-size: 8px;
+      font-size: 9px;
     }
     .intro-strip p {
       font-size: 22px;
@@ -1743,13 +1698,13 @@
       margin-bottom: 24px;
     }
     .section-heading .eyebrow {
-      font-size: 8px;
+      font-size: 9px;
     }
     .section-heading h2 {
       font-size: 31px;
     }
     .underlined-link {
-      font-size: 10px;
+      font-size: 12px;
       gap: 10px;
     }
     .underlined-link svg {
@@ -1765,12 +1720,12 @@
     .art-label {
       top: 12px;
       left: 11px;
-      font-size: 8px;
+      font-size: 9px;
     }
     .art-bottom {
       left: 11px;
       bottom: 11px;
-      font-size: 6px;
+      font-size: 7px;
       letter-spacing: 0.08em;
     }
     .product-art .garment-art {
@@ -1792,13 +1747,13 @@
       margin: 12px 0 4px;
     }
     .product-title-row h3 {
-      font-size: 11px;
+      font-size: 13px;
     }
     .product-price {
-      font-size: 10px;
+      font-size: 12px;
     }
     .product-colors {
-      font-size: 8px;
+      font-size: 9px;
       gap: 4px;
       flex-wrap: wrap;
     }
@@ -1810,7 +1765,7 @@
       margin-left: 2px;
     }
     .catalog-note {
-      font-size: 9px;
+      font-size: 11px;
       line-height: 1.8;
       padding-top: 26px;
     }
@@ -1828,7 +1783,7 @@
       margin: 20px 0 90px;
     }
     .story-copy .eyebrow {
-      font-size: 9px;
+      font-size: 11px;
     }
     .story-art {
       right: -8%;
@@ -1838,7 +1793,7 @@
       font-size: 45px;
     }
     .brand-note > p:not(.eyebrow) {
-      font-size: 12px;
+      font-size: 14px;
     }
     .site-footer {
       padding: 35px 25px 20px;
@@ -1855,18 +1810,18 @@
       font-size: 33px;
     }
     .footer-column {
-      font-size: 11px;
+      font-size: 13px;
       gap: 9px;
     }
     .footer-column .eyebrow {
-      font-size: 9px;
+      font-size: 11px;
     }
     .footer-column a {
       min-height: 35px;
     }
     .footer-bottom {
       flex-wrap: wrap;
-      font-size: 8px;
+      font-size: 9px;
       gap: 10px;
     }
     .footer-bottom > span:nth-child(2) {
@@ -1884,33 +1839,10 @@
       margin: 15px 0;
     }
     .collection-header > p:last-child {
-      font-size: 12px;
+      font-size: 14px;
     }
     .catalog-section {
       padding: 16px 20px 40px;
-    }
-    .catalog-departments {
-      gap: 30px;
-      padding-bottom: 15px;
-    }
-    .catalog-toolbar {
-      flex-direction: column;
-      align-items: stretch;
-      padding-top: 20px;
-      gap: 10px;
-    }
-    .category-tabs {
-      gap: 2px;
-    }
-    .category-tabs button {
-      padding: 8px 11px;
-      font-size: 10px;
-    }
-    .sort-label {
-      align-self: flex-end;
-    }
-    .sort-label select {
-      font-size: 11px;
     }
     .catalog-search-row {
       padding: 5px 0 24px;
@@ -1931,7 +1863,7 @@
     }
     .breadcrumbs {
       padding: 20px;
-      font-size: 9px;
+      font-size: 11px;
       gap: 7px;
     }
     .product-detail {
@@ -1954,10 +1886,10 @@
       padding-top: 10px;
     }
     .gallery-caption p {
-      font-size: 10px;
+      font-size: 12px;
     }
     .gallery-preview-note {
-      font-size: 9px;
+      font-size: 11px;
     }
     .gallery-lightbox {
       width: 100vw;
@@ -1978,7 +1910,7 @@
       gap: 14px;
     }
     .lightbox-footer p {
-      font-size: 10px;
+      font-size: 12px;
     }
     .lightbox-footer p span {
       display: block;
@@ -2038,7 +1970,7 @@
       margin-top: -5px;
     }
     .bag-product-name {
-      font-size: 12px;
+      font-size: 14px;
     }
     .quantity-row {
       gap: 14px;
@@ -2051,7 +1983,7 @@
       min-height: 44px;
     }
     .bag-note {
-      font-size: 10px;
+      font-size: 12px;
     }
     .order-summary {
       padding: 25px;
@@ -2066,7 +1998,7 @@
       font-size: 33px;
     }
     .empty-state p:not(.eyebrow) {
-      font-size: 12px;
+      font-size: 14px;
     }
     .information-page {
       padding: 45px 25px 65px;
@@ -2075,40 +2007,14 @@
       font-size: 41px;
     }
     .information-page > p:not(.eyebrow) {
-      font-size: 13px;
+      font-size: 15px;
     }
     .info-actions {
       gap: 20px;
     }
     .title-count {
-      font-size: 12px;
+      font-size: 14px;
       margin-left: 9px;
-    }
-  }
-  @media (max-width: 399px) {
-    .site-header {
-      column-gap: 6px;
-      padding-inline: 12px;
-    }
-    .header-actions {
-      gap: 4px;
-    }
-    .logo-crop {
-      width: 84px;
-      height: 42px;
-    }
-    .logo-crop img {
-      width: 118px;
-      height: 118px;
-      left: -17px;
-      top: -38px;
-    }
-    .search-link {
-      min-width: 36px;
-    }
-    .bag-link {
-      min-width: 47px;
-      gap: 5px;
     }
   }
   @media (max-width: 359px) {
@@ -2127,7 +2033,7 @@
       padding: 12px;
     }
     .hero-men {
-      font-size: 10px;
+      font-size: 12px;
     }
     .hero-scene {
       height: 320px;
@@ -2135,7 +2041,7 @@
     .hero-bottom {
       left: 20px;
       right: 20px;
-      font-size: 6px;
+      font-size: 7px;
     }
     .intro-strip {
       padding-left: 20px;
@@ -2146,9 +2052,6 @@
     }
     .section-heading {
       flex-wrap: wrap;
-    }
-    .category-tabs button {
-      padding: 8px 9px;
     }
     .product-info h1 {
       font-size: 32px;
@@ -2167,5 +2070,154 @@
       transition: none !important;
       animation: none !important;
     }
+  }
+}
+
+@layer components {
+  .mobile-menu-toggle, .mobile-catalog-toolbar { display: none; }
+  .mobile-navigation, .mobile-catalog-filters {
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 0;
+    overscroll-behavior: contain;
+  }
+  .mobile-navigation::backdrop, .mobile-catalog-filters::backdrop { background: rgb(46 42 35 / .36); }
+  body:has(.mobile-navigation[open], .mobile-catalog-filters[open]) { overflow: hidden; }
+  .mobile-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .mobile-panel-heading h2 { font-size: 28px; }
+  .mobile-panel-close { width: 44px; min-height: 44px; padding: 0; border: 0; font-size: 26px; line-height: 1; }
+  .product-purchase { margin-top: 19px; }
+  .product-quantity-label { display: inline-block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
+  .product-purchase-row { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+  .product-purchase-row .add-button { margin: 0; flex: 1 1 180px; width: auto; gap: 12px; padding-inline: 16px; }
+  .product-purchase-row .add-button svg { flex: 0 0 auto; }
+  .product-quantity { border-color: var(--control-border); }
+  .product-quantity button { width: 44px; min-height: 44px; font-size: 17px; }
+  .product-quantity input { width: 43px; padding: 0; text-align: center; font-size: 16px; border: 0; }
+  .product-quantity input[aria-invalid] { color: #813d2e; }
+  .product-quantity-help { font-size: 13px; color: var(--muted); margin-top: 7px; }
+}
+
+@layer responsive {
+  @media (max-width: 800px) {
+    .site-header {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      min-height: 64px;
+      padding: 4px clamp(8px, 3vw, 20px);
+      gap: 4px;
+    }
+    .site-header .main-nav, .header-actions > .search-link, .header-actions > .currency-picker { display: none; }
+    .mobile-menu-toggle {
+      grid-column: 1;
+      grid-row: 1;
+      display: grid;
+      place-items: center;
+      justify-self: start;
+      width: 44px;
+      min-height: 44px;
+      padding: 0;
+      border: 0;
+    }
+    .site-header .logo { grid-column: 2; grid-row: 1; justify-self: center; padding: 4px 0; }
+    .logo-crop { width: 96px; height: 47px; }
+    .logo-crop img { width: 134px; height: 134px; left: -19px; top: -43px; }
+    .header-actions { grid-column: 3; grid-row: 1; gap: 0; justify-self: end; }
+    .header-actions .bag-link, .header-actions .account-link { position: relative; min-width: 44px; }
+    .header-actions .bag-count {
+      position: absolute;
+      top: 1px;
+      right: 0;
+      width: auto;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 3px;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .mobile-navigation {
+      position: fixed;
+      inset: 0 auto 0 0;
+      margin: 0;
+      width: min(86vw, 340px);
+      height: 100%;
+      height: 100dvh;
+      max-height: none;
+      overflow: auto;
+      border: 0;
+      border-right: 1px solid var(--line);
+    }
+    .mobile-navigation-inner { padding: 15px 20px 25px; }
+    .mobile-nav-links { display: grid; margin: 12px 0 17px; }
+    .mobile-nav-links a {
+      display: flex;
+      align-items: center;
+      min-height: 50px;
+      padding-inline: 6px;
+      border-bottom: 1px solid var(--line);
+      font-size: 16px;
+    }
+    .mobile-nav-links a[aria-current="page"] { color: var(--action-hover); font-weight: 600; }
+    .mobile-menu-search, .mobile-menu-currency { display: flex; align-items: center; min-height: 44px; gap: 12px; }
+    .mobile-menu-currency { justify-content: space-between; padding-top: 9px; border-top: 1px solid var(--line); font-size: 14px; }
+    .mobile-menu-currency select { font-size: 16px; }
+    .catalog-section .catalog-departments, .catalog-section .catalog-toolbar { display: none; }
+    .mobile-catalog-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      border-block: 1px solid var(--line);
+    }
+    .mobile-sort { display: block; min-width: 0; border-inline-end: 1px solid var(--line); }
+    .mobile-sort select {
+      width: 100%;
+      min-width: 0;
+      min-height: 46px;
+      border: 0;
+      background: var(--paper);
+      padding: 6px 5px;
+      font-size: 16px;
+    }
+    .mobile-filter-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 46px;
+      padding: 4px 6px;
+      border: 0;
+      font-size: 14px;
+    }
+    .mobile-filter-count {
+      display: inline-grid;
+      place-items: center;
+      min-width: 19px;
+      height: 19px;
+      background: var(--surface);
+      border-radius: 12px;
+      font-size: 11px;
+    }
+    .mobile-catalog-filters {
+      position: fixed;
+      inset: auto 0 0;
+      margin: 0 auto;
+      width: min(100%, 480px);
+      max-width: 100%;
+      max-height: min(85dvh, 500px);
+      border-radius: 12px 12px 0 0;
+      overflow: auto;
+    }
+    .mobile-filter-inner { padding: 15px 20px calc(16px + env(safe-area-inset-bottom, 0px)); }
+    .mobile-filter-inner label { display: grid; gap: 6px; margin-top: 14px; font-size: 14px; font-weight: 500; }
+    .mobile-filter-inner select { width: 100%; padding: 8px 10px; font-size: 16px; }
+    .mobile-filter-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .mobile-filter-actions .text-button { margin: 0; }
+    .mobile-filter-actions .button { min-height: 44px; padding: 9px 12px; }
+    .catalog-section { padding-top: 0; }
+    .collection-header { padding: 27px 16px 28px; }
+    .collection-header h1 { margin: 8px 0 9px; }
+    .catalog-search-row { gap: 3px 10px; padding-bottom: 14px; }
+    .arrival-preview { margin: 8px 0; }
+    .product-purchase-row .add-button { flex-basis: 148px; }
   }
 }

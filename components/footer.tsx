@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Arrow } from "./icons";
+import { storefrontCollections } from "../lib/storefront-navigation";
 import { useDisplayCurrency } from "./display-currency-provider";
 export function Footer({ ordersOpen }: { ordersOpen: boolean }) {
   const { currency } = useDisplayCurrency();
@@ -17,18 +18,9 @@ export function Footer({ ordersOpen }: { ordersOpen: boolean }) {
         </div>
         <div className="footer-column">
           <p className="eyebrow">THE COLLECTION</p>
-          <Link href="/new-arrivals">
-            New Arrivals <Arrow />
-          </Link>
-          <Link href="/women">
-            Women <Arrow />
-          </Link>
-          <Link href="/men">
-            Men <Arrow />
-          </Link>
-          <Link href="/shop">
-            Shop All <Arrow />
-          </Link>
+          {storefrontCollections.map(({ label, href }) => (
+            <Link href={href} key={href}>{label} <Arrow /></Link>
+          ))}
         </div>
         <div className="footer-column">
           <p className="eyebrow">A LITTLE MORE</p>

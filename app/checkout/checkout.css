@@ -18,7 +18,7 @@
   align-items: center;
   gap: 10px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .checkout-steps a {
@@ -39,13 +39,13 @@
   padding: 13px 16px;
   border-left: 3px solid var(--action);
   background: var(--surface-soft);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .checkout-preview-notice p,
 .checkout-subtle {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .checkout-layout {
@@ -97,13 +97,13 @@
 
 .checkout-field label,
 .checkout-checkbox {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
 }
 
 .checkout-field label span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 400;
 }
 
@@ -127,7 +127,7 @@
 .checkout-country {
   margin-top: 12px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .checkout-checkbox {
@@ -196,7 +196,7 @@
   gap: 12px;
   padding: 14px 0;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .checkout-thumbnail {
@@ -220,13 +220,13 @@
 
 .checkout-item-amount {
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .checkout-totals {
   margin: 15px 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .checkout-totals div {
@@ -268,7 +268,7 @@
 .checkout-summary-notice {
   background: var(--surface-soft);
   padding: 12px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .checkout-details-review {

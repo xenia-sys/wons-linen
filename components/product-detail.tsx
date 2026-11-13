@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Product } from "../lib/types";
-import { MAX_PER_VARIANT, unitPrice } from "../lib/commerce";
+import { remainingVariantQuantity, unitPrice } from "../lib/commerce";
 import { ProductPrice } from "./product-price";
 import { useBag } from "./cart-provider";
 import { ProductGallery } from "./product-gallery";
@@ -13,7 +13,9 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
   ];
   const [color, setColor] = useState(colors[0][0]);
   const [size, setSize] = useState("");
-  const [added, setAdded] = useState(false);
+  const [quantityInput, setQuantityInput] = useState("1");
+  const [added, setAdded] = useState(0);
+  const [addError, setAddError] = useState(false);
   const { lines, add, ready, storageAvailable } = useBag();
   const variant = product.variants.find(
     (v) => v.color === color && v.size === size,
@@ -26,10 +28,17 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
   const sizes = [...new Set(product.variants.map((v) => v.size))];
   const inBag =
     lines.find((line) => line.variantId === variant?.id)?.quantity ?? 0;
-  const atLimit = variant
-    ? inBag >= Math.min(MAX_PER_VARIANT, variant.available_quantity)
-    : false;
-  const canAdd = ready && variant && variant.available_quantity > 0 && !atLimit;
+  const maxQuantity = variant ? remainingVariantQuantity(variant.available_quantity, inBag) : 0;
+  const quantity = /^\d+$/.test(quantityInput) ? Number(quantityInput) : 0;
+  const quantityEnabled = ready && maxQuantity > 0;
+  const validQuantity = Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= maxQuantity;
+  const atLimit = variant && variant.available_quantity > 0 && maxQuantity === 0;
+  const canAdd = quantityEnabled && validQuantity;
+  function selectQuantity(value: string) {
+    setQuantityInput(value);
+    setAdded(0);
+    setAddError(false);
+  }
   return (
     <>
       <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -74,7 +83,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
                   aria-pressed={c === color}
                   onClick={() => {
                     setColor(c);
-                    setAdded(false);
+                    selectQuantity("1");
                     if (
                       !product.variants.some(
                         (v) =>
@@ -112,7 +121,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
                     aria-label={`${s}${available ? "" : ", unavailable"}`}
                     onClick={() => {
                       setSize(s);
-                      setAdded(false);
+                      selectQuantity("1");
                     }}
                   >
                     {s}
@@ -131,33 +140,43 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
               do not use the preview sizes as a fitting guide.
             </p>
           </details>
-          <button
-            className="button dark add-button"
-            disabled={!canAdd}
-            onClick={() => {
-              if (variant && canAdd) {
-                add(variant.id);
-                setAdded(true);
-              }
-            }}
-          >
-            {!ready
-              ? "Loading your bag…"
-              : !size
-                ? "Select a size to continue"
-                : atLimit
-                  ? "Preview quantity limit reached"
-                  : variant?.available_quantity === 0
-                    ? "Unavailable"
-                    : canOrder ? "Add to bag" : "Add to preview bag"}
-            <Arrow />
-          </button>
+          <form className="product-purchase" onSubmit={event => {
+            event.preventDefault();
+            if (!variant || !canAdd) return;
+            const addedCount = add(variant.id, quantity);
+            setAdded(addedCount);
+            setAddError(addedCount === 0);
+            if (addedCount > 0) setQuantityInput("1");
+          }}>
+            <label className="product-quantity-label" htmlFor="product-quantity">Quantity</label>
+            <div className="product-purchase-row">
+              <div className="quantity-control product-quantity">
+                <button type="button" aria-label="Decrease quantity" disabled={!quantityEnabled || quantity <= 1}
+                  onClick={() => selectQuantity(String(Math.max(1, Math.min(maxQuantity, quantity - 1))))}>−</button>
+                <input id="product-quantity" type="text" inputMode="numeric" autoComplete="off" maxLength={4} value={quantityInput}
+                  disabled={!quantityEnabled} aria-describedby="product-quantity-help"
+                  aria-invalid={quantityEnabled && !validQuantity ? true : undefined} onChange={event => selectQuantity(event.target.value)} />
+                <button type="button" aria-label="Increase quantity" disabled={!quantityEnabled || quantity >= maxQuantity}
+                  onClick={() => selectQuantity(String(Math.min(maxQuantity, quantity + 1)))}>+</button>
+              </div>
+              <button type="submit" className="button dark add-button" disabled={!canAdd}>
+                {!ready ? "Loading your bag…" : !variant ? "Select a size" : atLimit ? "Quantity limit reached"
+                  : !maxQuantity ? "Unavailable" : canOrder ? "Add to bag" : "Add to preview bag"}
+                <Arrow />
+              </button>
+            </div>
+            <p className="product-quantity-help" id="product-quantity-help">
+              {quantityEnabled && !validQuantity ? `Enter a whole number from 1 to ${maxQuantity}.`
+                : quantityEnabled ? `You can add up to ${maxQuantity} ${maxQuantity === 1 ? "item" : "items"}.` : "Choose an available colour and size."}
+            </p>
+          </form>
           <div className="added-status" role="status">
-            {added && (
+            {added > 0 && (
               <>
-                Added to your bag. <Link href="/bag">View bag →</Link>
+                {added} {added === 1 ? "item" : "items"} added to your bag. <Link href="/bag">View bag →</Link>
               </>
             )}
+            {addError && <p>Stock has changed. Refresh the page and try again.</p>}
             {!storageAvailable && (
               <p>
                 Your bag is available for this visit; browser storage is

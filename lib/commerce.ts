@@ -1,6 +1,9 @@
 import type { CartLine, Product, ResolvedLine, Variant } from "./types.ts";
 export const CART_KEY = "wons.bag.v1";
 export const MAX_PER_VARIANT = 10;
+export function remainingVariantQuantity(available: number, inBag: number) {
+  return Math.max(0, Math.min(MAX_PER_VARIANT, available) - inBag);
+}
 export function money(amount: number) {
   return `VND ${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(amount)}`;
 }

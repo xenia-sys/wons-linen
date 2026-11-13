@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { filterProducts } from "../lib/commerce";
 import type { Department, Product } from "../lib/types";
@@ -22,6 +22,14 @@ export function Catalog({
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
+  const filters = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 801px)");
+    const closeOnDesktop = () => { if (desktop.matches) filters.current?.close(); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+  const filterCount = Number(category !== "All") + Number(arrivalDepartment !== "All");
   const categories = [
     ...new Set(
       products
@@ -38,6 +46,15 @@ export function Catalog({
     setQuery("");
     setSort("featured");
   }
+  function selectDepartment(option: Department | "All") {
+    setArrivalDepartment(option);
+    setCategory("All");
+  }
+  const sortOptions = <>
+    <option value="featured">{newArrivals ? "Featured, then newest" : "Featured"}</option>
+    <option value="price-asc">Price: low to high</option>
+    <option value="price-desc">Price: high to low</option>
+  </>;
   return (
     <section className="catalog-section" aria-label="Collection products">
       {newArrivals && preview && <p className="arrival-preview" role="note">Collection preview · Sample prices</p>}
@@ -45,7 +62,7 @@ export function Catalog({
         <div className="catalog-departments" role="group" aria-label="Filter new arrivals by department">
           {(["All", "Women", "Men"] as const).map(option => (
             <button key={option} type="button" aria-pressed={arrivalDepartment === option}
-              onClick={() => { setArrivalDepartment(option); setCategory("All"); }}>
+              onClick={() => selectDepartment(option)}>
               {option === "All" ? "All new arrivals" : option}
             </button>
           ))}
@@ -89,12 +106,52 @@ export function Catalog({
         <label className="sort-label">
           Sort by
           <select value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value="featured">{newArrivals ? "Featured, then newest" : "Featured"}</option>
-            <option value="price-asc">Price: low to high</option>
-            <option value="price-desc">Price: high to low</option>
+            {sortOptions}
           </select>
         </label>
       </div>
+      <div className="mobile-catalog-toolbar">
+        <label className="mobile-sort">
+          <span className="sr-only">Sort by</span>
+          <select value={sort} onChange={event => setSort(event.target.value)}>{sortOptions}</select>
+        </label>
+        <button type="button" className="mobile-filter-toggle" aria-haspopup="dialog" aria-controls="mobile-catalog-filters"
+          onClick={() => filters.current?.showModal()}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" /><path d="M8 3v6m8 0v6m-6 0v6" />
+          </svg>
+          Filter{filterCount > 0 && <span className="mobile-filter-count">{filterCount}</span>}
+        </button>
+      </div>
+      <dialog className="mobile-catalog-filters" id="mobile-catalog-filters" ref={filters} aria-labelledby="mobile-filter-title"
+        onClick={event => { if (event.target === event.currentTarget) filters.current?.close(); }}>
+        <div className="mobile-filter-inner">
+          <div className="mobile-panel-heading">
+            <h2 id="mobile-filter-title">Filter styles</h2>
+            <button type="button" className="mobile-panel-close" aria-label="Close filters" onClick={() => filters.current?.close()}>×</button>
+          </div>
+          {newArrivals && (
+            <label>Department
+              <select value={arrivalDepartment} onChange={event => selectDepartment(event.target.value as Department | "All")}>
+                <option value="All">All new arrivals</option>
+                <option value="Women">Women</option>
+                <option value="Men">Men</option>
+              </select>
+            </label>
+          )}
+          <label>Category
+            <select value={category} onChange={event => setCategory(event.target.value)}>
+              {["All", ...categories].map(value => <option value={value} key={value}>{value === "All" ? "All categories" : value}</option>)}
+            </select>
+          </label>
+          <div className="mobile-filter-actions">
+            <button type="button" className="text-button" disabled={!filterCount} onClick={() => { setArrivalDepartment("All"); setCategory("All"); }}>Reset filters</button>
+            <button type="button" className="button dark" onClick={() => filters.current?.close()}>
+              Show {filtered.length} {filtered.length === 1 ? "style" : "styles"}
+            </button>
+          </div>
+        </div>
+      </dialog>
       <div className="catalog-search-row">
         <label className="search-field" htmlFor="search">
           <SearchIcon />

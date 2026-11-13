@@ -52,11 +52,11 @@ export function StorefrontShell({
   return (
     <DisplayCurrencyProvider>
       <CartProvider products={products}>
-        <Header ordersOpen={ordersOpen} />
-        <main id="main" tabIndex={-1}>
-          {children}
-        </main>
-        <Footer ordersOpen={ordersOpen} />
+        <div className="storefront">
+          <Header ordersOpen={ordersOpen} />
+          <main id="main" tabIndex={-1}>{children}</main>
+          <Footer ordersOpen={ordersOpen} />
+        </div>
       </CartProvider>
     </DisplayCurrencyProvider>
   );

@@ -6,6 +6,7 @@ import {
   setQuantity,
   resolveCart,
   subtotal,
+  remainingVariantQuantity,
   filterProducts,
 } from "../lib/commerce.ts";
 import type { Product } from "../lib/types.ts";
@@ -101,6 +102,16 @@ test("quantities cannot exceed variant availability or per-variant limit", () =>
 test("negative, fractional and non-finite add quantities are rejected", () => {
   for (const quantity of [-1, 0, 1.5, NaN, Infinity])
     assert.deepEqual(addToCart([], products, "w-s", quantity), []);
+});
+test("adding a selected quantity counts existing bag items against stock and the SKU limit", () => {
+  const cart = addToCart([], products, "w-s", 1);
+  const remaining = remainingVariantQuantity(3, cart[0].quantity);
+  assert.equal(remaining, 2);
+  const filled = addToCart(cart, products, "w-s", remaining);
+  assert.deepEqual(filled, [{ variantId: "w-s", quantity: 3 }]);
+  assert.equal(remainingVariantQuantity(3, filled[0].quantity), 0);
+  assert.equal(remainingVariantQuantity(25, 7), 3);
+  assert.equal(remainingVariantQuantity(1, 3), 0);
 });
 test("quantity zero removes, invalid updates preserve, valid updates recalculate", () => {
   const cart = [{ variantId: "w-s", quantity: 2 }];

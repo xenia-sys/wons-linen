@@ -71,7 +71,7 @@
   .account-form label {
     display: block;
     min-width: 0;
-    font-size: 13px;
+    font-size: 15px;
   }
   .account-form input {
     display: block;
@@ -92,7 +92,7 @@
     opacity: .6;
   }
   .account-small {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--muted);
   }
   .account-access > .account-small,
@@ -114,7 +114,7 @@
   .account-error {
     padding: 10px 12px;
     margin-top: 12px;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.5;
   }
   .account-notice {
@@ -136,7 +136,7 @@
   .account-nav {
     padding: 13px 0;
     border-block: 1px solid var(--line);
-    font-size: 13px;
+    font-size: 15px;
   }
   .account-panel,
   .account-address {
@@ -177,7 +177,7 @@
     gap: 8px 16px;
     padding-block: 14px;
     border-bottom: 1px solid var(--line);
-    font-size: 13px;
+    font-size: 15px;
   }
 }
 @layer responsive {
