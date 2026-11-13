@@ -5,6 +5,22 @@
   background: var(--paper);
   min-height: 100dvh;
 }
+.admin-language-frame { position: relative; }
+.admin-language-frame[lang="vi"] .admin-root { --font-sans: system-ui; --font-serif: Georgia; }
+.admin-access-language { position: absolute; z-index: 2; inset: 16px 4% auto auto; }
+.admin-root .admin-language-switch { display: inline-flex; align-items: center; gap: 7px; margin: 0; min-width: 0; position: relative; }
+.admin-language-switch svg { position: absolute; left: 10px; pointer-events: none; }
+.admin-root .admin-language-switch select { width: auto; min-width: 115px; min-height: 40px; padding: 7px 10px 7px 32px; font-size: 13px; cursor: pointer; }
+.admin-topbar-tools { display: flex; align-items: center; gap: 12px; margin-left: auto; color: var(--muted); }
+.admin-topbar-tools .admin-language-switch { color: var(--ink); }
+@media (max-width: 700px) {
+  .admin-topbar-tools > span { display: none; }
+  .admin-workspace .admin-topbar-tools {
+    position: absolute;
+    z-index: 2;
+    inset: 16px 20px auto auto;
+  }
+}
 .admin-root h1 {
   font-size: clamp(30px, 3vw, 44px);
   margin: 8px 0 12px;
@@ -226,6 +242,7 @@
 }
 .admin-topbar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
@@ -713,10 +730,8 @@
     display: none;
   }
   .admin-role {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    margin: 0;
+    position: static;
+    margin: 8px 0 0;
   }
   .admin-sidebar nav {
     flex-direction: row;

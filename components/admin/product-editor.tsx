@@ -1,4 +1,5 @@
 "use client";
+import { useAdminLanguage } from "./admin-language";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PhotoFraming } from "./photo-framing";
@@ -75,6 +76,7 @@ function fromRecord(p: ProductRecord): ProductDraft {
   };
 }
 export function ProductEditor({ id }: { id?: string }) {
+  const { t, errorText } = useAdminLanguage();
   const router = useRouter();
   const [draft, setDraft] = useState<ProductDraft>(empty),
     [loading, setLoading] = useState(!!id),
@@ -86,7 +88,7 @@ export function ProductEditor({ id }: { id?: string }) {
   const [discountPercent, setDiscountPercent] = useState<number | null>(null);
   const [quote, setQuote] = useState<ReturnType<typeof parseUsdQuote>>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
-  const [photoProgress, setPhotoProgress] = useState("");
+  const [photoProgress, setPhotoProgress] = useState<{ current: number; total: number; file: string } | null>(null);
   const [coverNotice, setCoverNotice] = useState("");
   const [photoResult, setPhotoResult] = useState<Awaited<ReturnType<typeof uploadProductPhotoBatch>> | null>(null);
   const uploadingPhotos = useRef(false);
@@ -195,7 +197,7 @@ export function ProductEditor({ id }: { id?: string }) {
     setPhotoResult(null);
     try {
       setPhotoResult(await uploadProductPhotoBatch(files, draft.images.length, {
-        progress: (file, index) => setPhotoProgress(`Uploading ${index + 1} of ${files.length}: ${file.name}`),
+        progress: (file, index) => setPhotoProgress({ current: index + 1, total: files.length, file: file.name }),
         stopOnError: error => error instanceof AdminRequestError && (error.status === 401 || error.status === 403),
         upload: async (file) => {
           const optimized = await prepareImage(file, { productPhoto: true });
@@ -218,15 +220,15 @@ export function ProductEditor({ id }: { id?: string }) {
     } finally {
       uploadingPhotos.current = false;
       setUploading(false);
-      setPhotoProgress("");
+      setPhotoProgress(null);
     }
   }
-  if (loading) return <p role="status">Loading product…</p>;
+  if (loading) return <p role="status">{t("Loading product…")}</p>;
   if (id && !draft.id)
     return (
       <div className="admin-panel">
-        <p role="alert">{error || "Product not found."}</p>
-        <button onClick={load}>Try again</button>
+        <p role="alert">{error ? errorText(error) : t("Product not found.")}</p>
+        <button onClick={load}>{t("Try again")}</button>
       </div>
     );
   const colors = [
@@ -236,12 +238,10 @@ export function ProductEditor({ id }: { id?: string }) {
     <form onSubmit={save}>
       <div className="admin-page-heading">
         <div>
-          <Link href="/admin/products" className="admin-back">
-            ← All products
-          </Link>
-          <h1>{id ? draft.name || "Edit product" : "New product"}</h1>
+          <Link href="/admin/products" className="admin-back"> {t("← All products")} </Link>
+          <h1>{id ? draft.name || t("Edit product") : t("New product")}</h1>
           <p>
-            {dirty ? "Unsaved changes" : "Keep every product detail in place."}
+            {dirty ? t("Unsaved changes") : t("Keep every product detail in place.")}
           </p>
         </div>
         <div className="admin-actions">
@@ -250,9 +250,7 @@ export function ProductEditor({ id }: { id?: string }) {
               target="_blank"
               href={`/products/${draft.slug}`}
               className="admin-text-button"
-            >
-              View storefront ↗
-            </Link>
+            > {t("View storefront ↗")} </Link>
           )}
         </div>
       </div>
@@ -260,30 +258,24 @@ export function ProductEditor({ id }: { id?: string }) {
         <div className="admin-editor-layout">
           <div>
             <section className="admin-panel">
-              <h2>Product details</h2>
-              <label>
-                Product name
-                <input
+              <h2>{t("Product details")}</h2>
+              <label> {t("Product name")} <input
                   required
                   maxLength={160}
                   value={draft.name}
                   onChange={(e) => patch({ name: e.target.value })}
                 />
               </label>
-              <label>
-                Product URL
-                <input
+              <label> {t("Product URL")} <input
                   required
                   pattern="[a-z0-9]+(-[a-z0-9]+)*"
                   value={draft.slug}
                   placeholder="relaxed-linen-shirt"
                   onChange={(e) => patch({ slug: e.target.value })}
                 />
-                <small>Use lowercase words separated by hyphens.</small>
+                <small>{t("Use lowercase words separated by hyphens.")}</small>
               </label>
-              <label>
-                Description
-                <textarea
+              <label> {t("Description")} <textarea
                   rows={6}
                   maxLength={10000}
                   value={draft.description}
@@ -291,9 +283,7 @@ export function ProductEditor({ id }: { id?: string }) {
                 />
               </label>
               <div className="admin-form-grid">
-                <label>
-                  Department
-                  <select
+                <label> {t("Department")} <select
                     value={draft.new_arrival ? "New Arrivals" : draft.department}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -302,14 +292,12 @@ export function ProductEditor({ id }: { id?: string }) {
                         patch({ department: value, new_arrival: draft.new_arrival === true ? false : draft.new_arrival });
                     }}
                   >
-                    <option>Women</option>
-                    <option>Men</option>
-                    <option>New Arrivals</option>
+                    <option value="Women">{t("Women")}</option>
+                    <option value="Men">{t("Men")}</option>
+                    <option value="New Arrivals">{t("New Arrivals")}</option>
                   </select>
                 </label>
-                <label>
-                  Category
-                  <select
+                <label> {t("Category")} <select
                     value={draft.category}
                     onChange={(e) =>
                       patch({
@@ -318,35 +306,33 @@ export function ProductEditor({ id }: { id?: string }) {
                     }
                   >
                     {["Shirts", "Dresses", "Trousers", "Sets"].map((c) => (
-                      <option key={c}>{c}</option>
+                      <option key={c} value={c}>{t(c)}</option>
                     ))}
                   </select>
                 </label>
               </div>
-              {draft.new_arrival && <label>
-                Main department
-                <select value={draft.department} onChange={(e) => {
+              {draft.new_arrival && <label> {t("Main department")} <select value={draft.department} onChange={(e) => {
                   if (e.target.value === "Women" || e.target.value === "Men")
                     patch({ department: e.target.value });
                 }}>
-                  <option>Women</option>
-                  <option>Men</option>
+                  <option value="Women">{t("Women")}</option>
+                  <option value="Men">{t("Men")}</option>
                 </select>
-                <small>The product stays in its main department and is featured in New Arrivals when published.</small>
+                <small>{t("The product stays in its main department and is featured in New Arrivals when published.")}</small>
               </label>}
             </section>
             <section className="admin-panel">
               <div className="admin-panel-heading">
                 <div>
-                  <h2>Product photography</h2>
+                  <h2>{t("Product photography")}</h2>
                   <p>
-                    {draft.images.length}/{PRODUCT_IMAGE_LIMIT} images · Set a cover for the storefront cards.
+                    {t("{count}/{limit} images · Set a cover for the storefront cards.", { count: draft.images.length, limit: PRODUCT_IMAGE_LIMIT })}
                   </p>
                 </div>
                 <label
                   className={`admin-upload-label${!id || uploading || busy || galleryFull ? " disabled" : ""}`}
                 >
-                  {uploading ? "Uploading…" : galleryFull ? "Gallery full" : "+ Upload images"}
+                  {uploading ? t("Uploading…") : galleryFull ? t("Gallery full") : t("+ Upload images")}
                   <input
                     type="file"
                     accept={PRODUCT_IMAGE_ACCEPT}
@@ -360,29 +346,24 @@ export function ProductEditor({ id }: { id?: string }) {
                   />
                 </label>
               </div>
-              {photoProgress && <p className="admin-photo-feedback" role="status">{photoProgress}</p>}
-              {coverNotice && <p className="admin-success admin-photo-feedback" role="status">{coverNotice}</p>}
+              {photoProgress && <p className="admin-photo-feedback" role="status">{t("Uploading {current} of {total}: {file}", photoProgress)}</p>}
+              {coverNotice && <p className="admin-success admin-photo-feedback" role="status">{t(coverNotice)}</p>}
               {photoResult && <div className="admin-photo-feedback">
                 {photoResult.added > 0 && <p className="admin-success" role="status">
-                  {photoResult.added} {photoResult.added === 1 ? "image" : "images"} added. Select <strong>Save product</strong> to publish gallery changes.
+                  {t(photoResult.added === 1 ? "{count} image added. Select {save} to publish gallery changes." : "{count} images added. Select {save} to publish gallery changes.", { count: photoResult.added, save: t("Save product") })}
                 </p>}
                 {photoResult.failed.length > 0 && <div className="admin-error" role="alert">
-                  <p>{photoResult.failed.length === 1 ? "One file could not be uploaded:" : `${photoResult.failed.length} files could not be uploaded:`}</p>
-                  <ul>{photoResult.failed.map((file, i) => <li key={i}><strong>{file.name}</strong>: {file.message}</li>)}</ul>
-                  {photoResult.interrupted > 0 && <p>Upload paused. Select the remaining files after checking your store access.</p>}
+                  <p>{photoResult.failed.length === 1 ? t("One file could not be uploaded:") : t("{count} files could not be uploaded:", { count: photoResult.failed.length })}</p>
+                  <ul>{photoResult.failed.map((file, i) => <li key={i}><strong>{file.name}</strong>: {errorText(file.message)}</li>)}</ul>
+                  {photoResult.interrupted > 0 && <p>{t("Upload paused. Select the remaining files after checking your store access.")}</p>}
                 </div>}
-                {photoResult.overLimit > 0 && <p role="status">The gallery is full. {photoResult.overLimit} {photoResult.overLimit === 1 ? "file was" : "files were"} skipped.</p>}
+                {photoResult.overLimit > 0 && <p role="status">{t(photoResult.overLimit === 1 ? "The gallery is full. {count} file was skipped." : "The gallery is full. {count} files were skipped.", { count: photoResult.overLimit })}</p>}
               </div>}
               {!id && (
-                <p className="admin-help">
-                  Save this product as Hidden first, then upload its images.
-                </p>
+                <p className="admin-help"> {t("Save this product as Hidden first, then upload its images.")} </p>
               )}
               {id && !draft.images.length && (
-                <p className="admin-empty">
-                  Add front, back, styling and detail images for the product
-                  gallery.
-                </p>
+                <p className="admin-empty"> {t("Add front, back, styling and detail images for the product gallery.")} </p>
               )}
               <div className="admin-image-grid">
                 {draft.images.map((img, i) => (
@@ -396,28 +377,24 @@ export function ProductEditor({ id }: { id?: string }) {
                       onChange={framing => image(i, { framing })}
                     />
                     <span className="admin-image-position">
-                      {i === 0 ? "Cover" : `Image ${i + 1}`}
+                      {i === 0 ? t("Cover") : t("Image {index}", { index: i + 1 })}
                     </span>
-                    <label>
-                      Image description
-                      <input
+                    <label> {t("Image description")} <input
                         required
                         maxLength={300}
                         value={img.alt}
                         onChange={(e) => image(i, { alt: e.target.value })}
                       />
                     </label>
-                    <label>
-                      Colour
-                      <select
+                    <label> {t("Colour")} <select
                         value={img.color ?? ""}
                         onChange={(e) =>
                           image(i, { color: e.target.value || null })
                         }
                       >
-                        <option value="">All colours</option>
+                        <option value="">{t("All colours")}</option>
                         {colors.map((c) => (
-                          <option key={c}>{c}</option>
+                          <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
                     </label>
@@ -425,11 +402,11 @@ export function ProductEditor({ id }: { id?: string }) {
                       {i > 0 && <button type="button" disabled={busy || uploading} onClick={() => {
                         patch({ images: [img, ...draft.images.filter((_, index) => index !== i)] });
                         setCoverNotice("Cover selected. Save product to publish it.");
-                      }}>Set as cover</button>}
+                      }}>{t("Set as cover")}</button>}
                       <button
                         type="button"
                         disabled={i === 0}
-                        aria-label={`Move image ${i + 1} earlier`}
+                        aria-label={t("Move image {index} earlier", { index: i + 1 })}
                         onClick={() => reorder(i, -1)}
                       >
                         ←
@@ -437,7 +414,7 @@ export function ProductEditor({ id }: { id?: string }) {
                       <button
                         type="button"
                         disabled={i === draft.images.length - 1}
-                        aria-label={`Move image ${i + 1} later`}
+                        aria-label={t("Move image {index} later", { index: i + 1 })}
                         onClick={() => reorder(i, 1)}
                       >
                         →
@@ -449,26 +426,19 @@ export function ProductEditor({ id }: { id?: string }) {
                             images: draft.images.filter((_, n) => n !== i),
                           })
                         }
-                      >
-                        Remove
-                      </button>
+                      > {t("Remove")} </button>
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="admin-help">
-                Select JPG, PNG, WebP or AVIF photos up to 40 MB each. HEIC works in browsers that can open it.
-                Images are resized before upload. Save the
-                product to publish gallery changes, including image framing. Removing a gallery image
-                retains the original file.
-              </p>
+              <p className="admin-help"> {t("Select JPG, PNG, WebP or AVIF photos up to 40 MB each. HEIC works in browsers that can open it. Images are resized before upload. Save the product to publish gallery changes, including image framing. Removing a gallery image retains the original file.")} </p>
             </section>
             <section className="admin-panel">
               <div className="admin-panel-heading">
                 <div>
-                  <h2>Variants & pricing</h2>
+                  <h2>{t("Variants & pricing")}</h2>
                   <p>
-                    Set the base price in VND. USD is a reference conversion. Schedule offers in <Link href="/admin/discount-events" className="underlined-link">Discount events</Link>.
+                    {t("Set the base price in VND. USD is a reference conversion.")} {t("Schedule offers in")} <Link href="/admin/discount-events" className="underlined-link">{t("Discount events")}</Link>.
                   </p>
                 </div>
                 <button
@@ -492,9 +462,7 @@ export function ProductEditor({ id }: { id?: string }) {
                       ],
                     });
                   }}
-                >
-                  + Add variant
-                </button>
+                > {t("+ Add variant")} </button>
               </div>
               <div className="admin-table-scroll">
                 <table className="admin-table admin-variants">
@@ -502,12 +470,12 @@ export function ProductEditor({ id }: { id?: string }) {
                     <tr>
                       {[
                         "SKU",
-                        "Colour",
-                        "Swatch",
-                        "Size",
-                        "Price (VND)",
-                        "Price (USD)",
-                        "Available quantity",
+                        t("Colour"),
+                        t("Swatch"),
+                        t("Size"),
+                        t("Price (VND)"),
+                        t("Price (USD)"),
+                        t("Available quantity"),
                         "",
                       ].map((c, i) => (
                         <th key={i}>{c}</th>
@@ -519,7 +487,7 @@ export function ProductEditor({ id }: { id?: string }) {
                       <tr key={v.id ?? i}>
                         <td>
                           <input
-                            aria-label={`SKU for variant ${i + 1}`}
+                            aria-label={t("SKU for variant {index}", { index: i + 1 })}
                             required
                             value={v.sku}
                             onChange={(e) =>
@@ -529,7 +497,7 @@ export function ProductEditor({ id }: { id?: string }) {
                         </td>
                         <td>
                           <input
-                            aria-label={`Colour for variant ${i + 1}`}
+                            aria-label={t("Colour for variant {index}", { index: i + 1 })}
                             required
                             value={v.color}
                             onChange={(e) =>
@@ -539,7 +507,7 @@ export function ProductEditor({ id }: { id?: string }) {
                         </td>
                         <td>
                           <input
-                            aria-label={`Colour code for variant ${i + 1}`}
+                            aria-label={t("Colour code for variant {index}", { index: i + 1 })}
                             type="color"
                             value={v.color_hex}
                             onChange={(e) =>
@@ -549,7 +517,7 @@ export function ProductEditor({ id }: { id?: string }) {
                         </td>
                         <td>
                           <select
-                            aria-label={`Size for variant ${i + 1}`}
+                            aria-label={t("Size for variant {index}", { index: i + 1 })}
                             value={v.size}
                             onChange={(e) =>
                               variant(i, { size: e.target.value })
@@ -562,7 +530,7 @@ export function ProductEditor({ id }: { id?: string }) {
                         </td>
                         <td>
                           <input
-                            aria-label={`Price in VND for variant ${i + 1}`}
+                            aria-label={t("Price in VND for variant {index}", { index: i + 1 })}
                             type="number"
                             required
                             min={1}
@@ -576,12 +544,12 @@ export function ProductEditor({ id }: { id?: string }) {
                           {discountPercent && v.price_vnd > 0 ? <small className="admin-variant-offer">{money(percentagePrice(v.price_vnd, discountPercent))} (−{discountPercent}%)</small> : null}
                         </td>
                         <td>
-                          <span className="admin-usd-price">{quote && v.price_vnd > 0 ? formatDisplayPrice(v.price_vnd, quote) : quoteLoading ? "Loading…" : !quote ? "Unavailable" : "—"}</span>
+                          <span className="admin-usd-price">{quote && v.price_vnd > 0 ? formatDisplayPrice(v.price_vnd, quote) : quoteLoading ? t("Loading…") : !quote ? t("Unavailable") : "—"}</span>
                           {quote && discountPercent && v.price_vnd > 0 ? <small className="admin-variant-offer">{formatDisplayPrice(percentagePrice(v.price_vnd, discountPercent), quote)}</small> : null}
                         </td>
                         <td>
                           <input
-                            aria-label={`Available quantity for variant ${i + 1}`}
+                            aria-label={t("Available quantity for variant {index}", { index: i + 1 })}
                             type="number"
                             required
                             min={0}
@@ -598,7 +566,7 @@ export function ProductEditor({ id }: { id?: string }) {
                           <button
                             type="button"
                             disabled={draft.variants.length === 1}
-                            aria-label={`Remove variant ${i + 1}`}
+                            aria-label={t("Remove variant {index}", { index: i + 1 })}
                             onClick={() =>
                               patch({
                                 variants: draft.variants.filter(
@@ -619,26 +587,21 @@ export function ProductEditor({ id }: { id?: string }) {
           </div>
           <aside>
             <section className="admin-panel">
-              <h2>Visibility</h2>
-              <label>
-                Website status
-                <select
+              <h2>{t("Visibility")}</h2>
+              <label> {t("Website status")} <select
                   value={draft.status}
                   onChange={(e) =>
                     patch({ status: e.target.value as ProductDraft["status"] })
                   }
                 >
-                  <option value="hidden">Hidden — draft</option>
+                  <option value="hidden">{t("Hidden — draft")}</option>
                   {draft.is_demo && (
-                    <option value="preview">Preview — demo data</option>
+                    <option value="preview">{t("Preview — demo data")}</option>
                   )}
-                  <option value="published">Published</option>
+                  <option value="published">{t("Published")}</option>
                 </select>
               </label>
-              <p className="admin-help">
-                Hidden products are removed from the public catalog and product
-                links. Published products appear on new page loads after saving.
-              </p>
+              <p className="admin-help"> {t("Hidden products are removed from the public catalog and product links. Published products appear on new page loads after saving.")} </p>
               <label className="admin-checkbox">
                 <input
                   type="checkbox"
@@ -652,12 +615,8 @@ export function ProductEditor({ id }: { id?: string }) {
                           : draft.status,
                     })
                   }
-                />
-                Demo product
-              </label>
-              <label>
-                Display order
-                <input
+                /> {t("Demo product")} </label>
+              <label> {t("Display order")} <input
                   type="number"
                   min={0}
                   step={1}
@@ -670,25 +629,22 @@ export function ProductEditor({ id }: { id?: string }) {
               </label>
             </section>
             <section className="admin-panel admin-note">
-              <p className="eyebrow">YOUR ACCESS</p>
-              <p>
-                You can edit content and images, publish or hide products, and
-                update regular and sale prices.
-              </p>
-              <p>Product updates do not open checkout or enable payments.</p>
+              <p className="eyebrow">{t("YOUR ACCESS")}</p>
+              <p> {t("You can edit content and images, publish or hide products, and update regular and sale prices.")} </p>
+              <p>{t("Product updates do not open checkout or enable payments.")}</p>
             </section>
           </aside>
         </div>
       </fieldset>
       <div className="admin-panel admin-product-save">
         <div className="admin-product-save-feedback">
-          {error ? <p className="admin-error" role="alert">{error}</p>
+          {error ? <p className="admin-error" role="alert">{errorText(error)}</p>
             : <p className={notice ? "admin-success" : "admin-help"} role="status">
-              {notice || (dirty ? "Unsaved changes" : "Save your product details when you’re ready.")}
+              {(notice && t(notice)) || (dirty ? t("Unsaved changes") : t("Save your product details when you’re ready."))}
             </p>}
         </div>
         <button type="submit" className="button dark" disabled={busy || uploading}>
-          {busy ? "Saving…" : "Save product"}
+          {busy ? t("Saving…") : t("Save product")}
         </button>
       </div>
     </form>

@@ -1,4 +1,5 @@
 "use client";
+import { useAdminLanguage } from "./admin-language";
 import Image from "next/image";
 import { useId, useRef, useState } from "react";
 import type { KeyboardEvent, PointerEvent } from "react";
@@ -10,6 +11,7 @@ export function PhotoFraming({ src, alt, framing, index, disabled = false, onCha
   src: string; alt: string; framing?: ImageFraming | null; index: number; disabled?: boolean;
   onChange: (frame: ImageFraming | null) => void;
 }) {
+  const { t } = useAdminLanguage();
   const [editing, setEditing] = useState(false);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [failed, setFailed] = useState(false);
@@ -51,35 +53,35 @@ export function PhotoFraming({ src, alt, framing, index, disabled = false, onCha
   }
   return <div className="admin-photo-framing">
     <div className={`admin-photo-frame${canEdit ? " is-adjusting" : ""}`} role="group"
-      aria-label={`Reposition image ${index + 1}`} aria-describedby={editing ? helpId : undefined}
+      aria-label={t("Reposition image {index}", { index: index + 1 })} aria-describedby={editing ? helpId : undefined}
       tabIndex={canEdit ? 0 : -1} onPointerDown={start} onPointerMove={move}
       onPointerUp={event => end(event)} onPointerCancel={event => end(event, true)}
       onLostPointerCapture={() => { drag.current = null; }} onKeyDown={keyboard}>
-      {failed ? <p role="status">Image unavailable. Try reloading this product.</p> : <Image
+      {failed ? <p role="status">{t("Image unavailable. Try reloading this product.")}</p> : <Image
         src={src} alt={alt} fill sizes="(max-width: 700px) 90vw, 35vw"
         draggable={false} style={imageFramingStyle(framing, "contain")}
         onLoad={event => setSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })}
         onError={() => setFailed(true)} />}
-      {canEdit && <span className="admin-framing-hint" aria-hidden="true">Drag to reposition</span>}
+      {canEdit && <span className="admin-framing-hint" aria-hidden="true">{t("Drag to reposition")}</span>}
     </div>
     <div className="admin-framing-actions">
       <button type="button" disabled={disabled || failed || !size.width} aria-expanded={editing} onClick={() => {
         if (!editing && !framing) onChange({ ...defaultFraming });
         setEditing(value => !value);
-      }}>{editing ? "Done adjusting" : "Adjust framing"}</button>
-      {framing && <button type="button" disabled={disabled} onClick={() => { onChange(null); setEditing(false); }}>Show full image</button>}
+      }}>{editing ? t("Done adjusting") : t("Adjust framing")}</button>
+      {framing && <button type="button" disabled={disabled} onClick={() => { onChange(null); setEditing(false); }}>{t("Show full image")}</button>}
     </div>
     {editing && <fieldset className="admin-framing-controls" disabled={disabled || failed}>
-      <legend className="admin-sr-only">Image {index + 1} framing</legend>
-      <p id={helpId} className="admin-help">Drag with a mouse or finger. Arrow keys move the image too. Zoom in for more room to move. The frame matches the website’s 4:5 layout.</p>
-      <label>Zoom <output>{Math.round(frame.zoom * 100)}%</output><input type="range" min="1" max="3" step="0.01" value={frame.zoom}
+      <legend className="admin-sr-only">{t("Image {index} framing", { index: index + 1 })}</legend>
+      <p id={helpId} className="admin-help">{t("Drag with a mouse or finger. Arrow keys move the image too. Zoom in for more room to move. The frame matches the website’s 4:5 layout.")}</p>
+      <label>{t("Zoom")} <output>{Math.round(frame.zoom * 100)}%</output><input type="range" min="1" max="3" step="0.01" value={frame.zoom}
         onChange={event => onChange({ ...frame, zoom: Number(event.target.value) })} /></label>
-      <label>Horizontal position <output>{Math.round(frame.x)}%</output><input type="range" min="0" max="100" step="1" value={frame.x}
+      <label>{t("Horizontal position")} <output>{Math.round(frame.x)}%</output><input type="range" min="0" max="100" step="1" value={frame.x}
         onChange={event => onChange({ ...frame, x: Number(event.target.value) })} /></label>
-      <label>Vertical position <output>{Math.round(frame.y)}%</output><input type="range" min="0" max="100" step="1" value={frame.y}
+      <label>{t("Vertical position")} <output>{Math.round(frame.y)}%</output><input type="range" min="0" max="100" step="1" value={frame.y}
         onChange={event => onChange({ ...frame, y: Number(event.target.value) })} /></label>
-      <button type="button" onClick={() => onChange({ ...defaultFraming })}>Reset to centre</button>
-      <p className="admin-help">Choose Done adjusting, then Save product to apply this framing.</p>
+      <button type="button" onClick={() => onChange({ ...defaultFraming })}>{t("Reset to centre")}</button>
+      <p className="admin-help">{t("Choose Done adjusting, then Save product to apply this framing.")}</p>
     </fieldset>}
   </div>;
 }

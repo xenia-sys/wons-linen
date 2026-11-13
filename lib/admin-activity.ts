@@ -1,5 +1,9 @@
 import { storefrontImageSlots } from "./storefront-images.ts";
 import { VIETNAM_TIME_ZONE } from "./discount-events.ts";
+import type { AdminTranslator } from "./admin-i18n.ts";
+const english: AdminTranslator = (message, values) => values
+  ? message.replace(/\{(\w+)\}/g, (match, key: string) => Object.hasOwn(values, key) ? String(values[key]) : match)
+  : message;
 
 export type ActivityEntry = {
   id: number;
@@ -55,13 +59,13 @@ function field(entry: ActivityEntry, key: string): string {
   const value = entry.after_data?.[key] ?? entry.before_data?.[key];
   return typeof value === "string" ? value : "";
 }
-export function activityTitle(entry: ActivityEntry) {
-  if (entry.entity_type === "discount_events") return field(entry, "name") || "Discount event";
-  if (entry.entity_type === "storefront_images") return storefrontImageSlots.find(slot => slot.id === entry.entity_id)?.label ?? "Homepage cover";
-  if (entry.entity_type === "staff_members") return field(entry, "display_name") || field(entry, "email") || "Team member";
-  if (entry.entity_type === "products") return field(entry, "name") || entry.product?.name || "Product";
-  if (entry.entity_type === "variants") return [entry.product?.name, field(entry, "sku")].filter(Boolean).join(" · ") || "Product variant";
-  return entry.product?.name || field(entry, "alt") || "Product image";
+export function activityTitle(entry: ActivityEntry, t: AdminTranslator = english) {
+  if (entry.entity_type === "discount_events") return field(entry, "name") || t("Discount event");
+  if (entry.entity_type === "storefront_images") return t(storefrontImageSlots.find(slot => slot.id === entry.entity_id)?.label ?? "Homepage cover");
+  if (entry.entity_type === "staff_members") return field(entry, "display_name") || field(entry, "email") || t("Team member");
+  if (entry.entity_type === "products") return field(entry, "name") || entry.product?.name || t("Product");
+  if (entry.entity_type === "variants") return [entry.product?.name, field(entry, "sku")].filter(Boolean).join(" · ") || t("Product variant");
+  return entry.product?.name || field(entry, "alt") || t("Product image");
 }
 export function activityAction(entry: ActivityEntry) {
   if (entry.entity_type === "storefront_images") return entry.action === "DELETE" ? "Default cover restored" : "Cover published";
@@ -97,23 +101,24 @@ export function activityAction(entry: ActivityEntry) {
   }
   return changed.length ? "Product updated" : "Product saved";
 }
-export function activityValue(key: string, value: unknown): string {
-  if (key === "new_arrival") return value === true ? "Featured" : value === false ? "Excluded" : "Automatic";
+export function activityValue(key: string, value: unknown, t: AdminTranslator = english, dateLocale = "en-GB"): string {
+  if (key === "new_arrival") return t(value === true ? "Featured" : value === false ? "Excluded" : "Automatic");
   if (value === null || value === undefined || value === "") return "—";
   if (key === "percent_off") return value + "%";
-  if (key === "product_ids" && Array.isArray(value)) return `${value.length} ${value.length === 1 ? "product" : "products"}`;
+  if (key === "product_ids" && Array.isArray(value)) return t(value.length === 1 ? "{count} product" : "{count} products", { count: value.length });
   if ((key === "starts_at" || key === "ends_at") && typeof value === "string")
-    return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: VIETNAM_TIME_ZONE }).format(new Date(value));
+    return new Intl.DateTimeFormat(dateLocale, { dateStyle: "medium", timeStyle: "short", timeZone: VIETNAM_TIME_ZONE }).format(new Date(value));
   if (key === "framing" && typeof value === "object") {
     const frame = value as { x: number; y: number; zoom: number };
-    return `Position ${frame.x}% / ${frame.y}% · Zoom ${Math.round(frame.zoom * 100)}%`;
+    return t("Position {x}% / {y}% · Zoom {zoom}%", { x: frame.x, y: frame.y, zoom: Math.round(frame.zoom * 100) });
   }
   if ((key === "price_vnd" || key === "sale_price_vnd") && typeof value === "number") {
     return "VND " + new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
   }
-  if (key === "role") return value === "owner" ? "Owner" : value === "marketing_editor" ? "Marketing Editor" : String(value);
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  if (key === "status" && typeof value === "string") return value.charAt(0).toUpperCase() + value.slice(1);
+  if (key === "role") return value === "owner" ? t("Owner") : value === "marketing_editor" ? t("Marketing Editor") : String(value);
+  if (typeof value === "boolean") return t(value ? "Yes" : "No");
+  if (key === "status" && typeof value === "string") return t(value.charAt(0).toUpperCase() + value.slice(1));
+  if ((key === "department" || key === "category") && typeof value === "string") return t(value);
   return String(value);
 }
 export function activityProductId(entry: ActivityEntry): string | null {

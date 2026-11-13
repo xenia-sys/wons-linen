@@ -1,5 +1,6 @@
 "use client";
 
+import { useAdminLanguage } from "./admin-language";
 import { useEffect, useRef } from "react";
 
 type Option = { value: string; label: string };
@@ -7,6 +8,7 @@ type Option = { value: string; label: string };
 export function ActivityFilter({ label, value, options, onChange }: {
   label: string; value: string; options: Option[]; onChange: (value: string) => void;
 }) {
+  const { t } = useAdminLanguage();
   const menu = useRef<HTMLDetailsElement>(null);
   const trigger = useRef<HTMLElement>(null);
   const selected = options.find(option => option.value === value);
@@ -37,15 +39,15 @@ export function ActivityFilter({ label, value, options, onChange }: {
         if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget))
           event.currentTarget.open = false;
       }}>
-        <summary ref={trigger} aria-label={`${label}: ${selected?.label ?? label}`}>
-          <span>{selected?.label ?? label}</span><span aria-hidden="true">⌄</span>
+        <summary ref={trigger} aria-label={`${label}: ${selected ? t(selected.label) : label}`}>
+          <span>{selected ? t(selected.label) : label}</span><span aria-hidden="true">⌄</span>
         </summary>
-        <ul aria-label={`${label} options`}>
+        <ul aria-label={t("{label} options", { label })}>
           {options.map(option => <li key={option.value}>
             <button type="button" aria-pressed={value === option.value} onClick={() => {
               onChange(option.value);
               close();
-            }}>{option.label}</button>
+            }}>{t(option.label)}</button>
           </li>)}
         </ul>
       </details>

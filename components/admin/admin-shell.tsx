@@ -1,4 +1,5 @@
 "use client";
+import { AdminLanguageSwitch, useAdminLanguage } from "./admin-language";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,7 +15,14 @@ export function useStaff() {
   if (!profile) throw Error("Staff session required.");
   return profile;
 }
-export function AdminShell({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
+export function AdminShell(props: { enabled: boolean; children: React.ReactNode }) {
+  const { locale } = useAdminLanguage();
+  return <div lang={locale} className="admin-language-frame"><AdminWorkspace {...props} /></div>;
+}
+
+function AdminWorkspace({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
+  const { t, errorText } = useAdminLanguage();
+  const accessLanguage = <div className="admin-access-language"><AdminLanguageSwitch /></div>;
   const [profile, setProfile] = useState<Profile | null>(null);
   const verifiedProfile = useRef<Profile | null>(null);
   const [checking, setChecking] = useState(enabled);
@@ -130,48 +138,49 @@ export function AdminShell({ enabled, children }: { enabled: boolean; children: 
       setSignOutError("Sign-out could not be completed. Please try again.");
     }
   }
-  if (!enabled) return <div className="admin-root admin-access"><Link href="/" className="admin-wordmark">WONS</Link><h1>Production access only.</h1><p>Use the live WONS website to manage the store.</p><a className="button dark" href="https://wons-linen.vercel.app/admin/login">Open WONS admin</a></div>;
-  if (checking) return <div className="admin-root admin-access"><p className="eyebrow">WONS / STORE ADMINISTRATION</p><p role="status">Checking your session…</p></div>;
+  if (!enabled) return <div className="admin-root admin-access">{accessLanguage}<Link href="/" className="admin-wordmark">WONS</Link><h1>{t("Production access only.")}</h1><p>{t("Use the live WONS website to manage the store.")}</p><a className="button dark" href="https://wons-linen.vercel.app/admin/login">{t("Open WONS admin")}</a></div>;
+  if (checking) return <div className="admin-root admin-access">{accessLanguage}<p className="eyebrow">{t("WONS / STORE ADMINISTRATION")}</p><p role="status">{t("Checking your session…")}</p></div>;
   if (!profile) {
-    if (issue && issue.kind !== "signed_out") return <div className="admin-root admin-access">
+    if (issue && issue.kind !== "signed_out") return <div className="admin-root admin-access">{accessLanguage}
       <Link href="/" className="admin-wordmark">WONS</Link>
-      <h1>{issue.kind === "denied" ? "Store access required." : "Unable to open your workspace."}</h1>
-      <p role="alert">{issue.message}</p>
-      <div className="admin-actions"><button className="button dark" onClick={() => setVerification(value => value + 1)}>Try again</button><button onClick={signOut}>Use another account</button></div>
-      {signOutError && <p role="alert">{signOutError}</p>}<Link href="/">Back to WONS</Link>
+      <h1>{issue.kind === "denied" ? t("Store access required.") : t("Unable to open your workspace.")}</h1>
+      <p role="alert">{errorText(issue.message)}</p>
+      <div className="admin-actions"><button className="button dark" onClick={() => setVerification(value => value + 1)}>{t("Try again")}</button><button onClick={signOut}>{t("Use another account")}</button></div>
+      {signOutError && <p role="alert">{errorText(signOutError)}</p>}<Link href="/">{t("Back to WONS")}</Link>
     </div>;
-    if (path !== "/admin/login") return <div className="admin-root admin-access"><p role="status">Redirecting to sign in…</p></div>;
-    return <div className="admin-root"><LoginPanel notice={issue?.message ?? ""} destination={destination} /></div>;
+    if (path !== "/admin/login") return <div className="admin-root admin-access">{accessLanguage}<p role="status">{t("Redirecting to sign in…")}</p></div>;
+    return <div className="admin-root">{accessLanguage}<LoginPanel notice={issue?.message ?? ""} destination={destination} /></div>;
   }
-  if (path === "/admin/login") return <div className="admin-root admin-access"><p role="status">Opening your workspace…</p></div>;
+  if (path === "/admin/login") return <div className="admin-root admin-access">{accessLanguage}<p role="status">{t("Opening your workspace…")}</p></div>;
   const navigation = adminNavigation(profile.role);
   return <StaffContext.Provider value={profile}>
     <div className="admin-root admin-workspace">
-      <a href="#admin-main" className="skip-link">Skip to workspace</a>
+      <a href="#admin-main" className="skip-link">{t("Skip to workspace")}</a>
       <aside className="admin-sidebar">
-        <Link href="/admin" className="admin-wordmark">WONS<span>STORE ADMIN</span></Link>
-        <span className="admin-role">{staffRoleLabel(profile.role)}</span>
-        <nav aria-label="Store administration">
+        <Link href="/admin" className="admin-wordmark">WONS<span>{t("STORE ADMIN")}</span></Link>
+        <span className="admin-role">{t(staffRoleLabel(profile.role))}</span>
+        <nav aria-label={t("Store administration")}>
           {["Store operations", "Owner tools"].map(group => {
             const items = navigation.filter(item => item.group === group);
             return items.length ? <div className="admin-nav-group" key={group}>
-              <p className="admin-nav-heading">{group}</p>
-              {items.map(item => <Link key={item.href} href={item.href} aria-current={(path === item.href || (item.href === "/admin/products" && path.startsWith("/admin/products/"))) ? "page" : undefined}>{item.label}{item.href === "/admin/orders" && <OrderInboxBadge />}</Link>)}
+              <p className="admin-nav-heading">{t(group)}</p>
+              {items.map(item => <Link key={item.href} href={item.href} aria-current={(path === item.href || (item.href === "/admin/products" && path.startsWith("/admin/products/"))) ? "page" : undefined}>{t(item.label)}{item.href === "/admin/orders" && <OrderInboxBadge />}</Link>)}
             </div> : null;
           })}
         </nav>
-        <div className="admin-sidebar-bottom"><Link href="/">View storefront ↗</Link><p>{profile.email}</p><button onClick={signOut}>Sign out</button>{signOutError && <p role="alert">{signOutError}</p>}</div>
+        <div className="admin-sidebar-bottom"><Link href="/">{t("View storefront ↗")}</Link><p>{profile.email}</p><button onClick={signOut}>{t("Sign out")}</button>{signOutError && <p role="alert">{errorText(signOutError)}</p>}</div>
       </aside>
       <main className="admin-content" id="admin-main" tabIndex={-1}>
-        <div className="admin-topbar"><nav aria-label="Breadcrumb"><Link href="/admin">WONS Admin</Link><span> / {adminSectionName(path)}</span></nav><span>{staffRoleLabel(profile.role)} workspace</span></div>
+        <div className="admin-topbar"><nav aria-label={t("Breadcrumb")}><Link href="/admin">{t("WONS Admin")}</Link><span> / {t(adminSectionName(path))}</span></nav><div className="admin-topbar-tools"><span>{t("{role} workspace", { role: t(staffRoleLabel(profile.role)) })}</span><AdminLanguageSwitch /></div></div>
         {canOpenAdminSection(profile.role, path) ? children : <section className="admin-panel admin-route-denied">
-          <p className="eyebrow">OWNER TOOLS</p><h1>Owner access required.</h1><p>Your Marketing Editor account can manage products, images, prices and publication. Orders, team access and activity history are managed by the Owner.</p><Link className="button dark" href="/admin/products">Go to products</Link>
+          <p className="eyebrow">{t("OWNER TOOLS")}</p><h1>{t("Owner access required.")}</h1><p>{t("Your Marketing Editor account can manage products, images, prices and publication. Orders, team access and activity history are managed by the Owner.")}</p><Link className="button dark" href="/admin/products">{t("Go to products")}</Link>
         </section>}
       </main>
     </div>
   </StaffContext.Provider>;
 }
 function LoginPanel({ notice, destination }: { notice: string; destination: string }) {
+  const { t, errorText, locale } = useAdminLanguage();
   const [mode, setMode] = useState<"login" | "register">("login"),
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
@@ -219,26 +228,22 @@ function LoginPanel({ notice, destination }: { notice: string; destination: stri
         <Link className="admin-wordmark" href="/">
           WONS
         </Link>
-        <p className="eyebrow">BEHIND THE COLLECTION</p>
-        <h1>
+        <p className="eyebrow">{t("BEHIND THE COLLECTION")}</p>
+        <h1>{locale === "vi" ? <>Không gian để<br /><em>ghi dấu ấn riêng.</em></> : <>
           A thoughtful
           <br />
           space to
           <br />
           <em>make it yours.</em>
-        </h1>
-        <p>
-          Manage the collection, tell its story and keep every detail in place.
-        </p>
+        </>}</h1>
+        <p> {t("Manage the collection, tell its story and keep every detail in place.")} </p>
       </div>
       <div className="admin-login-form">
-        <p className="eyebrow">WONS STORE ADMINISTRATION</p>
-        <h2>{mode === "login" ? "Welcome back." : "Activate your account."}</h2>
-        <p>{destination === "/admin" ? "Use your approved staff account to open the WONS workspace." : "Sign in to continue to " + adminSectionName(destination) + "."}</p>
+        <p className="eyebrow">{t("WONS STORE ADMINISTRATION")}</p>
+        <h2>{mode === "login" ? t("Welcome back.") : t("Activate your account.")}</h2>
+        <p>{destination === "/admin" ? t("Use your approved staff account to open the WONS workspace.") : t("Sign in to continue to {section}.", { section: t(adminSectionName(destination)) })}</p>
         <form onSubmit={submit}>
-          <label>
-            Email address
-            <input
+          <label> {t("Email address")} <input
               required
               type="email"
               autoComplete="email"
@@ -246,9 +251,7 @@ function LoginPanel({ notice, destination }: { notice: string; destination: stri
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
-          <label>
-            Password
-            <input
+          <label> {t("Password")} <input
               required
               type="password"
               minLength={mode === "register" ? 12 : 1}
@@ -260,21 +263,18 @@ function LoginPanel({ notice, destination }: { notice: string; destination: stri
             />
           </label>
           {mode === "register" && (
-            <p className="admin-help">
-              Use at least 12 characters. Account activation does not grant
-              store permissions automatically.
-            </p>
+            <p className="admin-help"> {t("Use at least 12 characters. Account activation does not grant store permissions automatically.")} </p>
           )}
           <button className="button dark" disabled={busy}>
             {busy
-              ? "Please wait…"
+              ? t("Please wait…")
               : mode === "login"
-                ? "Sign in"
-                : "Create staff account"}
+                ? t("Sign in")
+                : t("Create staff account")}
           </button>
         </form>
         <div role="status" className="admin-message">
-          {message || notice}
+          {errorText(message || notice)}
         </div>
         <button
           className="admin-text-button"
@@ -286,20 +286,16 @@ function LoginPanel({ notice, destination }: { notice: string; destination: stri
           }}
         >
           {mode === "login"
-            ? "First visit? Activate a staff account"
-            : "Already activated? Sign in"}
+            ? t("First visit? Activate a staff account")
+            : t("Already activated? Sign in")}
         </button>
         {notice && (
           <button
             className="admin-text-button"
             onClick={() => staffAuth().auth.signOut()}
-          >
-            Clear session
-          </button>
+          > {t("Clear session")} </button>
         )}
-        <Link href="/" className="admin-back">
-          ← Back to WONS
-        </Link>
+        <Link href="/" className="admin-back"> {t("← Back to WONS")} </Link>
       </div>
     </div>
   );

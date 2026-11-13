@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminShell } from "../../components/admin/admin-shell";
+import { AdminLanguageProvider } from "../../components/admin/admin-language";
 import { adminDeploymentEnabled } from "../../lib/admin-server";
 import "./admin.css";
 export const metadata: Metadata = {
@@ -11,5 +12,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminShell enabled={adminDeploymentEnabled()}>{children}</AdminShell>;
+  return <AdminLanguageProvider><AdminShell enabled={adminDeploymentEnabled()}>{children}</AdminShell></AdminLanguageProvider>;
 }

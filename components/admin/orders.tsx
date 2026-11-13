@@ -1,5 +1,6 @@
 "use client";
 
+import { useAdminLanguage } from "./admin-language";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 import { money } from "../../lib/commerce";
@@ -10,11 +11,10 @@ import { StartCodTest } from "./start-cod-test";
 const statusLabels: Record<OrderStatus, string> = {
   pending: "Awaiting confirmation", confirmed: "Confirmed", cancelled: "Cancelled",
 };
-const date = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Ho_Chi_Minh", dateStyle: "medium", timeStyle: "short",
-});
 
 export function AdminOrders() {
+  const { t, errorText, dateLocale } = useAdminLanguage();
+  const date = new Intl.DateTimeFormat(dateLocale, { timeZone: "Asia/Ho_Chi_Minh", dateStyle: "medium", timeStyle: "short" });
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [before, setBefore] = useState<number | null>(null);
   const [next, setNext] = useState<number | null>(null);
@@ -89,31 +89,31 @@ export function AdminOrders() {
   return (
     <>
       <header className="admin-order-heading">
-        <p className="eyebrow">STORE OPERATIONS</p>
-        <h1>Orders</h1>
-        <p>New orders appear automatically while this workspace is open. Confirm real orders with the customer and collect cash on delivery.</p>
+        <p className="eyebrow">{t("STORE OPERATIONS")}</p>
+        <h1>{t("Orders")}</h1>
+        <p>{t("New orders appear automatically while this workspace is open. Confirm real orders with the customer and collect cash on delivery.")}</p>
         <div className="admin-actions">
           <StartCodTest />
-          <span>Use a sample item and sample details. Test orders do not change stock.</span>
+          <span>{t("Use a sample item and sample details. Test orders do not change stock.")}</span>
         </div>
       </header>
-      <section className="admin-panel" aria-label="Order inbox">
+      <section className="admin-panel" aria-label={t("Order inbox")}>
         <div className="admin-panel-heading">
-          <h2>{before ? "Earlier orders" : "Order inbox"}</h2>
-          <button type="button" onClick={notifyOrdersChanged}>Refresh</button>
+          <h2>{before ? t("Earlier orders") : t("Order inbox")}</h2>
+          <button type="button" onClick={notifyOrdersChanged}>{t("Refresh")}</button>
         </div>
-        {listError && <p role="alert">{listError}</p>}
-        {loading ? <p role="status">Loading orders…</p> : !orders.length && !listError ? <p>No orders received yet.</p> : orders.length ? (
+        {listError && <p role="alert">{errorText(listError)}</p>}
+        {loading ? <p role="status">{t("Loading orders…")}</p> : !orders.length && !listError ? <p>{t("No orders received yet.")}</p> : orders.length ? (
           <div className="admin-table-scroll">
             <table className="admin-table">
-              <thead><tr><th>Order</th><th>Received (Vietnam time)</th><th>Status</th><th>Items</th><th>Total</th></tr></thead>
+              <thead><tr><th>{t("Order")}</th><th>{t("Received (Vietnam time)")}</th><th>{t("Status")}</th><th>{t("Items")}</th><th>{t("Total")}</th></tr></thead>
               <tbody>
                 {orders.map(order => (
                   <tr key={order.id}>
                     <td><button type="button" className="admin-order-link" disabled={busy} onClick={() => void openOrder(order.id)}>{orderReference(order.order_number)}</button>
-                      {!order.seen_at && <span className="admin-order-new">New</span>}</td>
+                      {!order.seen_at && <span className="admin-order-new">{t("New")}</span>}</td>
                     <td>{date.format(new Date(order.created_at))}</td>
-                    <td>{statusLabels[order.status]}{order.is_test && <span className="admin-order-new">Test</span>}</td>
+                    <td>{t(statusLabels[order.status])}{order.is_test && <span className="admin-order-new">{t("Test")}</span>}</td>
                     <td>{order.item_count}</td>
                     <td>{money(order.total_vnd)}</td>
                   </tr>
@@ -123,44 +123,44 @@ export function AdminOrders() {
           </div>
         ) : null}
         <div className="admin-actions">
-          {before && <button type="button" onClick={() => navigate(null)}>Newest orders</button>}
-          {next && <button type="button" onClick={() => navigate(next)}>Earlier orders</button>}
+          {before && <button type="button" onClick={() => navigate(null)}>{t("Newest orders")}</button>}
+          {next && <button type="button" onClick={() => navigate(next)}>{t("Earlier orders")}</button>}
         </div>
       </section>
-      {detailError && <p role="alert">{detailError}</p>}
+      {detailError && <p role="alert">{errorText(detailError)}</p>}
       {detail && (
         <section className="admin-panel admin-order-detail" aria-labelledby="admin-order-detail">
           <div className="admin-panel-heading">
             <div>
-              <p className="eyebrow">{detail.is_test ? "TEST ORDER · " : ""}{statusLabels[detail.status]}</p>
+              <p className="eyebrow">{detail.is_test ? t("TEST ORDER ·") : ""} {t(statusLabels[detail.status])}</p>
               <h2 id="admin-order-detail" ref={detailTitle} tabIndex={-1}>{orderReference(detail.order_number)}</h2>
             </div>
-            <button type="button" disabled={busy} onClick={() => setDetail(null)}>Close details</button>
+            <button type="button" disabled={busy} onClick={() => setDetail(null)}>{t("Close details")}</button>
           </div>
           <dl className="admin-order-addresses">
-            <div><dt>Contact</dt><dd>{detail.email}</dd><dd>{detail.phone}</dd></div>
-            <div><dt>Ship to</dt><dd>{addressLines(detail.delivery).map((line, i) => <span key={i}>{line}</span>)}</dd></div>
-            <div><dt>Billing address</dt><dd>{addressLines(detail.billing).map((line, i) => <span key={i}>{line}</span>)}</dd></div>
-            {detail.notes && <div><dt>Order notes</dt><dd>{detail.notes}</dd></div>}
+            <div><dt>{t("Contact")}</dt><dd>{detail.email}</dd><dd>{detail.phone}</dd></div>
+            <div><dt>{t("Ship to")}</dt><dd>{addressLines(detail.delivery).map((line, i) => <span key={i}>{line}</span>)}</dd></div>
+            <div><dt>{t("Billing address")}</dt><dd>{addressLines(detail.billing).map((line, i) => <span key={i}>{line}</span>)}</dd></div>
+            {detail.notes && <div><dt>{t("Order notes")}</dt><dd>{detail.notes}</dd></div>}
           </dl>
           <div className="admin-table-scroll">
             <table className="admin-table">
-              <thead><tr><th>Product</th><th>Variant</th><th>Quantity</th><th>Subtotal</th></tr></thead>
+              <thead><tr><th>{t("Product")}</th><th>{t("Variant")}</th><th>{t("Quantity")}</th><th>{t("Subtotal")}</th></tr></thead>
               <tbody>{detail.lines.map(line => (
                 <tr key={line.variantId}><td>{line.name}<small>{line.sku}</small></td><td>{line.color} / {line.size}</td><td>{line.quantity}</td><td>{money(line.quantity * line.price)}</td></tr>
               ))}</tbody>
             </table>
           </div>
-          {detail.is_test && <p role="note"><strong>Test order. Do not ship or collect payment.</strong></p>}
-          <p className="admin-order-total"><strong>{money(detail.total_vnd)}</strong> · {COD_LABEL} · Free shipping · Taxes included.</p>
+          {detail.is_test && <p role="note"><strong>{t("Test order. Do not ship or collect payment.")}</strong></p>}
+          <p className="admin-order-total"><strong>{money(detail.total_vnd)}</strong> · {t(COD_LABEL)} {t("· Free shipping · Taxes included.")}</p>
           {detail.status !== "cancelled" && (
             <div className="admin-actions">
-              {detail.status === "pending" && <button type="button" className="button dark" disabled={busy || cancelConfirm} onClick={() => void changeStatus("confirm")}>Confirm order</button>}
+              {detail.status === "pending" && <button type="button" className="button dark" disabled={busy || cancelConfirm} onClick={() => void changeStatus("confirm")}>{t("Confirm order")}</button>}
               {cancelConfirm ? <>
-                <p>{detail.is_test ? "Cancel this test order?" : "Cancel this order and return the reserved items to stock?"}</p>
-                <button type="button" disabled={busy} onClick={() => void changeStatus("cancel")}>Yes, cancel order</button>
-                <button type="button" disabled={busy} onClick={() => setCancelConfirm(false)}>Keep order</button>
-              </> : <button type="button" disabled={busy} onClick={() => setCancelConfirm(true)}>Cancel order</button>}
+                <p>{detail.is_test ? t("Cancel this test order?") : t("Cancel this order and return the reserved items to stock?")}</p>
+                <button type="button" disabled={busy} onClick={() => void changeStatus("cancel")}>{t("Yes, cancel order")}</button>
+                <button type="button" disabled={busy} onClick={() => setCancelConfirm(false)}>{t("Keep order")}</button>
+              </> : <button type="button" disabled={busy} onClick={() => setCancelConfirm(true)}>{t("Cancel order")}</button>}
             </div>
           )}
         </section>

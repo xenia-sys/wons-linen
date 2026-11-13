@@ -1,4 +1,5 @@
 "use client";
+import { useAdminLanguage } from "./admin-language";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { adminFetch } from "../../lib/admin-browser";
@@ -17,6 +18,7 @@ type Item = {
   variants: Variant[];
 };
 export function ProductList() {
+  const { t, errorText, dateLocale } = useAdminLanguage();
   const [products, setProducts] = useState<Item[]>([]),
     [busy, setBusy] = useState(true),
     [error, setError] = useState(""),
@@ -47,84 +49,76 @@ export function ProductList() {
     <>
       <div className="admin-page-heading">
         <div>
-          <p className="eyebrow">THE COLLECTION</p>
-          <h1>Products</h1>
-          <p>Manage imagery, descriptions, visibility and prices.</p>
+          <p className="eyebrow">{t("THE COLLECTION")}</p>
+          <h1>{t("Products")}</h1>
+          <p>{t("Manage imagery, descriptions, visibility and prices.")}</p>
         </div>
-        <Link href="/admin/products/new" className="button dark">
-          + New product
-        </Link>
+        <Link href="/admin/products/new" className="button dark"> {t("+ New product")} </Link>
       </div>
       <div className="admin-stat-row">
         <div>
           <strong>{products.length}</strong>
-          <span>Total styles</span>
+          <span>{t("Total styles")}</span>
         </div>
         <div>
           <strong>
             {products.filter((p) => p.status === "published").length}
           </strong>
-          <span>Published</span>
+          <span>{t("Published")}</span>
         </div>
         <div>
           <strong>
             {products.filter((p) => p.status === "hidden").length}
           </strong>
-          <span>Hidden</span>
+          <span>{t("Hidden")}</span>
         </div>
       </div>
       <div className="admin-panel">
         <div className="admin-filters">
-          <label>
-            Search
-            <input
+          <label> {t("Search")} <input
               type="search"
-              placeholder="Product name or URL"
+              placeholder={t("Product name or URL")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </label>
-          <label>
-            Department
-            <select
+          <label> {t("Department")} <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
             >
-              <option>All</option>
-              <option>Women</option>
-              <option>Men</option>
-              <option>New Arrivals</option>
+              <option value="All">{t("All")}</option>
+              <option value="Women">{t("Women")}</option>
+              <option value="Men">{t("Men")}</option>
+              <option value="New Arrivals">{t("New Arrivals")}</option>
             </select>
           </label>
-          <label>
-            Visibility
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="All">All</option>
-              <option value="published">Published</option>
-              <option value="preview">Preview</option>
-              <option value="hidden">Hidden</option>
+          <label> {t("Visibility")} <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="All">{t("All")}</option>
+              <option value="published">{t("Published")}</option>
+              <option value="preview">{t("Preview")}</option>
+              <option value="hidden">{t("Hidden")}</option>
             </select>
           </label>
         </div>
         {busy ? (
-          <p role="status">Loading products…</p>
+          <p role="status">{t("Loading products…")}</p>
         ) : error ? (
           <div role="alert">
-            {error}
-            <button onClick={load}>Try again</button>
+            {errorText(error)}
+            <button onClick={load}>{t("Try again")}</button>
           </div>
         ) : (
           <div className="admin-table-scroll">
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Department</th>
-                  <th>Visibility</th>
-                  <th>Price from</th>
-                  <th>Updated</th>
+                  <th>{t("Product")}</th>
+                  <th>{t("Department")}</th>
+                  <th>{t("Visibility")}</th>
+                  <th>{t("Price from")}</th>
+                  <th>{t("Updated")}</th>
                   <th>
-                    <span className="admin-sr-only">Edit</span>
+                    <span className="admin-sr-only">{t("Edit")}</span>
                   </th>
                 </tr>
               </thead>
@@ -139,38 +133,36 @@ export function ProductList() {
                         {p.name}
                       </Link>
                       <small>
-                        {p.category}
-                        {p.is_demo ? " · Demo" : ""}
+                        {t(p.category)}
+                        {p.is_demo ? " " + t("· Demo") : ""}
                       </small>
                     </td>
-                    <td>{p.department}{p.new_arrival && <small>New Arrivals</small>}</td>
+                    <td>{t(p.department)}{p.new_arrival && <small>{t("New Arrivals")}</small>}</td>
                     <td>
                       <span className={`admin-badge status-${p.status}`}>
-                        {p.status}
+                        {t(p.status.charAt(0).toUpperCase() + p.status.slice(1))}
                       </span>
                     </td>
                     <td>
                       {p.variants.length
                         ? money(Math.min(...p.variants.map(unitPrice)))
-                        : "No variants"}
+                        : t("No variants")}
                     </td>
                     <td>
-                      {new Date(p.updated_at).toLocaleDateString("en-GB")}
+                      {new Date(p.updated_at).toLocaleDateString(dateLocale)}
                     </td>
                     <td>
                       <Link
                         href={`/admin/products/${p.id}`}
                         className="admin-edit-link"
-                      >
-                        Edit →
-                      </Link>
+                      > {t("Edit →")} </Link>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
             {!filtered.length && (
-              <p className="admin-empty">No products match these filters.</p>
+              <p className="admin-empty">{t("No products match these filters.")}</p>
             )}
           </div>
         )}

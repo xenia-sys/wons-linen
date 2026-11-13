@@ -1,4 +1,5 @@
 "use client";
+import { useAdminLanguage } from "./admin-language";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { adminFetch } from "../../lib/admin-browser";
@@ -7,12 +8,13 @@ import type { ActivityEntry } from "../../lib/admin-activity";
 import { useStaff } from "./admin-shell";
 import { ActivityFilter } from "./activity-filter";
 type ActivityResponse = { activity: ActivityEntry[]; nextCursor: string | null };
-const dateFormat = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Ho_Chi_Minh" });
 const activityActions = [
   { value: "all", label: "All actions" }, { value: "INSERT", label: "Created / added" },
   { value: "UPDATE", label: "Updated" }, { value: "DELETE", label: "Removed" },
 ];
 export function Activity() {
+  const { t, errorText, dateLocale } = useAdminLanguage();
+  const dateFormat = new Intl.DateTimeFormat(dateLocale, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Ho_Chi_Minh" });
   const profile = useStaff();
   const [entries, setEntries] = useState<ActivityEntry[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function Activity() {
       }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; controller.abort(); };
   }, [profile.role, type, action, cursor, refresh]);
-  if (profile.role !== "owner") return <section className="admin-panel"><h1>Owner access required.</h1><p>Activity history is available to the WONS Owner.</p><Link href="/admin/products">Go to products</Link></section>;
+  if (profile.role !== "owner") return <section className="admin-panel"><h1>{t("Owner access required.")}</h1><p>{t("Activity history is available to the WONS Owner.")}</p><Link href="/admin/products">{t("Go to products")}</Link></section>;
   function newest() {
     setCursor(null);
     setPreviousPages([]);
@@ -54,38 +56,38 @@ export function Activity() {
   }
   return <>
     <div className="admin-page-heading">
-      <div><p className="eyebrow">OWNER TOOLS</p><h1>Activity history</h1><p>Who changed what, and when. Open a change to compare before and after.</p></div>
-      <button onClick={newest} disabled={loading}>{loading ? "Loading…" : "Refresh activity"}</button>
+      <div><p className="eyebrow">{t("OWNER TOOLS")}</p><h1>{t("Activity history")}</h1><p>{t("Who changed what, and when. Open a change to compare before and after.")}</p></div>
+      <button onClick={newest} disabled={loading}>{loading ? t("Loading…") : t("Refresh activity")}</button>
     </div>
     <section className="admin-panel admin-activity-panel" aria-busy={loading}>
       <div className="admin-filters">
-        <ActivityFilter label="Area" value={type} options={activityTypes} onChange={value => filter(value, action)} />
-        <ActivityFilter label="Action" value={action} options={activityActions} onChange={value => filter(type, value)} />
-        {(type !== "all" || action !== "all") && <button onClick={() => filter("all", "all")}>Clear filters</button>}
+        <ActivityFilter label={t("Area")} value={type} options={activityTypes} onChange={value => filter(value, action)} />
+        <ActivityFilter label={t("Action")} value={action} options={activityActions} onChange={value => filter(type, value)} />
+        {(type !== "all" || action !== "all") && <button onClick={() => filter("all", "all")}>{t("Clear filters")}</button>}
       </div>
-      <p className="admin-help">Times are shown in Vietnam time (GMT+7). {cursor ? "Earlier activity." : "Newest activity first."}</p>
-      {loading ? <div className="admin-activity-state" role="status">Loading activity history…</div>
-      : error ? <div className="admin-activity-state"><p className="admin-error" role="alert">{error}</p><button className="button dark" onClick={() => setRefresh(value => value + 1)}>Try again</button></div>
+      <p className="admin-help">{t("Times are shown in Vietnam time (GMT+7).")} {cursor ? t("Earlier activity.") : t("Newest activity first.")}</p>
+      {loading ? <div className="admin-activity-state" role="status">{t("Loading activity history…")}</div>
+      : error ? <div className="admin-activity-state"><p className="admin-error" role="alert">{errorText(error)}</p><button className="button dark" onClick={() => setRefresh(value => value + 1)}>{t("Try again")}</button></div>
       : !entries.length ? <div className="admin-activity-state" role="status">
-        <h2>{type !== "all" || action !== "all" ? "No changes match these filters." : "No changes recorded yet."}</h2>
-        <p>Product, price, gallery and staff access changes appear here after they are saved.</p>
-        <Link className="underlined-link" href="/admin/products">Manage products →</Link>
+        <h2>{type !== "all" || action !== "all" ? t("No changes match these filters.") : t("No changes recorded yet.")}</h2>
+        <p>{t("Product, price, gallery and staff access changes appear here after they are saved.")}</p>
+        <Link className="underlined-link" href="/admin/products">{t("Manage products →")}</Link>
       </div> : <>
-        <p className="admin-help" role="status">{entries.length} {entries.length === 1 ? "change" : "changes"} on this page</p>
+        <p className="admin-help" role="status">{t(entries.length === 1 ? "{count} change on this page" : "{count} changes on this page", { count: entries.length })}</p>
         <div className="admin-event-list">
           {entries.map(entry => {
             const fields = activityChanges(entry);
             const entityLabel = activityTypes.find(item => item.value === entry.entity_type)?.label ?? "Store";
             return <details className="admin-activity admin-event" key={entry.id}>
               <summary>
-                <span className="admin-event-summary"><span className="admin-badge">{entityLabel}</span><strong>{activityAction(entry)}</strong><span className="admin-event-title">{activityTitle(entry)}</span><small>By {entry.actor_email || "System setup"}</small></span>
-                <span className="admin-event-meta"><time dateTime={entry.created_at}>{dateFormat.format(new Date(entry.created_at))}</time><span className="admin-event-toggle">View details</span></span>
+                <span className="admin-event-summary"><span className="admin-badge">{t(entityLabel)}</span><strong>{t(activityAction(entry))}</strong><span className="admin-event-title">{activityTitle(entry, t)}</span><small>{t("By {actor}", { actor: entry.actor_email || t("System setup") })}</small></span>
+                <span className="admin-event-meta"><time dateTime={entry.created_at}>{dateFormat.format(new Date(entry.created_at))}</time><span className="admin-event-toggle">{t("View details")}</span></span>
               </summary>
-              {fields.length ? <div className="admin-event-diff"><div className="admin-change-heading" aria-hidden="true"><span>Field</span><span>Before</span><span>After</span></div><dl className="admin-change-list">{fields.map(key => <div key={key}><dt>{activityFieldLabels[key] ?? key.replaceAll("_", " ")}</dt><dd><span className="admin-change-before" aria-label="Before">{activityValue(key, entry.before_data?.[key])}</span><span className="admin-change-after" aria-label="After">{activityValue(key, entry.after_data?.[key])}</span></dd></div>)}</dl></div> : <p className="admin-help">Saved without changing the tracked content fields.</p>}
-              {entry.product && <Link className="underlined-link admin-event-link" href={"/admin/products/" + entry.product.id}>Open product →</Link>}
-              {entry.entity_type === "staff_members" && <Link className="underlined-link admin-event-link" href="/admin/team">Manage team access →</Link>}
-              {entry.entity_type === "storefront_images" && <Link className="underlined-link admin-event-link" href="/admin/storefront">Manage storefront images →</Link>}
-              {entry.entity_type === "discount_events" && <Link className="underlined-link admin-event-link" href="/admin/discount-events">Manage discount events →</Link>}
+              {fields.length ? <div className="admin-event-diff"><div className="admin-change-heading" aria-hidden="true"><span>{t("Field")}</span><span>{t("Before")}</span><span>{t("After")}</span></div><dl className="admin-change-list">{fields.map(key => <div key={key}><dt>{activityFieldLabels[key] ? t(activityFieldLabels[key]) : key.replaceAll("_", " ")}</dt><dd><span className="admin-change-before" aria-label={t("Before")}>{activityValue(key, entry.before_data?.[key], t, dateLocale)}</span><span className="admin-change-after" aria-label={t("After")}>{activityValue(key, entry.after_data?.[key], t, dateLocale)}</span></dd></div>)}</dl></div> : <p className="admin-help">{t("Saved without changing the tracked content fields.")}</p>}
+              {entry.product && <Link className="underlined-link admin-event-link" href={"/admin/products/" + entry.product.id}>{t("Open product →")}</Link>}
+              {entry.entity_type === "staff_members" && <Link className="underlined-link admin-event-link" href="/admin/team">{t("Manage team access →")}</Link>}
+              {entry.entity_type === "storefront_images" && <Link className="underlined-link admin-event-link" href="/admin/storefront">{t("Manage storefront images →")}</Link>}
+              {entry.entity_type === "discount_events" && <Link className="underlined-link admin-event-link" href="/admin/discount-events">{t("Manage discount events →")}</Link>}
             </details>;
           })}
         </div>
@@ -93,12 +95,12 @@ export function Activity() {
           <button disabled={loading || !previousPages.length} onClick={() => {
             setCursor(previousPages[previousPages.length - 1] ?? null);
             setPreviousPages(pages => pages.slice(0, -1));
-          }}>← Newer activity</button>
+          }}>{t("← Newer activity")}</button>
           <button disabled={loading || !nextCursor} onClick={() => {
             if (!nextCursor) return;
             setPreviousPages(pages => [...pages, cursor]);
             setCursor(nextCursor);
-          }}>Older activity →</button>
+          }}>{t("Older activity →")}</button>
         </div>
       </>}
     </section>

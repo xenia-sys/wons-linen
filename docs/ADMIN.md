@@ -1,6 +1,6 @@
 # WONS product administration
 
-Production entry: https://wons-linen.vercel.app/admin/login. All staff UI is English.
+Production entry: https://wons-linen.vercel.app/admin/login. Use **Language** at the upper right to switch the admin interface between **English** and **Tiếng Việt**, including on the sign-in screen. The browser remembers the choice. It does not change storefront copy, product content or account permissions.
 
 | Capability                                                                  | Marketing Editor | Owner |
 | --------------------------------------------------------------------------- | ---------------- | ----- |

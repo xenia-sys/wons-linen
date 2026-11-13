@@ -1,4 +1,5 @@
 "use client";
+import { useAdminLanguage } from "./admin-language";
 import { useEffect, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 import { useStaff } from "./admin-shell";
@@ -10,6 +11,7 @@ type Member = {
   active: boolean;
 };
 export function Team() {
+  const { t, errorText } = useAdminLanguage();
   const profile = useStaff();
   const [members, setMembers] = useState<Member[]>([]),
     [email, setEmail] = useState(""),
@@ -31,8 +33,8 @@ export function Team() {
   if (profile.role !== "owner")
     return (
       <div className="admin-panel">
-        <h1>Owner access required.</h1>
-        <p>Team permissions are managed by the WONS Owner.</p>
+        <h1>{t("Owner access required.")}</h1>
+        <p>{t("Team permissions are managed by the WONS Owner.")}</p>
       </div>
     );
   async function save(e: React.FormEvent) {
@@ -62,22 +64,22 @@ export function Team() {
     <>
       <div className="admin-page-heading">
         <div>
-          <p className="eyebrow">PEOPLE & PERMISSIONS</p>
-          <h1>Team & access</h1>
-          <p>Each teammate uses their own verified email account.</p>
+          <p className="eyebrow">{t("PEOPLE & PERMISSIONS")}</p>
+          <h1>{t("Team & access")}</h1>
+          <p>{t("Each teammate uses their own verified email account.")}</p>
         </div>
       </div>
       <div className="admin-editor-layout">
         <section className="admin-panel">
-          <h2>Approved team</h2>
+          <h2>{t("Approved team")}</h2>
           <div className="admin-table-scroll">
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Teammate</th>
-                  <th>Role</th>
-                  <th>Access</th>
-                  <th>Edit</th>
+                  <th>{t("Teammate")}</th>
+                  <th>{t("Role")}</th>
+                  <th>{t("Access")}</th>
+                  <th>{t("Edit")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -87,8 +89,8 @@ export function Team() {
                       {m.display_name || m.email}
                       <small>{m.email}</small>
                     </td>
-                    <td>{m.role === "owner" ? "Owner" : "Marketing Editor"}</td>
-                    <td>{m.active ? "Active" : "Disabled"}</td>
+                    <td>{m.role === "owner" ? t("Owner") : t("Marketing Editor")}</td>
+                    <td>{m.active ? t("Active") : t("Disabled")}</td>
                     <td>
                       <button
                         type="button"
@@ -101,9 +103,7 @@ export function Team() {
                             "Editing this email address. Save to apply changes.",
                           );
                         }}
-                      >
-                        Edit
-                      </button>
+                      > {t("Edit")} </button>
                     </td>
                   </tr>
                 ))}
@@ -112,11 +112,9 @@ export function Team() {
           </div>
         </section>
         <section className="admin-panel">
-          <h2>Grant or update access</h2>
+          <h2>{t("Grant or update access")}</h2>
           <form onSubmit={save}>
-            <label>
-              Email
-              <input
+            <label> {t("Email")} <input
                 required
                 type="email"
                 autoComplete="off"
@@ -124,22 +122,18 @@ export function Team() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </label>
-            <label>
-              Name
-              <input
+            <label> {t("Name")} <input
                 maxLength={120}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </label>
-            <label>
-              Role
-              <select
+            <label> {t("Role")} <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as Member["role"])}
               >
-                <option value="marketing_editor">Marketing Editor</option>
-                <option value="owner">Owner</option>
+                <option value="marketing_editor">{t("Marketing Editor")}</option>
+                <option value="owner">{t("Owner")}</option>
               </select>
             </label>
             <label className="admin-checkbox">
@@ -147,22 +141,16 @@ export function Team() {
                 type="checkbox"
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
-              />
-              Access enabled
-            </label>
+              /> {t("Access enabled")} </label>
             <button className="button dark" disabled={busy}>
-              {busy ? "Saving…" : "Save access"}
+              {busy ? t("Saving…") : t("Save access")}
             </button>
           </form>
-          <p className="admin-help">
-            Marketing Editors can manage images, descriptions, variants, prices
-            and publication. Owners also manage team access and view activity.
-            Disabling access takes effect on the next protected request.
-          </p>
+          <p className="admin-help"> {t("Marketing Editors can manage images, descriptions, variants, prices and publication. Owners also manage team access and view activity. Disabling access takes effect on the next protected request.")} </p>
         </section>
       </div>
       <p role="status" className="admin-message">
-        {message}
+        {errorText(message)}
       </p>
     </>
   );

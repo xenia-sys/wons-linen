@@ -1,5 +1,6 @@
 "use client";
 
+import { useAdminLanguage } from "./admin-language";
 import { useEffect, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 
@@ -36,6 +37,7 @@ export function useOrderRefresh(load: (signal: AbortSignal) => Promise<void>) {
 const loadNew = async (signal: AbortSignal) => adminFetch("/orders?count=new", { signal });
 
 export function OrderInboxBadge() {
+  const { t } = useAdminLanguage();
   const [count, setCount] = useState(0);
   const [load] = useState(() => async (signal: AbortSignal) => {
     try {
@@ -46,5 +48,5 @@ export function OrderInboxBadge() {
     }
   });
   useOrderRefresh(load);
-  return <span className="admin-order-count" aria-live="polite">{count > 0 ? <span>{count} new</span> : null}</span>;
+  return <span className="admin-order-count" aria-live="polite">{count > 0 ? <span>{t("{count} new", { count })}</span> : null}</span>;
 }

@@ -1,9 +1,11 @@
 "use client";
 
+import { useAdminLanguage } from "./admin-language";
 import { useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 
 export function StartCodTest() {
+  const { t, errorText } = useAdminLanguage();
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,9 +24,9 @@ export function StartCodTest() {
   return (
     <>
       <button type="button" className="button dark" onClick={() => void start()} disabled={starting}>
-        {starting ? "Starting test…" : "Start COD test"}
+        {starting ? t("Starting test…") : t("Start COD test")}
       </button>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{errorText(error)}</p>}
     </>
   );
 }

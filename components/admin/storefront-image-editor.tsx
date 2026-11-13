@@ -1,5 +1,6 @@
 "use client";
 
+import { useAdminLanguage } from "./admin-language";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
@@ -9,6 +10,7 @@ import { storefrontImageSlots, storefrontImageUrl } from "../../lib/storefront-i
 import type { StorefrontImage } from "../../lib/storefront-images";
 
 function CoverEditor({ slot, initial }: { slot: (typeof storefrontImageSlots)[number]; initial?: StorefrontImage }) {
+  const { t, errorText } = useAdminLanguage();
   const [current, setCurrent] = useState(initial);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
@@ -68,17 +70,17 @@ function CoverEditor({ slot, initial }: { slot: (typeof storefrontImageSlots)[nu
 
   const src = preview || (current ? storefrontImageUrl(current.storage_path) : "");
   return <form className="admin-panel admin-cover-card" onSubmit={publish} aria-labelledby={slot.id}>
-    <h2 id={slot.id}>{slot.label}</h2>
-    <p>{slot.description}</p>
+    <h2 id={slot.id}>{t(slot.label)}</h2>
+    <p>{t(slot.description)}</p>
     <div className="admin-cover-preview">
       {src ? (
         // A local object URL previews the file before any upload.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={preview ? "Selected image preview" : current?.alt ?? ""} />
-      ) : <span>Default WONS artwork</span>}
+        <img src={src} alt={preview ? t("Selected image preview") : current?.alt ?? ""} />
+      ) : <span>{t("Default WONS artwork")}</span>}
     </div>
     <label className={`admin-upload-label${busy ? " disabled" : ""}`}>
-      {current ? "Change image" : "Choose image"}
+      {current ? t("Change image") : t("Choose image")}
       <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={busy} onChange={event => {
         const selected = event.target.files?.[0];
         event.target.value = "";
@@ -92,20 +94,20 @@ function CoverEditor({ slot, initial }: { slot: (typeof storefrontImageSlots)[nu
         setFile(selected);
       }} />
     </label>
-    {file && <label>Image description
-      <input type="text" required maxLength={300} value={alt} disabled={busy} onChange={event => setAlt(event.target.value)} />
+    {file && <label>{t("Image description")} <input type="text" required maxLength={300} value={alt} disabled={busy} onChange={event => setAlt(event.target.value)} />
     </label>}
-    {error && <p role="alert" className="admin-error">{error}</p>}
-    {notice && <p role="status">{notice}</p>}
+    {error && <p role="alert" className="admin-error">{errorText(error)}</p>}
+    {notice && <p role="status">{errorText(notice)}</p>}
     <div className="admin-actions">
-      <button type="submit" className="button dark" disabled={busy || !file || !alt.trim()}>{busy && file ? "Publishing…" : "Publish image"}</button>
-      {file && <button type="button" disabled={busy} onClick={() => { setFile(null); setAlt(current?.alt ?? ""); setError(""); }}>Cancel selection</button>}
-      {!file && current && <button type="button" disabled={busy} onClick={() => void restore()}>{busy ? "Restoring…" : "Restore default artwork"}</button>}
+      <button type="submit" className="button dark" disabled={busy || !file || !alt.trim()}>{busy && file ? t("Publishing…") : t("Publish image")}</button>
+      {file && <button type="button" disabled={busy} onClick={() => { setFile(null); setAlt(current?.alt ?? ""); setError(""); }}>{t("Cancel selection")}</button>}
+      {!file && current && <button type="button" disabled={busy} onClick={() => void restore()}>{busy ? t("Restoring…") : t("Restore default artwork")}</button>}
     </div>
   </form>;
 }
 
 export function StorefrontImageEditor() {
+  const { t, errorText } = useAdminLanguage();
   const [images, setImages] = useState<StorefrontImage[] | null>(null);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
@@ -120,13 +122,13 @@ export function StorefrontImageEditor() {
   }, [retry]);
   return <>
     <div className="admin-page-heading">
-      <div><p className="eyebrow">OWNER TOOLS</p><h1>Storefront images</h1>
-        <p>Update the homepage covers. Landscape photos work best.</p>
+      <div><p className="eyebrow">{t("OWNER TOOLS")}</p><h1>{t("Storefront images")}</h1>
+        <p>{t("Update the homepage covers. Landscape photos work best.")}</p>
       </div>
-      <Link className="underlined-link" href="/">View homepage →</Link>
+      <Link className="underlined-link" href="/">{t("View homepage →")}</Link>
     </div>
-    {error ? <div className="admin-panel"><p role="alert">{error}</p><button type="button" onClick={() => { setError(""); setRetry(value => value + 1); }}>Try again</button></div>
-      : !images ? <p role="status">Loading storefront images…</p>
+    {error ? <div className="admin-panel"><p role="alert">{errorText(error)}</p><button type="button" onClick={() => { setError(""); setRetry(value => value + 1); }}>{t("Try again")}</button></div>
+      : !images ? <p role="status">{t("Loading storefront images…")}</p>
       : <div className="admin-cover-grid">{storefrontImageSlots.map(slot =>
         <CoverEditor key={slot.id} slot={slot} initial={images.find(image => image.id === slot.id)} />
       )}</div>}
