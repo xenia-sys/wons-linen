@@ -1,10 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { filterProducts } from "../lib/commerce";
 import type { Department, Product } from "../lib/types";
 import { ProductCard } from "./product-card";
 import { SearchIcon } from "./icons";
+import { useMobileMenuOutlet } from "./mobile-menu-outlet";
 export function Catalog({
   products,
   department = "All",
@@ -22,14 +24,8 @@ export function Catalog({
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
-  const filters = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 801px)");
-    const closeOnDesktop = () => { if (desktop.matches) filters.current?.close(); };
-    desktop.addEventListener("change", closeOnDesktop);
-    return () => desktop.removeEventListener("change", closeOnDesktop);
-  }, []);
-  const filterCount = Number(category !== "All") + Number(arrivalDepartment !== "All");
+  const menuOutlet = useMobileMenuOutlet();
+  const hasRefinements = category !== "All" || arrivalDepartment !== "All" || sort !== "featured";
   const categories = [
     ...new Set(
       products
@@ -38,13 +34,16 @@ export function Catalog({
     ),
   ];
   const filtered = filterProducts(products, currentDepartment, category, query, sort);
-  const hasFilters =
-    category !== "All" || query.length > 0 || sort !== "featured" || arrivalDepartment !== "All";
-  function clearFilters() {
+  const hasFilters = hasRefinements || query.length > 0;
+  const resultLabel = `${filtered.length} ${filtered.length === 1 ? "style" : "styles"}`;
+  function clearRefinements() {
     setArrivalDepartment("All");
     setCategory("All");
-    setQuery("");
     setSort("featured");
+  }
+  function clearFilters() {
+    clearRefinements();
+    setQuery("");
   }
   function selectDepartment(option: Department | "All") {
     setArrivalDepartment(option);
@@ -110,25 +109,11 @@ export function Catalog({
           </select>
         </label>
       </div>
-      <div className="mobile-catalog-toolbar">
-        <label className="mobile-sort">
-          <span className="sr-only">Sort by</span>
-          <select value={sort} onChange={event => setSort(event.target.value)}>{sortOptions}</select>
-        </label>
-        <button type="button" className="mobile-filter-toggle" aria-haspopup="dialog" aria-controls="mobile-catalog-filters"
-          onClick={() => filters.current?.showModal()}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-            <path d="M4 6h16M4 12h16M4 18h16" /><path d="M8 3v6m8 0v6m-6 0v6" />
-          </svg>
-          Filter{filterCount > 0 && <span className="mobile-filter-count">{filterCount}</span>}
-        </button>
-      </div>
-      <dialog className="mobile-catalog-filters" id="mobile-catalog-filters" ref={filters} aria-labelledby="mobile-filter-title"
-        onClick={event => { if (event.target === event.currentTarget) filters.current?.close(); }}>
-        <div className="mobile-filter-inner">
-          <div className="mobile-panel-heading">
-            <h2 id="mobile-filter-title">Filter styles</h2>
-            <button type="button" className="mobile-panel-close" aria-label="Close filters" onClick={() => filters.current?.close()}>×</button>
+      {menuOutlet && createPortal(
+        <section className="mobile-menu-refinements" aria-labelledby="mobile-filter-title">
+          <div className="mobile-filter-title">
+            <h3 id="mobile-filter-title">Filter and sort</h3>
+            <p role="status">{resultLabel}</p>
           </div>
           {newArrivals && (
             <label>Department
@@ -144,14 +129,16 @@ export function Catalog({
               {["All", ...categories].map(value => <option value={value} key={value}>{value === "All" ? "All categories" : value}</option>)}
             </select>
           </label>
+          <label>Sort by
+            <select value={sort} onChange={event => setSort(event.target.value)}>{sortOptions}</select>
+          </label>
           <div className="mobile-filter-actions">
-            <button type="button" className="text-button" disabled={!filterCount} onClick={() => { setArrivalDepartment("All"); setCategory("All"); }}>Reset filters</button>
-            <button type="button" className="button dark" onClick={() => filters.current?.close()}>
-              Show {filtered.length} {filtered.length === 1 ? "style" : "styles"}
-            </button>
+            <button type="button" className="text-button" disabled={!hasRefinements} onClick={clearRefinements}>Reset</button>
+            <button type="button" className="button dark" onClick={() => menuOutlet.closest("dialog")?.close()}>Show {resultLabel}</button>
           </div>
-        </div>
-      </dialog>
+        </section>,
+        menuOutlet,
+      )}
       <div className="catalog-search-row">
         <label className="search-field" htmlFor="search">
           <SearchIcon />
@@ -165,17 +152,18 @@ export function Catalog({
           />
         </label>
         <span className="result-count" role="status">
-          {filtered.length} {filtered.length === 1 ? "style" : "styles"}
+          {resultLabel}
           {query && ` for “${query}”`}
         </span>
         {hasFilters && (
           <button
-            className="text-button"
+            className="text-button desktop-clear-filters"
             onClick={clearFilters}
           >
             Clear filters
           </button>
         )}
+        {query && <button type="button" className="text-button mobile-clear-search" onClick={() => setQuery("")}>Clear search</button>}
       </div>
       {filtered.length ? (
         <div className="product-grid">
@@ -188,7 +176,7 @@ export function Catalog({
           <p className="eyebrow">A FRESH START</p>
           <h2>{newArrivals && !products.length ? "More styles are on the way." : "No styles found."}</h2>
           <p>{newArrivals && !products.length ? "Explore the WONS collection while you wait." : "Try another search or clear your filters."}</p>
-          {hasFilters ? <button className="button dark" onClick={clearFilters}>Clear filters</button>
+          {hasFilters ? <button className="button dark desktop-clear-filters" onClick={clearFilters}>Clear filters</button>
             : <Link className="button dark" href="/shop">Shop all styles</Link>}
         </div>
       )}

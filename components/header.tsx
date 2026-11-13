@@ -8,7 +8,10 @@ import { AccountIcon, BagIcon, SearchIcon } from "./icons";
 import { CurrencySelector } from "./currency-selector";
 import { storefrontCollections } from "../lib/storefront-navigation";
 
-export function Header({ ordersOpen }: { ordersOpen: boolean }) {
+export function Header({ ordersOpen, menuOutletRef }: {
+  ordersOpen: boolean;
+  menuOutletRef: (element: HTMLDivElement | null) => void;
+}) {
   const pathname = usePathname();
   const { count } = useBag();
   const menu = useRef<HTMLDialogElement>(null);
@@ -65,9 +68,7 @@ export function Header({ ordersOpen }: { ordersOpen: boolean }) {
               <button type="button" className="mobile-panel-close" aria-label="Close navigation menu" onClick={() => menu.current?.close()}>×</button>
             </div>
             <nav aria-label="Collections" className="mobile-nav-links">{collectionLinks(() => menu.current?.close())}</nav>
-            <Link href="/shop#search" className="mobile-menu-search" onClick={() => menu.current?.close()}>
-              <SearchIcon /> Search the collection
-            </Link>
+            <div className="mobile-menu-outlet" ref={menuOutletRef} />
             <div className="mobile-menu-currency"><span>Currency</span><CurrencySelector statusId="mobile-currency-status" /></div>
           </div>
         </dialog>

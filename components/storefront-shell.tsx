@@ -1,11 +1,12 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Product } from "../lib/types";
 import { CartProvider } from "./cart-provider";
 import { DisplayCurrencyProvider } from "./display-currency-provider";
 import { Header } from "./header";
 import { Footer } from "./footer";
+import { MobileMenuOutlet } from "./mobile-menu-outlet";
 export function StorefrontShell({
   products,
   ordersOpen,
@@ -19,6 +20,7 @@ export function StorefrontShell({
 }) {
   const path = usePathname();
   const router = useRouter();
+  const [menuOutlet, setMenuOutlet] = useState<HTMLDivElement | null>(null);
   useEffect(() => {
     if (path !== "/bag" && path !== "/checkout") return;
     // The layout can survive a client navigation with an older price snapshot.
@@ -53,8 +55,10 @@ export function StorefrontShell({
     <DisplayCurrencyProvider>
       <CartProvider products={products}>
         <div className="storefront">
-          <Header ordersOpen={ordersOpen} />
-          <main id="main" tabIndex={-1}>{children}</main>
+          <Header ordersOpen={ordersOpen} menuOutletRef={setMenuOutlet} />
+          <MobileMenuOutlet.Provider value={menuOutlet}>
+            <main id="main" tabIndex={-1}>{children}</main>
+          </MobileMenuOutlet.Provider>
           <Footer ordersOpen={ordersOpen} />
         </div>
       </CartProvider>
