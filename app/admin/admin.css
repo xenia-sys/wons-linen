@@ -997,9 +997,25 @@
 .admin-table tbody tr:nth-child(even) { background: var(--surface-soft); }
 .admin-team-layout { grid-template-columns: minmax(0, 1.75fr) minmax(260px, 1fr); }
 .admin-team-layout .admin-table td:first-child { white-space: normal; overflow-wrap: anywhere; min-width: 160px; }
-.admin-team-confirm { padding: 16px; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-soft); }
-.admin-team-confirm h3, .admin-team-confirm p { margin: 0 0 9px; overflow-wrap: anywhere; }
-.admin-team-confirm .admin-actions { justify-content: start; }
+.admin-team-confirm {
+  position: fixed;
+  inset: 12px auto auto 12px;
+  margin: 0;
+  width: min(420px, var(--team-popup-width, calc(100vw - 24px)));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: clamp(17px, 3vw, 25px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 0 15px 46px #3b2c222e;
+}
+.admin-team-confirm::backdrop { background: #2e251942; }
+.admin-team-confirm h3 { margin: 0 0 10px; font-size: 19px; }
+.admin-team-confirm p { margin: 0 0 10px; overflow-wrap: anywhere; }
+.admin-team-confirm .admin-actions { justify-content: flex-end; gap: 8px; margin-top: 17px; }
 .admin-root .admin-danger-button { border-color: #d9b8ae; color: #813d2e; }
 .admin-root .admin-danger-button:hover:not(:disabled) { background: #f9ebe6; }
 .admin-order-filter { max-width: 285px; }

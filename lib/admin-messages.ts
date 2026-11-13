@@ -435,6 +435,7 @@ export const vietnameseAdminMessages: Readonly<Record<string, string>> = {
   "Admin access removed.": "Đã gỡ quyền quản trị.",
   "Remove admin access?": "Gỡ quyền quản trị?",
   "Remove access": "Gỡ quyền",
+  "Removing access…": "Đang gỡ quyền…",
   "Keep access": "Giữ quyền",
   "Your account": "Tài khoản của bạn",
   "This person will lose access to WONS Admin. Their sign-in account and past activity are kept.": "Người này sẽ mất quyền vào WONS Admin. Tài khoản đăng nhập và lịch sử thao tác vẫn được giữ lại.",

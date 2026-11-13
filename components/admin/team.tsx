@@ -1,6 +1,6 @@
 "use client";
 import { useAdminLanguage } from "./admin-language";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { adminFetch } from "../../lib/admin-browser";
 import { useStaff } from "./admin-shell";
 type Member = {
@@ -20,7 +20,13 @@ export function Team() {
     [active, setActive] = useState(true),
     [busy, setBusy] = useState(false),
     [removal, setRemoval] = useState<Member | null>(null),
+    [removalError, setRemovalError] = useState(""),
     [message, setMessage] = useState("");
+  const approvedPanel = useRef<HTMLElement>(null);
+  const approvedTitle = useRef<HTMLHeadingElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const keepButton = useRef<HTMLButtonElement>(null);
+  const removeTrigger = useRef<HTMLButtonElement>(null);
   async function load() {
     try {
       setMembers((await adminFetch("/team")).members);
@@ -31,6 +37,49 @@ export function Team() {
   useEffect(() => {
     if (profile.role === "owner") void load();
   }, [profile.role]);
+  useLayoutEffect(() => {
+    const modal = dialog.current;
+    const panel = approvedPanel.current;
+    if (!modal || !panel) return;
+    if (!removal) {
+      if (modal.open) {
+        modal.close();
+        const trigger = removeTrigger.current;
+        (trigger?.isConnected && !trigger.disabled ? trigger : approvedTitle.current)?.focus({ preventScroll: true });
+      }
+      return;
+    }
+    const position = () => {
+      const frame = panel.getBoundingClientRect();
+      const viewport = document.documentElement;
+      const width = viewport.clientWidth;
+      const height = viewport.clientHeight;
+      const visibleTop = Math.max(0, frame.top);
+      const visibleBottom = Math.min(height, frame.bottom);
+      const centerY = visibleBottom > visibleTop ? (visibleTop + visibleBottom) / 2 : height / 2;
+      const centerX = (Math.max(0, frame.left) + Math.min(width, frame.right)) / 2;
+      modal.style.setProperty("--team-popup-width", `${Math.max(0, Math.min(width, frame.width) - 24)}px`);
+      const bounds = modal.getBoundingClientRect();
+      const fit = (center: number, size: number, limit: number) => Math.max(12, Math.min(center - size / 2, limit - size - 12));
+      modal.style.left = `${fit(centerX, bounds.width, width)}px`;
+      modal.style.top = `${fit(centerY, bounds.height, height)}px`;
+    };
+    if (!modal.open) {
+      modal.showModal();
+      position();
+      keepButton.current?.focus({ preventScroll: true });
+    }
+    const observer = new ResizeObserver(position);
+    observer.observe(panel);
+    observer.observe(modal);
+    window.addEventListener("resize", position);
+    window.addEventListener("scroll", position, { passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", position);
+      window.removeEventListener("scroll", position);
+    };
+  }, [removal]);
   if (profile.role !== "owner")
     return (
       <div className="admin-panel">
@@ -64,7 +113,7 @@ export function Team() {
   async function remove(member: Member) {
     if (busy) return;
     setBusy(true);
-    setMessage("");
+    setRemovalError("");
     try {
       await adminFetch(`/team?id=${member.id}`, { method: "DELETE" });
       setMembers((current) => current.filter((item) => item.id !== member.id));
@@ -77,7 +126,7 @@ export function Team() {
       setRemoval(null);
       setMessage("Admin access removed.");
     } catch (error) {
-      setMessage((error as Error).message);
+      setRemovalError((error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -92,19 +141,30 @@ export function Team() {
         </div>
       </div>
       <div className="admin-editor-layout admin-team-layout">
-        <section className="admin-panel">
-          <h2>{t("Approved team")}</h2>
-          {removal && (
-            <div className="admin-team-confirm">
-              <h3>{t("Remove admin access?")}</h3>
-              <p><strong>{removal.display_name || removal.email}</strong>{removal.display_name && <> · {removal.email}</>}</p>
-              <p>{t("This person will lose access to WONS Admin. Their sign-in account and past activity are kept.")}</p>
+        <section className="admin-panel" ref={approvedPanel} aria-labelledby="approved-team-heading">
+          <h2 id="approved-team-heading" ref={approvedTitle} tabIndex={-1}>{t("Approved team")}</h2>
+          <dialog
+            ref={dialog}
+            className="admin-team-confirm"
+            role="alertdialog"
+            aria-labelledby="team-remove-heading"
+            aria-describedby="team-remove-member team-remove-description"
+            onCancel={(event) => {
+              event.preventDefault();
+              if (!busy) setRemoval(null);
+            }}
+          >
+            {removal && <>
+              <h3 id="team-remove-heading">{t("Remove admin access?")}</h3>
+              <p id="team-remove-member"><strong>{removal.display_name || removal.email}</strong>{removal.display_name && <> · {removal.email}</>}</p>
+              <p id="team-remove-description">{t("This person will lose access to WONS Admin. Their sign-in account and past activity are kept.")}</p>
+              {removalError && <p className="admin-error" role="alert">{errorText(removalError)}</p>}
               <div className="admin-actions">
-                <button type="button" className="admin-danger-button" disabled={busy} onClick={() => void remove(removal)}>{t("Remove access")}</button>
-                <button type="button" disabled={busy} onClick={() => setRemoval(null)}>{t("Keep access")}</button>
+                <button ref={keepButton} type="button" disabled={busy} onClick={() => setRemoval(null)}>{t("Keep access")}</button>
+                <button type="button" className="admin-danger-button" disabled={busy} onClick={() => void remove(removal)}>{busy ? t("Removing access…") : t("Remove access")}</button>
               </div>
-            </div>
-          )}
+            </>}
+          </dialog>
           <div className="admin-table-scroll">
             <table className="admin-table">
               <thead>
@@ -128,7 +188,7 @@ export function Team() {
                     <td>
                       <button
                         type="button"
-                        disabled={busy || !!removal}
+                        disabled={busy}
                         onClick={() => {
                           setEmail(m.email);
                           setName(m.display_name);
@@ -142,7 +202,12 @@ export function Team() {
                     </td>
                     <td>
                       {profile.email.toLowerCase() === m.email ? <span className="muted">{t("Your account")}</span> : (
-                        <button type="button" className="admin-danger-button" disabled={busy || !!removal} onClick={() => { setMessage(""); setRemoval(m); }}>
+                        <button type="button" className="admin-danger-button" aria-haspopup="dialog" disabled={busy} onClick={(event) => {
+                          removeTrigger.current = event.currentTarget;
+                          setMessage("");
+                          setRemovalError("");
+                          setRemoval(m);
+                        }}>
                           {t("Remove")}
                         </button>
                       )}
