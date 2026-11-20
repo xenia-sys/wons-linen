@@ -650,6 +650,11 @@
   .product-price {
     font-size: 14px;
   }
+  .product-size-label {
+    margin: 8px 0;
+    color: var(--ink);
+    font-size: 14px;
+  }
   .product-colors {
     display: flex;
     align-items: center;
@@ -1260,9 +1265,11 @@
     flex-wrap: wrap;
   }
   .size-options button {
-    width: 52px;
-    padding: 8px;
+    min-width: 52px;
+    width: auto;
+    padding: 8px 12px;
     font-size: 14px;
+    white-space: nowrap;
   }
   .size-options button:disabled {
     text-decoration: line-through;
@@ -1926,7 +1933,7 @@
       padding-top: 5px;
     }
     .size-options button {
-      width: 54px;
+      min-width: 54px;
       min-height: 46px;
     }
     .color-options button {

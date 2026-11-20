@@ -1,6 +1,7 @@
 import { parseImageFraming } from "./image-framing.ts";
 import type { ImageFraming } from "./image-framing.ts";
 import { PRODUCT_IMAGE_LIMIT } from "./product-photo-upload.ts";
+import { PRODUCT_SIZES } from "./product-sizes.ts";
 export type StaffRole = "owner" | "marketing_editor";
 export type AdminVariant = {
   id?: string;
@@ -106,8 +107,8 @@ export function parseProductDraft(input: unknown): ProductDraft {
     const hex = text(v.color_hex, "Colour code", 7);
     if (!/^#[0-9a-f]{6}$/i.test(hex))
       throw Error("Use a six-digit hex colour.");
-    const size = text(v.size, "Size", 4);
-    if (!["XS", "S", "M", "L", "XL", "XXL"].includes(size))
+    const size = text(v.size, "Size", 16);
+    if (!PRODUCT_SIZES.includes(size))
       throw Error("Choose a valid size.");
     return {
       id: optionalId(v.id),

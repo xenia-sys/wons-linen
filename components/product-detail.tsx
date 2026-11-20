@@ -7,12 +7,13 @@ import { ProductPrice } from "./product-price";
 import { useBag } from "./cart-provider";
 import { ProductGallery } from "./product-gallery";
 import { Arrow } from "./icons";
+import { FREE_SIZE, isFreeSizeProduct, selectedSizeForColour } from "../lib/product-sizes";
 export function ProductDetail({ product, canOrder }: { product: Product; canOrder: boolean }) {
   const colors = [
     ...new Map(product.variants.map((v) => [v.color, v.color_hex])).entries(),
   ];
   const [color, setColor] = useState(colors[0][0]);
-  const [size, setSize] = useState("");
+  const [size, setSize] = useState(() => selectedSizeForColour(product.variants, colors[0][0]));
   const [quantityInput, setQuantityInput] = useState("1");
   const [added, setAdded] = useState(0);
   const [addError, setAddError] = useState(false);
@@ -26,6 +27,8 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
       (a, b) => unitPrice(a) - unitPrice(b),
     )[0];
   const sizes = [...new Set(product.variants.map((v) => v.size))];
+  const freeSizeOnly = isFreeSizeProduct(product.variants);
+  const hasFreeSize = sizes.includes(FREE_SIZE);
   const inBag =
     lines.find((line) => line.variantId === variant?.id)?.quantity ?? 0;
   const maxQuantity = variant ? remainingVariantQuantity(variant.available_quantity, inBag) : 0;
@@ -84,15 +87,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
                   onClick={() => {
                     setColor(c);
                     selectQuantity("1");
-                    if (
-                      !product.variants.some(
-                        (v) =>
-                          v.color === c &&
-                          v.size === size &&
-                          v.available_quantity > 0,
-                      )
-                    )
-                      setSize("");
+                    setSize(selectedSizeForColour(product.variants, c, size));
                   }}
                 >
                   <span className="swatch" style={{ backgroundColor: hex }} />
@@ -103,7 +98,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
           </fieldset>
           <fieldset>
             <legend>
-              Select your size <span>— Required</span>
+              {freeSizeOnly ? <>Size <span>— Free size</span></> : <>Select your size <span>— Required</span></>}
             </legend>
             <div className="size-options">
               {sizes.map((s) => {
@@ -134,11 +129,14 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
             <summary>
               Size & fit guide <span>+</span>
             </summary>
-            <p>
+            {hasFreeSize ? <p>
+              Free size is a single garment size. Check the product measurements
+              and fit notes before ordering.
+            </p> : <p>
               This is a silhouette preview. Confirmed garment measurements and
               fit notes will be added for each style before orders open. Please
               do not use the preview sizes as a fitting guide.
-            </p>
+            </p>}
           </details>
           <form className="product-purchase" onSubmit={event => {
             event.preventDefault();

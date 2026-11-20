@@ -576,7 +576,7 @@
   padding: 4px;
 }
 .admin-variants select {
-  min-width: 65px;
+  min-width: 185px;
 }
 .admin-usd-price, .admin-variant-offer { display: block; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .admin-variant-offer { margin-top: 6px; color: var(--action-hover); font-size: 13px; font-weight: 600; }

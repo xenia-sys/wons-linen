@@ -221,6 +221,8 @@ export const vietnameseAdminMessages: Readonly<Record<string, string>> = {
   "+ Add variant": "+ Thêm biến thể",
   "Swatch": "Mẫu màu",
   "Size": "Kích cỡ",
+  "Free size": "Free size (một cỡ)",
+  "Choose Free size for a one-size variant.": "Chọn Free size cho biến thể chỉ có một kích cỡ.",
   "Price (VND)": "Giá (VND)",
   "Price (USD)": "Giá (USD)",
   "Available quantity": "Số lượng tồn",

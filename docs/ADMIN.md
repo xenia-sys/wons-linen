@@ -38,6 +38,8 @@ Production Auth URLs are configured. The founder's confirmed account demonstrate
 
 ## Product workflow
 
+In **Variants & pricing → Size**, choose **Free size** (shown as **Free size (một cỡ)** in Vietnamese) for a one-size variant, then save the product. Each colour keeps its own SKU, price and stock. Products whose variants are all Free size show that label on catalog cards and product pages. An available Free size is selected automatically when it is the only size available for the selected colour. The bag and order keep the size label. Free size does not imply a universal fit; include actual garment measurements in the description.
+
 Create a new product as **Hidden**, add at least one variant and save. Then upload front, back, styling and detail photos. Set English image descriptions and optional matching colours. Choose **Set as cover** to move a photo to the first gallery position, then choose **Save product** at the bottom of the form to attach the gallery. Product photos can be up to 40 MB before optimization and 3 MB afterward. The editor resizes and compresses each file independently, starting at up to 2000 pixels on the longest edge. HEIC is supported when the browser can decode it. Up to 20 images can be linked to a product. If a file fails, the editor names it, keeps completed uploads, and continues with the remaining files.
 
 To feature a published product, choose **Department → New Arrivals** and confirm its **Main department** (Women or Men). It remains in that department and appears first in New Arrivals. Change Department back to Women or Men and save to remove it from New Arrivals. The Department filter in the Products list shows manually featured products when set to New Arrivals.

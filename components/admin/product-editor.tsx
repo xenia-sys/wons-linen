@@ -10,12 +10,13 @@ import { prepareImage } from "../../lib/prepare-image";
 import { PRODUCT_IMAGE_ACCEPT, PRODUCT_IMAGE_LIMIT, uploadProductPhotoBatch } from "../../lib/product-photo-upload";
 import { formatDisplayPrice, parseUsdQuote } from "../../lib/display-currency";
 import { money, percentagePrice } from "../../lib/commerce";
+import { PRODUCT_SIZES } from "../../lib/product-sizes";
 import type {
   ProductDraft,
   AdminVariant,
   AdminImage,
 } from "../../lib/admin-validation";
-const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+const sizes = PRODUCT_SIZES;
 const firstVariant = (): AdminVariant => ({
   sku: "WONS-IVORY-S",
   color: "Ivory",
@@ -490,6 +491,7 @@ export function ProductEditor({ id }: { id?: string }) {
                   <h2>{t("Variants & pricing")}</h2>
                   <p>
                     {t("Set the base price in VND. USD is a reference conversion.")} {t("Schedule offers in")} <Link href="/admin/discount-events" className="underlined-link">{t("Discount events")}</Link>.
+                    {" "}{t("Choose Free size for a one-size variant.")}
                   </p>
                 </div>
                 <button
@@ -575,7 +577,7 @@ export function ProductEditor({ id }: { id?: string }) {
                             }
                           >
                             {sizes.map((s) => (
-                              <option key={s}>{s}</option>
+                              <option key={s} value={s}>{t(s)}</option>
                             ))}
                           </select>
                         </td>

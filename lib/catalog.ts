@@ -3,6 +3,7 @@ import { createPublicSupabaseClient } from "./supabase";
 import type { Product } from "./types";
 import productImages from "../content/product-images.json";
 import { getDiscountPricing } from "./discount-pricing";
+import { PRODUCT_SIZES } from "./product-sizes";
 export const getCatalog = cache(async (): Promise<(Product & { created_at: string })[]> => {
   const catalog = createPublicSupabaseClient()
     .from("products")
@@ -47,8 +48,7 @@ export const getCatalog = cache(async (): Promise<(Product & { created_at: strin
       variants: p.variants.map(variant => ({ ...variant, discount_percent: pricing.rates[p.id] })).sort(
         (a, b) =>
           a.color.localeCompare(b.color) ||
-          ["XS", "S", "M", "L", "XL", "XXL"].indexOf(a.size) -
-            ["XS", "S", "M", "L", "XL", "XXL"].indexOf(b.size),
+          PRODUCT_SIZES.indexOf(a.size) - PRODUCT_SIZES.indexOf(b.size),
       ),
     }));
 });

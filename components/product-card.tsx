@@ -6,6 +6,7 @@ import type { Product } from "../lib/types";
 import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
 import { imageFramingStyle } from "../lib/image-framing";
+import { isFreeSizeProduct } from "../lib/product-sizes";
 export function ProductCard({ product }: { product: Product }) {
   const lowest = [...product.variants].sort(
     (a, b) => unitPrice(a) - unitPrice(b),
@@ -46,6 +47,7 @@ export function ProductCard({ product }: { product: Product }) {
         <p className="product-price">
           <ProductPrice variant={lowest} />
         </p>
+        {isFreeSizeProduct(product.variants) && <p className="product-size-label">Free size</p>}
         <div className="product-colors">
           {colors.map(([color, hex]) => (
             <span
