@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { selectNewArrivals } from "../lib/new-arrivals.ts";
-import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour } from "../lib/product-gallery.ts";
+import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour, cardHoverImage } from "../lib/product-gallery.ts";
 import type { Product } from "../lib/types.ts";
 
 const style = (slug: string, day: number, options: Partial<Product> = {}) => ({
@@ -68,4 +68,14 @@ test("a product opens on the first colour that has its own photography", () => {
   assert.equal(preferredColour(style("shared", 1, { variants, images: [image("a"), image("b", "Black")] })), "Black");
   assert.equal(preferredColour(style("unmatched", 1, { variants, images: [image("a", "Navy")] })), "Olive");
   assert.equal(preferredColour(style("unpictured", 1, { variants })), "Olive");
+});
+
+test("catalog cards reveal the cover colour's back view, then its next photo", () => {
+  const image = (id: string, alt: string, color?: string) => ({ id, src: `/${id}.jpg`, alt, color });
+  const cards = (images: ReturnType<typeof image>[]) => cardHoverImage(style("card", 1, { images }))?.id;
+  assert.equal(cards([image("a", "Front view", "White"), image("b", "Close-up", "White"), image("c", "Back view of it", "White")]), "c");
+  assert.equal(cards([image("a", "Front view", "White"), image("b", "Back view", "Black"), image("c", "Styled view", "White")]), "c");
+  assert.equal(cards([image("a", "Front view", "White"), image("b", "Close-up")]), "b");
+  assert.equal(cards([image("a", "Front view", "White")]), undefined);
+  assert.equal(cards([]), undefined);
 });

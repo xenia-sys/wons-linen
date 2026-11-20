@@ -40,6 +40,19 @@ export function preferredColour(product: Product): string {
   return pictured?.color ?? colours[0];
 }
 
+/**
+ * The photo a catalog card reveals on hover: the back view of the cover's colour
+ * when there is one, otherwise the next photo of that colour (or a shared photo).
+ */
+export function cardHoverImage(product: Product) {
+  const [cover, ...rest] = product.images ?? [];
+  if (!cover) return undefined;
+  const sameColour = rest.filter(
+    (image) => image.src !== cover.src && (!image.color || !cover.color || image.color === cover.color),
+  );
+  return sameColour.find((image) => /^back view\b/i.test(image.alt)) ?? sameColour[0];
+}
+
 export function getProductGallery(
   product: Product,
   color: string,

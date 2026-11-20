@@ -7,11 +7,13 @@ import { GarmentArt } from "./garment-art";
 import { Arrow } from "./icons";
 import { imageFramingStyle } from "../lib/image-framing";
 import { isFreeSizeProduct } from "../lib/product-sizes";
+import { cardHoverImage } from "../lib/product-gallery";
 export function ProductCard({ product }: { product: Product }) {
   const lowest = [...product.variants].sort(
     (a, b) => unitPrice(a) - unitPrice(b),
   )[0];
   const cover = product.images?.[0];
+  const hover = cardHoverImage(product);
   const colors = [
     ...new Map(product.variants.map((v) => [v.color, v.color_hex])).entries(),
   ];
@@ -20,13 +22,27 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/products/${product.slug}`} className="product-card-link">
         <div className={`product-art art-${product.category.toLowerCase()}`} style={cover?.framing ? { aspectRatio: "4 / 5" } : undefined}>
           {cover ? (
-            <Image
-              src={cover.src}
-              alt=""
-              fill
-              sizes="(max-width: 700px) 50vw, 33vw"
-              style={imageFramingStyle(cover.framing)}
-            />
+            <span className="product-photos">
+              <Image
+                src={cover.src}
+                alt=""
+                fill
+                sizes="(max-width: 700px) 50vw, 33vw"
+                className="product-photo"
+                style={imageFramingStyle(cover.framing)}
+              />
+              {hover && (
+                <Image
+                  src={hover.src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 700px) 50vw, 33vw"
+                  className="product-photo product-photo-hover"
+                  loading="lazy"
+                  style={imageFramingStyle(hover.framing)}
+                />
+              )}
+            </span>
           ) : (
             <GarmentArt
               category={product.category}

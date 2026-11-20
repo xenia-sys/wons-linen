@@ -609,6 +609,32 @@
   .product-card-link:hover .garment-art {
     transform: scale(1.035);
   }
+  .product-photos {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transition: transform 0.8s cubic-bezier(0.23, 0.78, 0.26, 1);
+  }
+  .product-photo-hover {
+    opacity: 0;
+    transition: opacity 0.55s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .product-card-link:hover .product-photos,
+    .product-card-link:focus-visible .product-photos {
+      transform: scale(1.03);
+    }
+    .product-card-link:hover .product-photo-hover,
+    .product-card-link:focus-visible .product-photo-hover {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .product-photos,
+    .product-photo-hover {
+      transition: none;
+    }
+  }
   .art-bottom {
     position: absolute;
     left: 19px;
