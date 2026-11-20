@@ -19,9 +19,6 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="product-card">
       <Link href={`/products/${product.slug}`} className="product-card-link">
         <div className={`product-art art-${product.category.toLowerCase()}`} style={cover?.framing ? { aspectRatio: "4 / 5" } : undefined}>
-          <span className="art-label">
-            {product.department} / {product.category}
-          </span>
           {cover ? (
             <Image
               src={cover.src}

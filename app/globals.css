@@ -609,15 +609,6 @@
   .product-card-link:hover .garment-art {
     transform: scale(1.035);
   }
-  .art-label {
-    position: absolute;
-    top: 19px;
-    left: 19px;
-    font-size: 11px;
-    letter-spacing: 0.07em;
-    z-index: 1;
-    color: var(--muted);
-  }
   .art-bottom {
     position: absolute;
     left: 19px;
@@ -1725,11 +1716,6 @@
     }
     .product-art {
       aspect-ratio: 3/4;
-    }
-    .art-label {
-      top: 12px;
-      left: 11px;
-      font-size: 9px;
     }
     .art-bottom {
       left: 11px;

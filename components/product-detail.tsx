@@ -6,14 +6,15 @@ import { remainingVariantQuantity, unitPrice } from "../lib/commerce";
 import { ProductPrice } from "./product-price";
 import { useBag } from "./cart-provider";
 import { ProductGallery } from "./product-gallery";
+import { preferredColour } from "../lib/product-gallery";
 import { Arrow } from "./icons";
 import { FREE_SIZE, isFreeSizeProduct, selectedSizeForColour } from "../lib/product-sizes";
 export function ProductDetail({ product, canOrder }: { product: Product; canOrder: boolean }) {
   const colors = [
     ...new Map(product.variants.map((v) => [v.color, v.color_hex])).entries(),
   ];
-  const [color, setColor] = useState(colors[0][0]);
-  const [size, setSize] = useState(() => selectedSizeForColour(product.variants, colors[0][0]));
+  const [color, setColor] = useState(() => preferredColour(product));
+  const [size, setSize] = useState(() => selectedSizeForColour(product.variants, preferredColour(product)));
   const [quantityInput, setQuantityInput] = useState("1");
   const [added, setAdded] = useState(0);
   const [addError, setAddError] = useState(false);

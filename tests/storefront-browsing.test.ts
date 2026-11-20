@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { selectNewArrivals } from "../lib/new-arrivals.ts";
-import { galleryDragOffset, galleryIndex, gallerySwipeDirection } from "../lib/product-gallery.ts";
+import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour } from "../lib/product-gallery.ts";
 import type { Product } from "../lib/types.ts";
 
 const style = (slug: string, day: number, options: Partial<Product> = {}) => ({
@@ -58,4 +58,14 @@ test("gallery follows a drag between images and resists the ends", () => {
   assert.ok(galleryDragOffset(-120, 500, 2, 3) > -30);
   assert.equal(galleryIndex(-1, 3), 0);
   assert.equal(galleryIndex(3, 3), 2);
+});
+
+test("a product opens on the first colour that has its own photography", () => {
+  const variant = (color: string) => ({ id: color, sku: color, color, color_hex: "#000000", size: "S", price_vnd: 100, available_quantity: 1 });
+  const image = (id: string, color?: string) => ({ id, src: `/${id}.jpg`, alt: id, color });
+  const variants = ["Olive", "Black", "White"].map(variant);
+  assert.equal(preferredColour(style("pictured", 1, { variants, images: [image("a", "White"), image("b", "Black")] })), "White");
+  assert.equal(preferredColour(style("shared", 1, { variants, images: [image("a"), image("b", "Black")] })), "Black");
+  assert.equal(preferredColour(style("unmatched", 1, { variants, images: [image("a", "Navy")] })), "Olive");
+  assert.equal(preferredColour(style("unpictured", 1, { variants })), "Olive");
 });

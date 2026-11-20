@@ -31,6 +31,15 @@ export type GalleryMedia =
       label: string;
     };
 
+/** Open a product on a colour that has its own photography, following gallery order. */
+export function preferredColour(product: Product): string {
+  const colours = [...new Set(product.variants.map((variant) => variant.color))];
+  const pictured = (product.images ?? []).find(
+    (image) => image.color && colours.includes(image.color),
+  );
+  return pictured?.color ?? colours[0];
+}
+
 export function getProductGallery(
   product: Product,
   color: string,
