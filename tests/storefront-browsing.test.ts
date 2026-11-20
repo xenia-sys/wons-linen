@@ -20,10 +20,10 @@ test("new arrivals lists the latest twelve real styles across departments", () =
   assert.deepEqual(result.products.map(p => p.slug), real.slice(1).reverse().map(p => p.slug));
 });
 
-test("preview styles are labeled and disappear when the first real style is published", () => {
+test("demo styles never return, even when no real style is published", () => {
   const demo = style("demo", 3, { is_demo: true, status: "preview" });
   const real = style("real", 2);
-  assert.deepEqual(selectNewArrivals([demo]), { products: [demo], preview: true });
+  assert.deepEqual(selectNewArrivals([demo]), { products: [], preview: false });
   assert.deepEqual(selectNewArrivals([demo, real]), { products: [real], preview: false });
   assert.deepEqual(selectNewArrivals([]), { products: [], preview: false });
 });

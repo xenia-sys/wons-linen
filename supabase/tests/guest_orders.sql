@@ -61,14 +61,11 @@ begin
   begin perform public.submit_wons_order(repeat('a',64),altered,null);
     raise exception 'Demo item ordered'; exception when sqlstate 'WN001' then null; end;
   test_body := altered || jsonb_build_object('test',true,'id',current_setting('wons.test.demo_order'));
-  receipt := public.submit_wons_order(repeat('a',64),test_body,null);
-  if (receipt->>'total_vnd')::bigint is distinct from (current_setting('wons.test.demo')::jsonb->>'price')::bigint
-    or public.submit_wons_order(repeat('a',64),test_body,null) <> receipt then
-    raise exception 'Test order price or retry incorrect';
-  end if;
+  begin perform public.submit_wons_order(repeat('a',64),test_body,null);
+    raise exception 'Retired test checkout accepted a demo order'; exception when invalid_parameter_value then null; end;
   begin perform public.submit_wons_order(repeat('a',64),
-    jsonb_set(payload || jsonb_build_object('test',true,'id',gen_random_uuid()),'{items,0,quantity}','1'),null);
-    raise exception 'Real product accepted in test checkout'; exception when sqlstate 'WN001' then null; end;
+    payload || jsonb_build_object('test',true,'id',gen_random_uuid()),null);
+    raise exception 'Retired test checkout accepted a real-product test order'; exception when invalid_parameter_value then null; end;
   receipt := public.submit_wons_order(repeat('a',64),payload,repeat('c',64));
   if (receipt->>'total_vnd')::bigint is distinct from 1580000::bigint or not (receipt ? 'order_number') or receipt ? 'email' then
     raise exception 'Receipt total incorrect';
@@ -100,21 +97,15 @@ do $$
 declare
   oid uuid := (current_setting('wons.test.payload')::jsonb->>'id')::uuid;
   vid uuid := current_setting('wons.test.variant')::uuid;
-  tid uuid := current_setting('wons.test.demo_order')::uuid;
   demo_vid uuid := (current_setting('wons.test.demo')::jsonb->>'variantId')::uuid;
   demo_stock int := current_setting('wons.test.demo_stock')::int;
 begin
-  if (select count(id) from public.wons_orders) <> 2 or
+  if (select count(id) from public.wons_orders) <> 1 or
     not exists(select id from public.wons_orders where id=oid and status='pending' and seen_at is null
-      and not is_test and payment_method='cod' and total_vnd=1580000 and delivery_vnd=0 and delivery->>'street'='Other test street' and email='sample@example.invalid')
-    or not exists(select id from public.wons_orders where id=tid and is_test and payment_method='cod' and seen_at is null) then
+      and not is_test and payment_method='cod' and total_vnd=1580000 and delivery_vnd=0 and delivery->>'street'='Other test street' and email='sample@example.invalid') then
     raise exception 'Owner inbox missing or has incorrect order data';
   end if;
   if (select available_quantity from public.variants where id=demo_vid) <> demo_stock then raise exception 'Test reserved stock'; end if;
-  if public.manage_wons_order(tid,'confirm') <> 'confirmed' or public.manage_wons_order(tid,'cancel') <> 'cancelled' then
-    raise exception 'Test order status did not update';
-  end if;
-  if (select available_quantity from public.variants where id=demo_vid) <> demo_stock then raise exception 'Test cancellation restocked samples'; end if;
   begin perform public.manage_wons_order(oid,'ship');
     raise exception 'Order skipped confirmation and packing'; exception when sqlstate 'WN004' then null; end;
   if (select available_quantity from public.variants where id=vid) <> 0 then raise exception 'Stock was not reserved'; end if;
@@ -166,4 +157,4 @@ begin
     raise exception 'Fulfillment changed reserved stock'; end if;
 end $$;
 rollback;
-select 'PASS: guest gateway, COD, guarded test orders, unchanged demo stock, retry, real reservations, Owner inbox/RLS, fulfillment and cancellation' as result;
+select 'PASS: guest gateway, COD, retired test checkout rejection, unchanged demo stock, retry, real reservations, Owner inbox/RLS, fulfillment and cancellation' as result;

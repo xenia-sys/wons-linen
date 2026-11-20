@@ -12,12 +12,10 @@ export function Catalog({
   products,
   department = "All",
   collection,
-  preview = false,
 }: {
   products: Product[];
   department?: Department | "All";
   collection?: "new-arrivals";
-  preview?: boolean;
 }) {
   const newArrivals = collection === "new-arrivals";
   const [arrivalDepartment, setArrivalDepartment] = useState<Department | "All">("All");
@@ -53,7 +51,6 @@ export function Catalog({
   </>;
   return (
     <section className="catalog-section" aria-label="Collection products">
-      {newArrivals && preview && <p className="arrival-preview" role="note">Collection preview · Sample prices</p>}
       {newArrivals ? (
         <div className="catalog-departments" role="group" aria-label="Filter new arrivals by department">
           {(["All", "Women", "Men"] as const).map(option => (
@@ -177,10 +174,6 @@ export function Catalog({
             : <Link className="button dark" href="/shop">Shop all styles</Link>}
         </div>
       )}
-      {!newArrivals && <p className="catalog-note">
-        A first look at WONS. Styles, colours and prices are illustrative;
-        product photography will follow.
-      </p>}
     </section>
   );
 }

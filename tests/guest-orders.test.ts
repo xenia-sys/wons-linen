@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseOrder } from "../lib/orders.ts";
 import { POST } from "../app/api/checkout/route.ts";
-import { createTestCheckoutCookie, TEST_CHECKOUT_COOKIE, TEST_CHECKOUT_SECONDS, testCheckoutAllowed } from "../lib/test-checkout.ts";
 
 const address = { firstName: " Sample ", lastName: "Guest", street: "Test street", city: "Sample City" };
 const payload = {
@@ -28,16 +27,6 @@ test("checkout rejects duplicate items, fractional quantities and excessive tota
     Array.from({ length: 4 }, (_, i) => ({ ...item, quantity: 8, variantId: "805222af-6ce5-4e47-8d6b-3252bd54f4f" + i }))]) {
     assert.throws(() => parseOrder({ ...payload, items }));
   }
-});
-
-test("the Owner test grant expires and cannot be modified or reused with a different key", () => {
-  const now = 1794460000000;
-  const key = "a".repeat(64);
-  const token = createTestCheckoutCookie(key, now);
-  assert.ok(testCheckoutAllowed(token, key, now + 1000));
-  assert.equal(testCheckoutAllowed(token, key, now + TEST_CHECKOUT_SECONDS * 1000), false);
-  assert.equal(testCheckoutAllowed(token.replace(/^\d/, "2"), key, now), false);
-  assert.equal(testCheckoutAllowed(token, "b".repeat(64), now), false);
 });
 
 test("guest endpoint blocks preview, checks origin and returns only the database receipt", async () => {
@@ -67,20 +56,14 @@ test("guest endpoint blocks preview, checks origin and returns only the database
     const response = await POST(request());
     assert.equal(response.status, 201);
     assert.deepEqual(await response.json(), { order_number: 1, total_vnd: 1580000 });
-    const sample = { ...payload, test: true, items: [{ ...payload.items[0], quantity: 1 }] };
-    const denied = await POST(request(site, sample));
-    assert.equal(denied.status, 403);
-    assert.equal((await denied.json()).code, "TEST_SESSION_REQUIRED");
-    const cookie = `${TEST_CHECKOUT_COOKIE}=${createTestCheckoutCookie("a".repeat(64))}`;
-    globalThis.fetch = async (_url, options) => {
-      const body = JSON.parse(String(options?.body));
-      assert.equal(body.order_data.test, true);
-      assert.equal(body.order_data.items[0].quantity, 1);
-      return Response.json({ order_number: 2, total_vnd: 790000 });
-    };
-    const testOrder = await POST(request(site, sample, cookie));
-    assert.equal(testOrder.status, 201);
-    assert.deepEqual(await testOrder.json(), { order_number: 2, total_vnd: 790000 });
+    let testRequests = 0;
+    globalThis.fetch = async () => { testRequests += 1; throw Error("Test must not reach the database"); };
+    for (const value of [true, "true", 1, null]) {
+      const denied = await POST(request(site, { ...payload, test: value }, "__Host-wons-test-checkout=retired"));
+      assert.equal(denied.status, 410);
+      assert.equal((await denied.json()).code, "TEST_CHECKOUT_REMOVED");
+    }
+    assert.equal(testRequests, 0);
     globalThis.fetch = async () => Response.json({ code: "WN001", message: "private database detail" }, { status: 400 });
     const changed = await POST(request());
     assert.equal(changed.status, 409);

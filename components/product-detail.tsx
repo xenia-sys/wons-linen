@@ -36,7 +36,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
   const quantityEnabled = ready && maxQuantity > 0;
   const validQuantity = Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= maxQuantity;
   const atLimit = variant && variant.available_quantity > 0 && maxQuantity === 0;
-  const canAdd = quantityEnabled && validQuantity;
+  const canAdd = canOrder && quantityEnabled && validQuantity;
   function selectQuantity(value: string) {
     setQuantityInput(value);
     setAdded(0);
@@ -71,9 +71,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
           </p>
           <p className="product-description">{product.description}</p>
           <span className="preview-pill">
-            {canOrder ? "Free shipping within Vietnam" : product.is_demo
-              ? "Collection preview · Sample price"
-              : "Collection preview · Orders are not open"}
+            {canOrder ? "Free shipping within Vietnam" : "Orders are not open"}
           </span>
           <fieldset>
             <legend>
@@ -133,9 +131,8 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
               Free size is a single garment size. Check the product measurements
               and fit notes before ordering.
             </p> : <p>
-              This is a silhouette preview. Confirmed garment measurements and
-              fit notes will be added for each style before orders open. Please
-              do not use the preview sizes as a fitting guide.
+              Check the garment measurements and fit notes in the product
+              description. Contact WONS if you need help choosing a size.
             </p>}
           </details>
           <form className="product-purchase" onSubmit={event => {
@@ -159,7 +156,7 @@ export function ProductDetail({ product, canOrder }: { product: Product; canOrde
               </div>
               <button type="submit" className="button dark add-button" disabled={!canAdd}>
                 {!ready ? "Loading your bag…" : !variant ? "Select a size" : atLimit ? "Quantity limit reached"
-                  : !maxQuantity ? "Unavailable" : canOrder ? "Add to bag" : "Add to preview bag"}
+                  : !maxQuantity ? "Unavailable" : canOrder ? "Add to bag" : "Orders are not open"}
                 <Arrow />
               </button>
             </div>

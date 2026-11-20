@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function NewArrivalsPage() {
-  const { products, preview } = selectNewArrivals(await getCatalog());
+  const { products } = selectNewArrivals(await getCatalog());
   return (
     <>
       <section className="collection-header" aria-labelledby="new-arrivals-title">
@@ -17,7 +17,7 @@ export default async function NewArrivalsPage() {
         <h1 id="new-arrivals-title">New Arrivals</h1>
         <p>Discover the latest Women’s and Men’s linen styles.</p>
       </section>
-      <Catalog products={products} collection="new-arrivals" preview={preview} />
+      <Catalog products={products} collection="new-arrivals" />
     </>
   );
 }

@@ -246,27 +246,10 @@ export function ProductEditor({ id }: { id?: string }) {
           }
         >
           <option value="hidden">{t("Hidden — draft")}</option>
-          {draft.is_demo && (
-            <option value="preview">{t("Preview — demo data")}</option>
-          )}
           <option value="published">{t("Published")}</option>
         </select>
       </label>
       <p className="admin-help"> {t("Hidden products are removed from the public catalog and product links. Published products appear on new page loads after saving.")} </p>
-      <label className="admin-checkbox">
-        <input
-          type="checkbox"
-          checked={draft.is_demo}
-          onChange={(e) =>
-            patch({
-              is_demo: e.target.checked,
-              status:
-                !e.target.checked && draft.status === "preview"
-                  ? "hidden"
-                  : draft.status,
-            })
-          }
-        /> {t("Demo product")} </label>
       <label> {t("Display order")} <input
           type="number"
           min={0}

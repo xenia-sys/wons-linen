@@ -38,6 +38,8 @@ Production Auth URLs are configured. The founder's confirmed account demonstrate
 
 ## Product workflow
 
+The store now serves published, non-demo products only. The demo-product checkbox, Preview visibility option and hosted COD test controls have been removed. Historical test order records stay in the database for audit, but are excluded from the order inbox, new-order badge and sales reports.
+
 The **Category** field supports Shirts, Dresses, Skirts, Trousers, Shorts and Sets. Vietnamese admin labels include **Chân váy** for Skirts and **Quần short** for Shorts. Save a product with the appropriate category and publish it to include it in the storefront's category filters. Desktop category tabs and the mobile menu show categories available in the selected department or New Arrivals collection.
 
 In **Variants & pricing → Size**, choose **Free size** (shown as **Free size (một cỡ)** in Vietnamese) for a one-size variant, then save the product. Each colour keeps its own SKU, price and stock. Products whose variants are all Free size show that label on catalog cards and product pages. An available Free size is selected automatically when it is the only size available for the selected colour. The bag and order keep the size label. Free size does not imply a universal fit; include actual garment measurements in the description.

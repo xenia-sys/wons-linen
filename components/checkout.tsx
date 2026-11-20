@@ -13,9 +13,6 @@ import { GarmentArt } from "./garment-art";
 import { Arrow, BagIcon } from "./icons";
 
 const FORM_ID = "checkout-details";
-const sampleContact = { email: "test-cod@example.invalid", phone: "0000000000" };
-const sampleBilling = { "first-name": "WONS", "last-name": "Test", street: "1 Sample Street", city: "Sample City" };
-const sampleDelivery = { ...sampleBilling, street: "2 Sample Delivery Street" };
 
 type Field = {
   key: string;
@@ -41,7 +38,7 @@ const addressFields: Field[] = [
   { key: "postcode", label: "Postal code", optional: true, max: 20 },
 ];
 
-function Fields({ prefix, fields, defaults }: { prefix: string; fields: Field[]; defaults?: Record<string, string> }) {
+function Fields({ prefix, fields }: { prefix: string; fields: Field[] }) {
   return (
     <div className="checkout-field-grid">
       {fields.map(({ key, label, type, wide, optional, max }) => {
@@ -51,7 +48,7 @@ function Fields({ prefix, fields, defaults }: { prefix: string; fields: Field[];
             <label htmlFor={id}>
               {label} {optional && <span>(optional)</span>}
             </label>
-            <input id={id} type={type ?? "text"} required={!optional} maxLength={max ?? (type === "tel" ? 40 : 160)} defaultValue={defaults?.[key]} />
+            <input id={id} type={type ?? "text"} required={!optional} maxLength={max ?? (type === "tel" ? 40 : 160)} />
           </div>
         );
       })}
@@ -59,10 +56,10 @@ function Fields({ prefix, fields, defaults }: { prefix: string; fields: Field[];
   );
 }
 
-function AddressFields({ prefix, defaults }: { prefix: string; defaults?: Record<string, string> }) {
+function AddressFields({ prefix }: { prefix: string }) {
   return (
     <>
-      <Fields prefix={prefix} fields={addressFields} defaults={defaults} />
+      <Fields prefix={prefix} fields={addressFields} />
       <p className="checkout-country"><strong>Country / region:</strong> {ORDER_COUNTRY}</p>
     </>
   );
@@ -80,10 +77,10 @@ function getAddress(read: (field: string) => string, prefix: string): OrderAddre
 type Review = OrderDetails & { items: OrderItem[]; separateDelivery: boolean };
 
 function OrderSummary({
-  lines, test, reviewing, canOrder, changed, placing, error, place,
+  lines, reviewing, changed, placing, error, place,
 }: {
-  lines: ResolvedLine[]; test: boolean;
-  reviewing: boolean; canOrder: boolean; changed: boolean; placing: boolean;
+  lines: ResolvedLine[];
+  reviewing: boolean; changed: boolean; placing: boolean;
   error: { message: string; code?: string } | null; place: () => void;
 }) {
   const count = lines.reduce((total, line) => total + line.quantity, 0);
@@ -92,9 +89,9 @@ function OrderSummary({
     <aside className="checkout-summary" aria-labelledby="checkout-summary-title">
       <div className="checkout-summary-heading">
         <h2 id="checkout-summary-title">Your order</h2>
-        {!test && <Link href="/bag" className="underlined-link">Edit bag</Link>}
+        <Link href="/bag" className="underlined-link">Edit bag</Link>
       </div>
-      <p className="checkout-subtle">{test ? "1 sample item for this test" : `${count} ${count === 1 ? "item" : "items"} in your bag`}</p>
+      <p className="checkout-subtle">{`${count} ${count === 1 ? "item" : "items"} in your bag`}</p>
       <ul className="checkout-items">
         {lines.map(({ variantId, product, variant, quantity }) => {
           const cover =
@@ -126,8 +123,8 @@ function OrderSummary({
         <div className="checkout-total"><dt>Order total</dt><dd>{format(subtotal(lines))}</dd></div>
       </dl>
       {currency === "USD" && <p className="checkout-subtle">Orders are recorded in VND ({money(subtotal(lines))}). USD amounts are estimates.</p>}
-      {error && <p className="checkout-summary-notice" role="alert">{error.message} {error.code === "BAG_CHANGED" && <a href={test ? "/checkout?test=1" : "/bag"} className="underlined-link">{test ? "Refresh test checkout" : "Refresh bag"}</a>}{error.code === "TEST_SESSION_REQUIRED" && <Link href="/admin/orders" className="underlined-link">Back to Orders</Link>}</p>}
-      {reviewing ? canOrder ? (
+      {error && <p className="checkout-summary-notice" role="alert">{error.message} {error.code === "BAG_CHANGED" && <a href="/bag" className="underlined-link">Refresh bag</a>}</p>}
+      {reviewing ? (
         <>
           {changed && <p className="checkout-summary-notice" role="alert">Your bag changed. Edit your details and review the updated order.</p>}
           <button className="button dark checkout-review-button" type="button" onClick={place} disabled={placing || changed}>
@@ -135,24 +132,17 @@ function OrderSummary({
           </button>
         </>
       ) : (
-        <>
-          <button className="button dark checkout-review-button" type="button" disabled aria-describedby="preview-order-unavailable">
-            Place order <Arrow />
-          </button>
-          <p className="checkout-subtle" id="preview-order-unavailable">Preview only. These items cannot be ordered.</p>
-        </>
-      ) : (
         <button className="button dark checkout-review-button" type="submit" form={FORM_ID}>
           Review order <Arrow />
         </button>
       )}
-      <p className="checkout-subtle checkout-payment-note">{test ? "Test only. No payment or shipment." : canOrder ? "Pay in cash when your order is delivered." : "Preview items are not available to order."}</p>
+      <p className="checkout-subtle checkout-payment-note">Pay in cash when your order is delivered.</p>
     </aside>
   );
 }
 
-function GuestCheckout({ lines, test, canOrder, complete }: {
-  lines: ResolvedLine[]; test: boolean; canOrder: boolean;
+function GuestCheckout({ lines, complete }: {
+  lines: ResolvedLine[];
   complete: (receipt: OrderReceipt, items: OrderItem[]) => void;
 }) {
   const router = useRouter();
@@ -204,7 +194,7 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
   }
 
   async function placeOrder() {
-    if (!canOrder || !review || changed || inFlight.current) return;
+    if (!review || changed || inFlight.current) return;
     inFlight.current = true;
     setPlacing(true);
     setError(null);
@@ -213,7 +203,7 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
       const { separateDelivery: _separateDelivery, ...details } = review;
       const response = await fetch("/api/checkout", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: requestId.current, ...details, ...(test ? { test: true } : {}) }),
+        body: JSON.stringify({ id: requestId.current, ...details }),
         signal: AbortSignal.timeout(18000),
       });
       const result = await response.json();
@@ -237,15 +227,15 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
   return (
     <div className="checkout-layout">
       <div className="checkout-main">
-        <form ref={editTarget} id={FORM_ID} autoComplete={canOrder && !test ? "on" : "off"} hidden={review !== null} onSubmit={reviewOrder}>
+        <form ref={editTarget} id={FORM_ID} autoComplete="on" hidden={review !== null} onSubmit={reviewOrder}>
           <fieldset className="checkout-section">
             <legend>Contact details</legend>
             <p className="checkout-subtle">You can check out as a guest. No account is needed.</p>
-            <Fields prefix="contact" fields={contactFields} defaults={test ? sampleContact : undefined} />
+            <Fields prefix="contact" fields={contactFields} />
           </fieldset>
           <fieldset className="checkout-section">
             <legend>Billing address</legend>
-            <AddressFields prefix="billing" defaults={test ? sampleBilling : undefined} />
+            <AddressFields prefix="billing" />
           </fieldset>
           <fieldset className="checkout-section">
             <legend>Delivery address</legend>
@@ -258,7 +248,7 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
               Ship to a different address?
             </label>
             {separateDelivery ? (
-              <AddressFields prefix="delivery" defaults={test ? sampleDelivery : undefined} />
+              <AddressFields prefix="delivery" />
             ) : (
               <p className="checkout-subtle">Same as the billing address.</p>
             )}
@@ -294,22 +284,20 @@ function GuestCheckout({ lines, test, canOrder, complete }: {
         <section className="checkout-payment" aria-labelledby="checkout-payment-title">
           <h2 id="checkout-payment-title">Payment</h2>
           <p><strong>{COD_LABEL}</strong></p>
-          <p className="checkout-subtle">{test ? "Simulated payment. No cash will be collected." : "Pay in cash when your order is delivered. This is the only payment method."}</p>
+          <p className="checkout-subtle">Pay in cash when your order is delivered. This is the only payment method.</p>
           <Link className="underlined-link" href="/information/privacy">Privacy information</Link>
         </section>
       </div>
-      <OrderSummary lines={lines} test={test} reviewing={review !== null} canOrder={canOrder} changed={changed} placing={placing} error={error} place={placeOrder} />
+      <OrderSummary lines={lines} reviewing={review !== null} changed={changed} placing={placing} error={error} place={placeOrder} />
     </div>
   );
 }
 
-export function Checkout({ enabled, testLine }: { enabled: boolean; testLine?: ResolvedLine }) {
-  const { ready, lines: bagLines, consume } = useBag();
-  const test = Boolean(testLine);
-  const lines = testLine ? [testLine] : bagLines;
+export function Checkout({ enabled }: { enabled: boolean }) {
+  const { ready, lines, consume } = useBag();
   const [receipt, setReceipt] = useState<OrderReceipt | null>(null);
   const receiptTitle = useRef<HTMLHeadingElement>(null);
-  const canOrder = enabled && (test || (lines.length > 0 && lines.every(line => line.product.status === "published" && !line.product.is_demo)));
+  const canOrder = enabled && lines.length > 0 && lines.every(line => line.product.status === "published" && !line.product.is_demo);
   useEffect(() => {
     if (receipt) receiptTitle.current?.focus();
   }, [receipt]);
@@ -317,21 +305,21 @@ export function Checkout({ enabled, testLine }: { enabled: boolean; testLine?: R
     <section className="checkout-page" aria-labelledby="checkout-title">
       <header className="checkout-header">
         <nav aria-label="Checkout steps" className="checkout-steps">
-          <Link href={test ? "/admin/orders" : "/bag"}>{test ? "Orders" : "Bag"}</Link>
+          <Link href="/bag">Bag</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="step">Checkout</span>
         </nav>
-        <h1 id="checkout-title">{test ? "COD test checkout" : "Checkout"}</h1>
+        <h1 id="checkout-title">Checkout</h1>
       </header>
       {receipt ? (
         <section className="checkout-empty" aria-labelledby="checkout-receipt">
           <BagIcon />
-          <h2 id="checkout-receipt" tabIndex={-1} ref={receiptTitle}>{test ? "Test order received." : "Order received."}</h2>
+          <h2 id="checkout-receipt" tabIndex={-1} ref={receiptTitle}>Order received.</h2>
           <p><strong>{orderReference(receipt.order_number)}</strong> · {money(receipt.total_vnd)}</p>
-          <p>{test ? "Find it in WONS Admin → Orders with the Test label. Do not fulfill it." : "WONS will contact you to confirm. Pay in cash when your order is delivered."}</p>
-          <Link href={test ? "/admin/orders" : "/shop"} className="button dark">{test ? "Back to Orders" : "Continue exploring"} <Arrow /></Link>
+          <p>WONS will contact you to confirm. Pay in cash when your order is delivered.</p>
+          <Link href="/shop" className="button dark">Continue exploring <Arrow /></Link>
         </section>
-      ) : !test && !ready ? (
+      ) : !ready ? (
         <p className="checkout-loading" role="status">Loading your bag…</p>
       ) : !lines.length ? (
         <div className="checkout-empty">
@@ -340,15 +328,22 @@ export function Checkout({ enabled, testLine }: { enabled: boolean; testLine?: R
           <p>Add an item to your bag to continue.</p>
           <Link href="/shop" className="button dark">Explore the collection <Arrow /></Link>
         </div>
+      ) : !canOrder ? (
+        <div className="checkout-empty">
+          <BagIcon />
+          <h2>Checkout is currently unavailable.</h2>
+          <p>Return to your bag to review the available items.</p>
+          <Link href="/bag" className="button dark">Review bag <Arrow /></Link>
+        </div>
       ) : (
         <>
           <div className="checkout-preview-notice">
-            <strong>{test ? "Test order" : canOrder ? "Delivery within Vietnam" : "Checkout preview"}</strong>
-            <p>{test ? "Use sample details only. This order will be marked Test and will not change stock or be shipped." : canOrder ? "Free shipping. Review your details before placing your order." : "Use sample details only. Nothing you enter here is sent to WONS or saved by the site."}</p>
+            <strong>Delivery within Vietnam</strong>
+            <p>Free shipping. Review your details before placing your order.</p>
           </div>
-          <GuestCheckout lines={lines} test={test} canOrder={canOrder} complete={(order, items) => {
+          <GuestCheckout lines={lines} complete={(order, items) => {
             setReceipt(order);
-            if (!test) consume(items);
+            consume(items);
           }} />
         </>
       )}

@@ -10,7 +10,8 @@ export const getCatalog = cache(async (): Promise<(Product & { created_at: strin
     .select(
       "id,slug,name,department,new_arrival,category,description,status,is_demo,sort_order,created_at,variants(id,sku,color,color_hex,size,price_vnd,sale_price_vnd,available_quantity),product_images(id,storage_path,alt,color,sort_order,framing)",
     )
-    .in("status", ["preview", "published"])
+    .eq("status", "published")
+    .eq("is_demo", false)
     .order("sort_order")
     .abortSignal(AbortSignal.timeout(8000));
   const [{ data, error }, pricing] = await Promise.all([catalog, getDiscountPricing()]);

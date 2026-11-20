@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: { default: "WONS LINEN | Women & Men", template: "%s | WONS LINEN" },
   description:
-    "The WONS LINEN collection preview. Easy silhouettes for Women and Men, at your own pace.",
+    "The WONS LINEN collection. Easy silhouettes for Women and Men, at your own pace.",
   robots: { index: false, follow: false },
 };
 export default async function RootLayout({

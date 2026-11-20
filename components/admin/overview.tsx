@@ -22,6 +22,6 @@ export function AdminOverview() {
         <li><strong>{t("Publish when ready")}</strong><p>{t("Choose Published and save. Choose Hidden to withdraw it from the storefront.")}</p></li>
       </ol>
     </section>
-    <section className="admin-panel admin-access-summary"><h2>{t("Your access")}</h2><p>{t("You can manage products, prices, discount events and publication. Reports, orders and COD tests require an Owner account.")}</p></section>
+    <section className="admin-panel admin-access-summary"><h2>{t("Your access")}</h2><p>{t("You can manage products, prices, discount events and publication. Reports and orders require an Owner account.")}</p></section>
   </>;
 }

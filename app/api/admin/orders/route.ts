@@ -13,13 +13,13 @@ export async function GET(request: Request) {
     if (id !== null) {
       if (!ORDER_UUID.test(id)) throw new AdminError("Invalid order reference.");
       const { data, error } = await db.from("wons_orders")
-        .select(`${SUMMARY},email,phone,billing,delivery,notes,lines`).eq("id", id).maybeSingle();
+        .select(`${SUMMARY},email,phone,billing,delivery,notes,lines`).eq("is_test", false).eq("id", id).maybeSingle();
       if (error) throw new AdminError("Could not load the order.", 503);
       if (!data) throw new AdminError("Order not found.", 404);
       return Response.json({ order: data }, { headers });
     }
     if (search.get("count") === "new") {
-      const { count, error } = await db.from("wons_orders").select("id", { head: true, count: "exact" }).is("seen_at", null);
+      const { count, error } = await db.from("wons_orders").select("id", { head: true, count: "exact" }).eq("is_test", false).is("seen_at", null);
       if (error) throw new AdminError("Could not check for new orders.", 503);
       return Response.json({ count }, { headers });
     }
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     const status = search.get("status");
     if (before !== null && (!/^\d{1,15}$/.test(before) || Number(before) < 1))
       throw new AdminError("Invalid order cursor.");
-    let query = db.from("wons_orders").select(SUMMARY).order("order_number", { ascending: false }).limit(LIMIT + 1);
+    let query = db.from("wons_orders").select(SUMMARY).eq("is_test", false).order("order_number", { ascending: false }).limit(LIMIT + 1);
     if (status !== null) {
       if (![...ORDER_FLOW, "cancelled"].some((value) => value === status))
         throw new AdminError("Invalid order status.");

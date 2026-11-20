@@ -6,7 +6,6 @@ import { adminFetch } from "../../lib/admin-browser";
 import { money } from "../../lib/commerce";
 import { addressLines, COD_LABEL, ORDER_FLOW, ORDER_STATUS_LABELS, orderReference, type OrderAction, type OrderStatus, type OrderSummary, type StoredOrder } from "../../lib/orders";
 import { notifyOrdersChanged, useOrderRefresh } from "./order-inbox";
-import { StartCodTest } from "./start-cod-test";
 
 const nextStep: Partial<Record<OrderStatus, { action: OrderAction; label: string }>> = {
   pending: { action: "confirm", label: "Confirm order" },
@@ -103,10 +102,6 @@ export function AdminOrders() {
         <p className="eyebrow">{t("STORE OPERATIONS")}</p>
         <h1>{t("Orders")}</h1>
         <p>{t("New orders appear automatically while this workspace is open. Confirm real orders with the customer and collect cash on delivery.")}</p>
-        <div className="admin-actions">
-          <StartCodTest />
-          <span>{t("Use a sample item and sample details. Test orders do not change stock.")}</span>
-        </div>
       </header>
       <section className="admin-panel" aria-label={t("Order inbox")}>
         <div className="admin-panel-heading">

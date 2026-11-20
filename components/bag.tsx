@@ -137,7 +137,7 @@ export function Bag({ enabled }: { enabled: boolean }) {
             </p>
           </div>
           <aside className="order-summary">
-            <p className="eyebrow">YOUR PREVIEW</p>
+            <p className="eyebrow">YOUR SELECTION</p>
             <h2>Order summary</h2>
             <div className="summary-line">
               <span>
@@ -155,12 +155,12 @@ export function Bag({ enabled }: { enabled: boolean }) {
             </div>
             <p className="summary-notice">
               {currency === "USD" && "USD amounts are estimates converted from VND. "}
-              {canOrder ? "WONS will contact you to confirm. Pay in cash when your order is delivered." : "Your bag includes items that are not available to order. You can still preview checkout."}
+              {canOrder ? "WONS will contact you to confirm. Pay in cash when your order is delivered." : "Checkout is currently unavailable for this selection. Please review your bag."}
             </p>
-            <Link href="/checkout" className="button dark">
+            {canOrder ? <Link href="/checkout" className="button dark">
               Continue to checkout <Arrow />
-            </Link>
-            <p className="secure-note">{canOrder ? "Cash on delivery (COD) only." : "Preview items cannot be ordered."}</p>
+            </Link> : <button className="button dark" type="button" disabled>Checkout unavailable</button>}
+            <p className="secure-note">Cash on delivery (COD) only.</p>
           </aside>
         </div>
       )}

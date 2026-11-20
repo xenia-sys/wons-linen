@@ -83,10 +83,6 @@ export default async function Home() {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        <p className="catalog-note">
-          Collection preview · Sample prices · Original illustrations, with
-          product photography to follow.
-        </p>
       </section>
       <section className="department-stories">
         <Link href="/women" className="department-story women-story">

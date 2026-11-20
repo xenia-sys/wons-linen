@@ -6,7 +6,6 @@ import { adminFetch } from "../../lib/admin-browser";
 import { OVERVIEW_PERIODS, parseOverviewPeriod, type OverviewPeriod, type OverviewPoint, type OverviewReport } from "../../lib/admin-overview";
 import { ORDER_FLOW, ORDER_STATUS_LABELS } from "../../lib/orders";
 import { useAdminLanguage } from "./admin-language";
-import { StartCodTest } from "./start-cod-test";
 
 const orderStatuses = [...ORDER_FLOW, "cancelled"] as const;
 const inventoryGroups = [
@@ -198,13 +197,12 @@ export function OverviewDashboard() {
         </div>
       )}
     </div>
-    <div className="overview-foot"><p>{t("Test COD orders are excluded. Inventory shows current stock, regardless of the date range.")}</p><p>{t("Vietnam time")}</p></div>
+    <div className="overview-foot"><p>{t("Inventory shows current stock, regardless of the date range.")}</p><p>{t("Vietnam time")}</p></div>
     <section className="overview-card overview-quick-actions">
       <h2>{t("Quick actions")}</h2>
       <div className="admin-actions">
         <Link className="button dark" href="/admin/products/new">{t("+ New product")}</Link>
         <Link className="button light" href="/admin/orders">{t("Open Orders →")}</Link>
-        <StartCodTest />
       </div>
     </section>
   </div>;
