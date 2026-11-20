@@ -1,6 +1,7 @@
 import type { ImageFraming } from "./image-framing.ts";
+import type { Category } from "./product-categories.ts";
+export type { Category } from "./product-categories.ts";
 export type Department = "Women" | "Men";
-export type Category = "Shirts" | "Dresses" | "Trousers" | "Sets";
 export type Variant = {
   id: string;
   sku: string;

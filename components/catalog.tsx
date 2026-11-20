@@ -3,6 +3,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { filterProducts } from "../lib/commerce";
+import { PRODUCT_CATEGORIES } from "../lib/product-categories";
 import type { Department, Product } from "../lib/types";
 import { ProductCard } from "./product-card";
 import { SearchIcon } from "./icons";
@@ -26,13 +27,9 @@ export function Catalog({
   const [sort, setSort] = useState("featured");
   const menuOutlet = useMobileMenuOutlet();
   const hasRefinements = category !== "All" || arrivalDepartment !== "All" || sort !== "featured";
-  const categories = [
-    ...new Set(
-      products
-        .filter((p) => currentDepartment === "All" || p.department === currentDepartment)
-        .map((p) => p.category),
-    ),
-  ];
+  const categories = PRODUCT_CATEGORIES.filter(option =>
+    products.some(product => product.category === option &&
+      (currentDepartment === "All" || product.department === currentDepartment)));
   const filtered = filterProducts(products, currentDepartment, category, query, sort);
   const hasFilters = hasRefinements || query.length > 0;
   const resultLabel = `${filtered.length} ${filtered.length === 1 ? "style" : "styles"}`;

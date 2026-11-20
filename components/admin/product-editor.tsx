@@ -11,6 +11,7 @@ import { PRODUCT_IMAGE_ACCEPT, PRODUCT_IMAGE_LIMIT, uploadProductPhotoBatch } fr
 import { formatDisplayPrice, parseUsdQuote } from "../../lib/display-currency";
 import { money, percentagePrice } from "../../lib/commerce";
 import { PRODUCT_SIZES } from "../../lib/product-sizes";
+import { PRODUCT_CATEGORIES } from "../../lib/product-categories";
 import type {
   ProductDraft,
   AdminVariant,
@@ -357,7 +358,7 @@ export function ProductEditor({ id }: { id?: string }) {
                       })
                     }
                   >
-                    {["Shirts", "Dresses", "Trousers", "Sets"].map((c) => (
+                    {PRODUCT_CATEGORIES.map((c) => (
                       <option key={c} value={c}>{t(c)}</option>
                     ))}
                   </select>

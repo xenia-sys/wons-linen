@@ -38,6 +38,8 @@ Production Auth URLs are configured. The founder's confirmed account demonstrate
 
 ## Product workflow
 
+The **Category** field supports Shirts, Dresses, Skirts, Trousers, Shorts and Sets. Vietnamese admin labels include **Chân váy** for Skirts and **Quần short** for Shorts. Save a product with the appropriate category and publish it to include it in the storefront's category filters. Desktop category tabs and the mobile menu show categories available in the selected department or New Arrivals collection.
+
 In **Variants & pricing → Size**, choose **Free size** (shown as **Free size (một cỡ)** in Vietnamese) for a one-size variant, then save the product. Each colour keeps its own SKU, price and stock. Products whose variants are all Free size show that label on catalog cards and product pages. An available Free size is selected automatically when it is the only size available for the selected colour. The bag and order keep the size label. Free size does not imply a universal fit; include actual garment measurements in the description.
 
 Create a new product as **Hidden**, add at least one variant and save. Then upload front, back, styling and detail photos. Set English image descriptions and optional matching colours. Choose **Set as cover** to move a photo to the first gallery position, then choose **Save product** at the bottom of the form to attach the gallery. Product photos can be up to 40 MB before optimization and 3 MB afterward. The editor resizes and compresses each file independently, starting at up to 2000 pixels on the longest edge. HEIC is supported when the browser can decode it. Up to 20 images can be linked to a product. If a file fails, the editor names it, keeps completed uploads, and continues with the remaining files.

@@ -2,6 +2,7 @@ import { parseImageFraming } from "./image-framing.ts";
 import type { ImageFraming } from "./image-framing.ts";
 import { PRODUCT_IMAGE_LIMIT } from "./product-photo-upload.ts";
 import { PRODUCT_SIZES } from "./product-sizes.ts";
+import { PRODUCT_CATEGORIES, type Category } from "./product-categories.ts";
 export type StaffRole = "owner" | "marketing_editor";
 export type AdminVariant = {
   id?: string;
@@ -28,7 +29,7 @@ export type ProductDraft = {
   description: string;
   department: "Women" | "Men";
   new_arrival?: boolean | null;
-  category: "Shirts" | "Dresses" | "Trousers" | "Sets";
+  category: Category;
   status: "hidden" | "preview" | "published";
   is_demo: boolean;
   sort_order: number;
@@ -79,7 +80,7 @@ export function parseProductDraft(input: unknown): ProductDraft {
     );
   if (
     !["Women", "Men"].includes(String(p.department)) ||
-    !["Shirts", "Dresses", "Trousers", "Sets"].includes(String(p.category)) ||
+    !PRODUCT_CATEGORIES.some(category => category === p.category) ||
     !["hidden", "preview", "published"].includes(String(p.status))
   )
     throw Error("Choose a valid department, category and visibility.");

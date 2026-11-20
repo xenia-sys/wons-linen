@@ -168,6 +168,30 @@ export function GarmentArt({
       {view !== "back" && <circle cx="250" cy="88" r="2.5" fill="#817665" />}
     </g>
   );
+  const skirt = (
+    <g>
+      <path d="M187 102h126l60 326q-123 27-246 0Z"
+        fill={`url(#${id}-cloth)`} stroke="#6e6554" strokeOpacity=".28" />
+      <path d="M184 118h132m-181 296q115 25 230 0m-153-271-32 256m71-281v291m37-266 32 256"
+        fill="none" stroke="#6e6554" strokeOpacity=".24" strokeWidth="1.5" />
+      <path d="m225 160-22 230m72-230 23 230"
+        fill="none" stroke="#fff" strokeOpacity=".3" strokeWidth="5" />
+      {view === "back" && <path d="M250 119v65" stroke="#6e6554" strokeOpacity=".3" />}
+    </g>
+  );
+  const shorts = (
+    <g>
+      <path d="M175 117h150l22 217-83 8-14-100-14 100-83-8Z"
+        fill={`url(#${id}-cloth)`} stroke="#6e6554" strokeOpacity=".28" />
+      <path d={view === "back"
+        ? "M175 133h150m-75 0v109m-87 77 71 7m32 0 71-7M186 173h38v41h-38Zm90 0h38v41h-38Z"
+        : "M175 133h150m-75-16v125m-73-95 28 29m118-29-28 29m-132 143 71 7m32 0 71-7"}
+        fill="none" stroke="#6e6554" strokeOpacity=".24" strokeWidth="1.5" />
+      <path d="m202 217-7 85m103-85 7 85"
+        fill="none" stroke="#fff" strokeOpacity=".3" strokeWidth="5" />
+      {view !== "back" && <circle cx="250" cy="125" r="2.5" fill="#817665" />}
+    </g>
+  );
   const dress = (
     <g>
       <path
@@ -239,6 +263,10 @@ export function GarmentArt({
             dress
           ) : category === "Trousers" ? (
             trousers
+          ) : category === "Skirts" ? (
+            skirt
+          ) : category === "Shorts" ? (
+            shorts
           ) : category === "Sets" ? (
             <>
               <g transform="translate(145 135) scale(.72)">{trousers}</g>

@@ -577,13 +577,15 @@
   .art-shirts {
     background: linear-gradient(130deg, #eee2c6, #faf4e6);
   }
-  .art-dresses {
+  .art-dresses,
+  .art-skirts {
     background: linear-gradient(130deg, #f1e6cb, #fffcf4);
   }
   .art-sets {
     background: linear-gradient(130deg, #eadbbb, #f6edda);
   }
-  .art-trousers {
+  .art-trousers,
+  .art-shorts {
     background: linear-gradient(130deg, #eadebf, #f7efdd);
   }
   .product-art::before {
