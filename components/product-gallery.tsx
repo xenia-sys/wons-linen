@@ -28,24 +28,22 @@ function Chevron({ previous = false }: { previous?: boolean }) {
   );
 }
 
-const ZOOM_SCALE = 2.5;
-type ZoomPoint = { x: number; y: number };
-const clampPercent = (value: number) => Math.max(0, Math.min(100, value));
-
 function GalleryAsset({
   media,
   product,
   colorHex,
   thumbnail = false,
   enlarged = false,
+  zoomed = false,
   near = true,
 }: {
   media: GalleryMedia;
   product: Product;
   colorHex: string;
   thumbnail?: boolean;
-  /** Request a sharper source while the image is zoomed. */
   enlarged?: boolean;
+  /** Request a sharper source while the enlarged image is zoomed. */
+  zoomed?: boolean;
   near?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
@@ -66,13 +64,15 @@ function GalleryAsset({
         sizes={
           thumbnail
             ? "(max-width: 700px) 100px, 140px"
-            : enlarged
-              ? "(max-width: 700px) 250vw, 115vw"
+            : zoomed
+              ? "(max-width: 700px) 250vw, 200vw"
+              : enlarged
+              ? "(max-width: 700px) 100vw, 80vw"
               : "(max-width: 700px) calc(100vw - 40px), 46vw"
         }
         className="gallery-photo"
         draggable={false}
-        style={imageFramingStyle(media.framing, thumbnail ? "cover" : "contain")}
+        style={imageFramingStyle(enlarged ? null : media.framing, thumbnail ? "cover" : "contain")}
         loading={thumbnail || !near ? "lazy" : "eager"}
         onError={() => setFailed(true)}
       />
@@ -93,15 +93,30 @@ function GalleryAsset({
   );
 }
 
+const ZOOM_SCALE = 2.5;
+type ZoomPoint = { x: number; y: number };
+const clampPercent = (value: number) => Math.max(0, Math.min(100, value));
+
+function ZoomIcon({ out = false }: { out?: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d={out ? "M7.5 10.5h6M15.5 15.5 20 20" : "M7.5 10.5h6M10.5 7.5v6M15.5 15.5 20 20"}
+        stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
 function GalleryTrack({
-  media, active, product, colorHex, trackRef, zoom,
+  media, active, product, colorHex, trackRef, enlarged = false, zoom = null,
 }: {
   media: GalleryMedia[];
   active: number;
   product: Product;
   colorHex: string;
   trackRef: Ref<HTMLSpanElement>;
-  zoom: ZoomPoint | null;
+  enlarged?: boolean;
+  zoom?: ZoomPoint | null;
 }) {
   return (
     <span className="gallery-track" ref={trackRef}
@@ -114,7 +129,7 @@ function GalleryTrack({
               ? { transform: `scale(${ZOOM_SCALE})`, transformOrigin: `${zoom.x}% ${zoom.y}%` }
               : undefined}>
               <GalleryAsset media={item} product={product} colorHex={colorHex}
-                enlarged={zoomed} near={Math.abs(index - active) <= 1} />
+                enlarged={enlarged} zoomed={zoomed} near={Math.abs(index - active) <= 1} />
             </span>
           </span>
         );
@@ -128,20 +143,22 @@ export function ProductGallery({ product, color, colorHex }: {
 }) {
   const media = getProductGallery(product, color);
   const [selection, setActive] = useState(0);
+  const [enlarged, setEnlarged] = useState(false);
   const [zoom, setZoom] = useState<ZoomPoint | null>(null);
+  const pan = useRef<{ id: number; x: number; y: number; origin: ZoomPoint; moved: boolean } | null>(null);
   const active = galleryIndex(selection, media.length);
   const current = media[active];
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const thumbnailRail = useRef<HTMLDivElement>(null);
   const thumbnails = useRef<(HTMLButtonElement | null)[]>([]);
-  const pan = useRef<{ id: number; x: number; y: number; origin: ZoomPoint; moved: boolean } | null>(null);
+  const titleId = useId();
   const stageId = useId();
   const hintId = useId();
   const multiple = media.length > 1;
   const mainDrag = useGalleryDrag(active, media.length, setActive);
+  const lightboxDrag = useGalleryDrag(active, media.length, setActive);
   const framed = media.some(item => item.kind === "photo" && item.framing);
   const artClass = "art-" + product.category.toLowerCase();
-
-  useEffect(() => setZoom(null), [active]);
 
   useEffect(() => {
     const rail = thumbnailRail.current;
@@ -170,6 +187,14 @@ export function ProductGallery({ product, color, colorHex }: {
     if (focusThumbnail) thumbnails.current[next]?.focus({ preventScroll: true });
   }
 
+  function openImage(event: MouseEvent<HTMLButtonElement>) {
+    if (event.detail > 0 && mainDrag.suppressClick.current) return;
+    setEnlarged(true);
+    dialogRef.current?.showModal();
+  }
+
+  useEffect(() => setZoom(null), [active]);
+
   function pointFrom(event: { clientX: number; clientY: number; currentTarget: HTMLElement }): ZoomPoint {
     const bounds = event.currentTarget.getBoundingClientRect();
     return {
@@ -178,34 +203,28 @@ export function ProductGallery({ product, color, colorHex }: {
     };
   }
 
-  function toggleZoom(event: MouseEvent<HTMLButtonElement>) {
+  // In the enlarged view, a click or tap zooms at that point and a second one zooms out.
+  function toggleZoom(event: MouseEvent<HTMLDivElement>) {
     if (zoom) {
       const moved = pan.current?.moved;
       pan.current = null;
       if (!moved) setZoom(null);
       return;
     }
-    if (event.detail > 0 && mainDrag.suppressClick.current) return;
-    setZoom(event.detail > 0 ? pointFrom(event) : { x: 50, y: 50 });
-  }
-
-  function handleKey(event: KeyboardEvent) {
-    if (event.key === "Escape" && zoom) {
-      event.preventDefault();
-      setZoom(null);
-      return;
-    }
-    browseWithKeyboard(event);
+    if (lightboxDrag.suppressClick.current) return;
+    setZoom(pointFrom(event));
   }
 
   // While zoomed, the pointer explores the image instead of swiping between images.
   const zoomHandlers = {
-    onPointerDown(event: PointerEvent<HTMLButtonElement>) {
+    onPointerDown(event: PointerEvent<HTMLDivElement>) {
       if (!zoom || !event.isPrimary) return;
       pan.current = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: zoom, moved: false };
-      if (event.pointerType !== "mouse") event.currentTarget.setPointerCapture(event.pointerId);
+      if (event.pointerType !== "mouse") {
+        try { event.currentTarget.setPointerCapture(event.pointerId); } catch {}
+      }
     },
-    onPointerMove(event: PointerEvent<HTMLButtonElement>) {
+    onPointerMove(event: PointerEvent<HTMLDivElement>) {
       if (!zoom) return;
       if (event.pointerType === "mouse") {
         setZoom(pointFrom(event));
@@ -230,13 +249,11 @@ export function ProductGallery({ product, color, colorHex }: {
       <div className="gallery-layout">
         <div id={stageId} className={`gallery-stage ${artClass}`}
           style={framed ? { aspectRatio: "4 / 5" } : undefined}>
-          <button type="button" className={`gallery-open${multiple && !zoom ? " gallery-swipe" : ""}`}
-            data-zoomed={zoom ? "" : undefined}
-            aria-label={zoom ? `Zoom out of image ${active + 1}` : `Zoom in on image ${active + 1}: ${current.label}`}
-            aria-pressed={zoom !== null} aria-describedby={hintId}
-            onClick={toggleZoom} onKeyDown={handleKey} {...(zoom ? zoomHandlers : mainDrag.handlers)}>
-            <GalleryTrack media={media} active={active} product={product} colorHex={colorHex}
-              trackRef={mainDrag.track} zoom={zoom} />
+          <button type="button" className={`gallery-open${multiple ? " gallery-swipe" : ""}`}
+            aria-label={`Enlarge image ${active + 1}: ${current.label}`}
+            aria-describedby={multiple ? hintId : undefined} aria-haspopup="dialog"
+            onClick={openImage} onKeyDown={browseWithKeyboard} {...mainDrag.handlers}>
+            <GalleryTrack media={media} active={active} product={product} colorHex={colorHex} trackRef={mainDrag.track} />
           </button>
         </div>
         {multiple && (
@@ -269,10 +286,52 @@ export function ProductGallery({ product, color, colorHex }: {
         </p>
         <span>{current.kind === "illustration" ? "ILLUSTRATED STUDY" : "WONS LINEN"}</span>
       </div>
-      <p id={hintId} className="gallery-swipe-hint">
-        {multiple ? "Swipe or drag to browse. " : ""}Click or tap the image to zoom in, and again to zoom out.
-      </p>
+      {multiple && <p id={hintId} className="gallery-swipe-hint">Swipe or drag to browse. Select an image to enlarge it.</p>}
       {current.kind === "illustration" && <p className="gallery-preview-note">Concept illustrations. Product photography will follow.</p>}
+      <dialog className="gallery-lightbox" ref={dialogRef} aria-labelledby={titleId}
+        onClose={() => { setEnlarged(false); setZoom(null); }}
+        onCancel={event => {
+          if (!zoom) return;
+          event.preventDefault();
+          setZoom(null);
+        }} onClick={event => {
+          if (event.target === event.currentTarget) dialogRef.current?.close();
+        }} onKeyDown={browseWithKeyboard}>
+        <div className="lightbox-content">
+          <div className="lightbox-heading">
+            <div>
+              <p className="eyebrow">WONS LINEN / {color.toUpperCase()}</p>
+              <h2 id={titleId}>{product.name}</h2>
+            </div>
+            <div className="lightbox-actions">
+              <button type="button" className="lightbox-close" aria-pressed={zoom !== null}
+                aria-label={zoom ? "Zoom out" : "Zoom in"}
+                onClick={() => setZoom(value => value ? null : { x: 50, y: 50 })}>
+                <ZoomIcon out={zoom !== null} />
+              </button>
+              <button type="button" className="lightbox-close" aria-label="Close enlarged image"
+                onClick={() => dialogRef.current?.close()}>×</button>
+            </div>
+          </div>
+          <div className={`lightbox-image ${artClass}${multiple && !zoom ? " gallery-swipe" : ""}`}
+            data-zoomed={zoom ? "" : undefined} onClick={toggleZoom}
+            {...(zoom ? zoomHandlers : lightboxDrag.handlers)}>
+            {enlarged && <GalleryTrack media={media} active={active} product={product} colorHex={colorHex}
+              trackRef={lightboxDrag.track} enlarged zoom={zoom} />}
+          </div>
+          <div className="lightbox-footer">
+            <button type="button" aria-label="Previous enlarged image" disabled={active === 0} onClick={() => move(-1)}>
+              <Chevron previous />
+            </button>
+            <p role="status" aria-live="polite">
+              {active + 1} / {media.length} <span>· {current.label}{current.kind === "illustration" ? " · Illustration" : ""}</span>
+            </p>
+            <button type="button" aria-label="Next enlarged image" disabled={active === media.length - 1} onClick={() => move(1)}>
+              <Chevron />
+            </button>
+          </div>
+        </div>
+      </dialog>
     </section>
   );
 }
