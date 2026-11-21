@@ -22,8 +22,8 @@ const pages: Record<
     title: "A little care, in every detail.",
     eyebrow: "CLIENT CARE",
     paragraphs: [
-      "Explore styles, choose colours and sizes, and add available items to your bag. WONS contacts customers to confirm orders.",
-      "Check each product description for sizing, fabric and care details. Contact WONS if you need help before ordering.",
+      "Explore styles, choose colours and sizes, and add available items to your bag. WONS contacts customers by phone, Zalo or email to confirm orders.",
+      "Each product page lists the available sizes and fabric. For measurements, fit or care advice, contact WONS at linenwons@gmail.com or 0912 562 991 (call or Zalo) before ordering.",
       "Shipping is free within Vietnam. Product prices include taxes and fees. The only payment method is cash on delivery (COD).",
     ],
   },
@@ -41,12 +41,12 @@ function isPolicy(slug: string): slug is PolicySlug {
 }
 
 function policyUrl(href: string, lang: Language) {
-  return lang === "en" ? `${href}?lang=en` : href;
+  return lang === "vi" ? `${href}?lang=vi` : href;
 }
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const [{ slug }, { lang }] = await Promise.all([params, searchParams]);
-  if (isPolicy(slug)) return { title: policies[slug][lang === "en" ? "en" : "vi"].title };
+  if (isPolicy(slug)) return { title: policies[slug][lang === "vi" ? "vi" : "en"].title };
   return { title: Object.hasOwn(pages, slug) ? pages[slug].eyebrow : "Information" };
 }
 
@@ -78,10 +78,10 @@ function StorePolicy({ slug, lang }: { slug: PolicySlug; lang: Language }) {
       <header className="policy-header">
         <p className="eyebrow">WONS LINEN</p>
         <h1 id="policy-title">{title}</h1>
-        <time dateTime="2026-11-20">{effectiveLabel}</time>
+        <time dateTime="2026-11-21">{effectiveLabel}</time>
         <nav className="policy-language" aria-label={lang === "vi" ? "Ngôn ngữ chính sách" : "Policy language"}>
-          <Link href={href} hrefLang="vi" lang="vi" aria-current={lang === "vi" ? "page" : undefined}>Tiếng Việt</Link>
-          <Link href={policyUrl(href, "en")} hrefLang="en" lang="en" aria-current={lang === "en" ? "page" : undefined}>English</Link>
+          <Link href={policyUrl(href, "vi")} hrefLang="vi" lang="vi" aria-current={lang === "vi" ? "page" : undefined}>Tiếng Việt</Link>
+          <Link href={href} hrefLang="en" lang="en" aria-current={lang === "en" ? "page" : undefined}>English</Link>
         </nav>
       </header>
       <div className="policy-content">
@@ -105,7 +105,7 @@ function StorePolicy({ slug, lang }: { slug: PolicySlug; lang: Language }) {
 
 export default async function Information({ params, searchParams }: Props) {
   const [{ slug }, { lang }] = await Promise.all([params, searchParams]);
-  if (isPolicy(slug)) return <StorePolicy slug={slug} lang={lang === "en" ? "en" : "vi"} />;
+  if (isPolicy(slug)) return <StorePolicy slug={slug} lang={lang === "vi" ? "vi" : "en"} />;
   if (!Object.hasOwn(pages, slug)) notFound();
   const page = pages[slug];
   return (

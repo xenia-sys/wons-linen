@@ -286,6 +286,7 @@ function GuestCheckout({ lines, complete }: {
           <h2 id="checkout-payment-title">Payment</h2>
           <p><strong>{COD_LABEL}</strong></p>
           <p className="checkout-subtle">Pay in cash when your order is delivered. This is the only payment method.</p>
+          <p className="checkout-subtle">By placing your order, you agree to the Terms of Use and the Returns and Refunds Policy, and confirm that you have read the Privacy Policy.</p>
           <nav aria-label="Store policies" className="checkout-policy-links">
             {Object.values(policyLinks).map(({ href, en }) => (
               <Link key={href} className="underlined-link" href={href} target="_blank" rel="noopener noreferrer">

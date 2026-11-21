@@ -2,7 +2,7 @@
   "terms-of-use": {
     "vi": {
       "title": "Điều khoản sử dụng",
-      "effectiveLabel": "Có hiệu lực từ ngày 20 tháng 11 năm 2026",
+      "effectiveLabel": "Có hiệu lực từ ngày 21 tháng 11 năm 2026",
       "intro": [],
       "sections": [
         {
@@ -10,7 +10,7 @@
           "blocks": [
             {
               "kind": "paragraph",
-              "text": "Website wons-linen.vercel.app do HỘ KINH DOANH WONS FASHION (sau đây gọi là “WONS”) vận hành. Mã số đăng ký hoặc mã số thuế: 058191000112. Địa chỉ: 115 Trần Huy Liệu, P. Phú Nhuận, TP. HCM, Việt Nam."
+              "text": "Website wonslinen.vn do HỘ KINH DOANH WONS FASHION (sau đây gọi là “WONS”) vận hành. Mã số đăng ký hoặc mã số thuế: 058191000112. Địa chỉ: 115 Trần Huy Liệu, P. Phú Nhuận, TP. HCM, Việt Nam."
             },
             {
               "kind": "paragraph",
@@ -27,7 +27,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Hãy kiểm tra mẫu, màu, kích cỡ, số lượng, địa chỉ giao, ưu đãi và tổng tiền trước khi chọn “Place order”. Mã đơn hoặc thông báo đã nhận yêu cầu chỉ xác nhận WONS đã nhận đơn để xử lý. WONS chấp nhận đơn khi gửi email xác nhận ghi rõ sản phẩm, tổng tiền và thông tin giao hàng. Hãy giữ lại email đó để đối chiếu."
+              "text": "Hãy kiểm tra mẫu, màu, kích cỡ, số lượng, địa chỉ giao, ưu đãi và tổng tiền trước khi chọn “Place order”. Mã đơn hoặc thông báo đã nhận yêu cầu chỉ xác nhận WONS đã nhận đơn để xử lý. WONS chấp nhận đơn khi liên hệ xác nhận với bạn qua điện thoại, Zalo hoặc email, nêu rõ sản phẩm, tổng tiền và thông tin giao hàng. Hãy lưu lại mã đơn để đối chiếu."
             }
           ]
         },
@@ -49,7 +49,7 @@
           "blocks": [
             {
               "kind": "paragraph",
-              "text": "WONS giao hàng miễn phí trong phạm vi Việt Nam. Thời gian giao dự kiến: nội thành khoảng 1 ngày, ngoại thành khoảng 3–5 ngày. Mốc áp dụng cho địa chỉ của bạn được nêu trong email xác nhận đơn. Nếu thời gian giao thay đổi đáng kể, WONS sẽ thông báo và trao đổi phương án xử lý với bạn."
+              "text": "WONS giao hàng miễn phí trong phạm vi Việt Nam. Thời gian giao dự kiến: nội thành khoảng 1 ngày, ngoại thành khoảng 3–5 ngày. WONS sẽ báo thời gian dự kiến cho địa chỉ của bạn khi xác nhận đơn. Nếu thời gian giao thay đổi đáng kể, WONS sẽ thông báo và trao đổi phương án xử lý với bạn."
             },
             {
               "kind": "paragraph",
@@ -91,7 +91,7 @@
     },
     "en": {
       "title": "Terms of Use",
-      "effectiveLabel": "Effective 20 November 2026",
+      "effectiveLabel": "Effective 21 November 2026",
       "intro": [],
       "sections": [
         {
@@ -99,7 +99,7 @@
           "blocks": [
             {
               "kind": "paragraph",
-              "text": "The website wons-linen.vercel.app is operated by HỘ KINH DOANH WONS FASHION (“WONS”). Business registration or tax ID: 058191000112. Address: 115 Trần Huy Liệu, Phú Nhuận Ward, Ho Chi Minh City, Vietnam."
+              "text": "The website wonslinen.vn is operated by HỘ KINH DOANH WONS FASHION (“WONS”). Business registration or tax ID: 058191000112. Address: 115 Trần Huy Liệu, Phú Nhuận Ward, Ho Chi Minh City, Vietnam."
             },
             {
               "kind": "paragraph",
@@ -116,7 +116,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Check the style, colour, size, quantity, delivery address, promotions and total before selecting “Place order”. An order reference or receipt screen only acknowledges that WONS received your request. WONS accepts the order when it sends you a confirmation email listing the items, total and delivery details. Keep that email for your records."
+              "text": "Check the style, colour, size, quantity, delivery address, promotions and total before selecting “Place order”. An order reference or receipt screen only acknowledges that WONS received your request. WONS accepts the order when it confirms it with you by phone, Zalo or email, stating the items, total and delivery details. Keep your order reference for your records."
             }
           ]
         },
@@ -138,7 +138,7 @@
           "blocks": [
             {
               "kind": "paragraph",
-              "text": "WONS provides free delivery within Vietnam. Estimated delivery is about 1 day in inner-city areas and 3–5 days in outer areas. Your order confirmation email specifies the estimate for your address. If delivery timing changes materially, WONS will let you know and discuss the available options."
+              "text": "WONS provides free delivery within Vietnam. Estimated delivery is about 1 day in inner-city areas and 3–5 days in outer areas. WONS will give you the estimate for your address when it confirms your order. If delivery timing changes materially, WONS will let you know and discuss the available options."
             },
             {
               "kind": "paragraph",
@@ -182,7 +182,7 @@
   "returns-and-refunds": {
     "vi": {
       "title": "Chính sách đổi trả và hoàn tiền",
-      "effectiveLabel": "Có hiệu lực từ ngày 20 tháng 11 năm 2026",
+      "effectiveLabel": "Có hiệu lực từ ngày 21 tháng 11 năm 2026",
       "intro": [
         {
           "kind": "paragraph",
@@ -233,7 +233,7 @@
             {
               "kind": "list",
               "items": [
-                "Mua tại cửa hàng: Liên hệ Fanpage chính thức, gọi hotline hoặc đến trực tiếp cửa hàng WONS.",
+                "Mua tại cửa hàng: Nhắn Zalo 0912 562 991, gọi 0912 562 991 / 0914 841 991 hoặc đến trực tiếp cửa hàng WONS.",
                 "Mua online: Gửi email đến linenwons@gmail.com hoặc gọi 0912 562 991 / 0914 841 991. Vui lòng cung cấp mã đơn, sản phẩm cần hỗ trợ, lý do và phương án mong muốn."
               ]
             },
@@ -252,7 +252,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Khi tự nguyện đổi hàng mua tại cửa hàng, bạn có thể chọn sản phẩm cùng dòng hoặc dòng khác. Nếu sản phẩm đổi giá cao hơn, bạn thanh toán phần chênh. Nếu tự chọn sản phẩm giá thấp hơn, WONS không hoàn phần chênh. Quy tắc này chỉ áp dụng khi bạn chọn đổi hàng ở cửa hàng; yêu cầu trả để hoàn tiền được xử lý theo mục 5."
+              "text": "Khi tự nguyện đổi hàng mua tại cửa hàng, bạn có thể chọn sản phẩm cùng dòng hoặc dòng khác. Nếu sản phẩm đổi giá cao hơn, bạn thanh toán phần chênh. Nếu tự chọn sản phẩm giá thấp hơn, WONS không hoàn phần chênh. Quy tắc này chỉ áp dụng khi bạn chọn đổi hàng ở cửa hàng. Với đơn online, WONS sẽ báo phần chênh lệch giá (nếu có) và cách thanh toán hoặc hoàn trả trước khi tiến hành đổi. Yêu cầu trả để hoàn tiền được xử lý theo mục 5."
             }
           ]
         },
@@ -273,7 +273,7 @@
     },
     "en": {
       "title": "Returns and Refunds Policy",
-      "effectiveLabel": "Effective 20 November 2026",
+      "effectiveLabel": "Effective 21 November 2026",
       "intro": [
         {
           "kind": "paragraph",
@@ -324,7 +324,7 @@
             {
               "kind": "list",
               "items": [
-                "In-store purchases: Message the official WONS Facebook Page, call our customer care team or visit the WONS store.",
+                "In-store purchases: Message 0912 562 991 on Zalo, call 0912 562 991 / 0914 841 991 or visit the WONS store.",
                 "Online purchases: Email linenwons@gmail.com or call 0912 562 991 / 0914 841 991. Include the order reference, the item, why you are contacting us and your preferred resolution."
               ]
             },
@@ -343,7 +343,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "For a voluntary exchange of an in-store purchase, you may choose an item from the same or a different product line. If the replacement costs more, you pay the difference. If you choose a lower-priced item, WONS does not refund the difference. This applies only when you choose an in-store exchange; returns for a refund are handled under Section 5."
+              "text": "For a voluntary exchange of an in-store purchase, you may choose an item from the same or a different product line. If the replacement costs more, you pay the difference. If you choose a lower-priced item, WONS does not refund the difference. This applies only when you choose an in-store exchange. For online orders, WONS will tell you about any price difference and how it will be paid or refunded before making the exchange. Returns for a refund are handled under Section 5."
             }
           ]
         },
@@ -366,7 +366,7 @@
   "privacy": {
     "vi": {
       "title": "Chính sách quyền riêng tư",
-      "effectiveLabel": "Có hiệu lực từ ngày 20 tháng 11 năm 2026",
+      "effectiveLabel": "Có hiệu lực từ ngày 21 tháng 11 năm 2026",
       "intro": [
         {
           "kind": "paragraph",
@@ -452,7 +452,7 @@
     },
     "en": {
       "title": "Privacy Policy",
-      "effectiveLabel": "Effective 20 November 2026",
+      "effectiveLabel": "Effective 21 November 2026",
       "intro": [
         {
           "kind": "paragraph",
