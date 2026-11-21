@@ -1,5 +1,6 @@
 import { storefrontImageSlots } from "./storefront-images.ts";
 import { VIETNAM_TIME_ZONE } from "./discount-events.ts";
+import { informationFields, informationPages, isInformationPage } from "./information-pages.ts";
 import type { AdminTranslator } from "./admin-i18n.ts";
 const english: AdminTranslator = (message, values) => values
   ? message.replace(/\{(\w+)\}/g, (match, key: string) => Object.hasOwn(values, key) ? String(values[key]) : match)
@@ -23,6 +24,7 @@ export const activityTypes = [
   { value: "variants", label: "Prices, variants & availability" },
   { value: "product_images", label: "Product images" },
   { value: "storefront_images", label: "Storefront images" },
+  { value: "information_pages", label: "Website pages" },
   { value: "discount_events", label: "Discount events" },
   { value: "staff_members", label: "Team & permissions" },
 ];
@@ -48,6 +50,7 @@ export const activityFieldLabels: Record<string, string> = {
   framing: "Image framing", storage_path: "Image file",
   percent_off: "Discount", starts_at: "Starts (Vietnam time)", ends_at: "Ends (Vietnam time)",
   enabled: "Event enabled", product_ids: "Selected products",
+  ...informationFields,
 };
 export function activityChanges(entry: ActivityEntry) {
   return [...new Set([...Object.keys(entry.before_data ?? {}), ...Object.keys(entry.after_data ?? {})])]
@@ -62,6 +65,7 @@ function field(entry: ActivityEntry, key: string): string {
 export function activityTitle(entry: ActivityEntry, t: AdminTranslator = english) {
   if (entry.entity_type === "discount_events") return field(entry, "name") || t("Discount event");
   if (entry.entity_type === "storefront_images") return t(storefrontImageSlots.find(slot => slot.id === entry.entity_id)?.label ?? "Homepage cover");
+  if (entry.entity_type === "information_pages") return t(isInformationPage(entry.entity_id) ? informationPages[entry.entity_id].label : "Website pages");
   if (entry.entity_type === "staff_members") return field(entry, "display_name") || field(entry, "email") || t("Team member");
   if (entry.entity_type === "products") return field(entry, "name") || entry.product?.name || t("Product");
   if (entry.entity_type === "variants") return [entry.product?.name, field(entry, "sku")].filter(Boolean).join(" · ") || t("Product variant");
@@ -69,6 +73,7 @@ export function activityTitle(entry: ActivityEntry, t: AdminTranslator = english
 }
 export function activityAction(entry: ActivityEntry) {
   if (entry.entity_type === "storefront_images") return entry.action === "DELETE" ? "Default cover restored" : "Cover published";
+  if (entry.entity_type === "information_pages") return "Website page updated";
   const changed = activityChanges(entry);
   if (entry.entity_type === "discount_events") {
     if (entry.action === "INSERT") return "Discount event created";
@@ -125,7 +130,7 @@ export function activityValue(key: string, value: unknown, t: AdminTranslator = 
   return String(value);
 }
 export function activityProductId(entry: ActivityEntry): string | null {
-  if (["staff_members", "storefront_images", "discount_events"].includes(entry.entity_type)) return null;
+  if (["staff_members", "storefront_images", "discount_events", "information_pages"].includes(entry.entity_type)) return null;
   const value = entry.entity_type === "products" ? entry.entity_id : entry.after_data?.product_id ?? entry.before_data?.product_id;
   return typeof value === "string" ? value : null;
 }

@@ -1510,6 +1510,7 @@
     padding: 75px 6% 100px;
     max-width: 850px;
     margin: auto;
+    overflow-wrap: anywhere;
   }
   .information-page h1 {
     margin: 22px 0 30px;
@@ -1520,6 +1521,7 @@
     color: var(--muted);
     font-size: 16px;
     line-height: 1.9;
+    white-space: pre-line;
   }
   .information-page > .underlined-link {
     margin-top: 20px;

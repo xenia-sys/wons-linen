@@ -1,4 +1,5 @@
 import type { StaffRole } from "./admin-validation.ts";
+import { informationPages, isInformationPage } from "./information-pages.ts";
 
 export const STAFF_AUTH_REQUIRED = "wons:staff-auth-required";
 export const STAFF_ACCESS_CHANGED = "wons:staff-access-changed";
@@ -7,7 +8,11 @@ export function isAdminPath(path: string) {
   return path === "/admin" || path.startsWith("/admin/");
 }
 export function ownerSection(path: string) {
-  return ["/admin/team", "/admin/activity", "/admin/orders", "/admin/storefront"].some(section => path === section || path.startsWith(section + "/"));
+  return ["/admin/team", "/admin/activity", "/admin/orders", "/admin/storefront", "/admin/information"].some(section => path === section || path.startsWith(section + "/"));
+}
+function informationId(path: string) {
+  const id = path.startsWith("/admin/information/") ? path.slice("/admin/information/".length) : null;
+  return isInformationPage(id) ? id : null;
 }
 export function canOpenAdminSection(role: StaffRole, path: string) {
   return !ownerSection(path) || role === "owner";
@@ -16,6 +21,7 @@ export function adminNextPath(value: unknown, role?: StaffRole): string {
   if (typeof value !== "string" || /[\\\u0000-\u001f\u007f]/.test(value)) return "/admin";
   const path = value.split(/[?#]/)[0].replace(/\/$/, "");
   const allowed = ["/admin", "/admin/products", "/admin/products/new", "/admin/team", "/admin/activity", "/admin/orders", "/admin/storefront", "/admin/discount-events"].includes(path)
+    || informationId(path) !== null
     || /^\/admin\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(path);
   if (!allowed) return "/admin";
   return role && !canOpenAdminSection(role, path) ? "/admin/products" : path;
@@ -24,6 +30,8 @@ export function adminLoginPath(path: string) {
   return "/admin/login?next=" + encodeURIComponent(adminNextPath(path));
 }
 export function adminSectionName(path: string) {
+  const id = informationId(path);
+  if (id) return informationPages[id].label;
   if (path === "/admin/discount-events") return "Discount events";
   if (path === "/admin/activity") return "Activity history";
   if (path === "/admin/storefront") return "Storefront images";
@@ -46,6 +54,7 @@ export function adminNavigation(role: StaffRole) {
   return role === "owner" ? [...items,
     { href: "/admin/orders", label: "Orders", group: "Store operations" },
     { href: "/admin/storefront", label: "Storefront images", group: "Owner tools" },
+    ...Object.entries(informationPages).map(([id, { label }]) => ({ href: `/admin/information/${id}`, label, group: "Owner tools" })),
     { href: "/admin/team", label: "Team & access", group: "Owner tools" },
     { href: "/admin/activity", label: "Activity history", group: "Owner tools" },
   ] : items;

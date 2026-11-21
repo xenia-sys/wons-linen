@@ -3,13 +3,14 @@ import assert from "node:assert/strict";
 import { adminLoginPath, adminNavigation, adminNextPath, canOpenAdminSection } from "../lib/admin-navigation.ts";
 import { activityAction, activityChanges, activityProductId, activityTitle, activityValue, parseActivityQuery } from "../lib/admin-activity.ts";
 import type { ActivityEntry } from "../lib/admin-activity.ts";
+import { informationParagraphs, parseInformationEdit } from "../lib/information-pages.ts";
 const productId = "25f13db6-08d9-438f-b1ce-209f0ce2e946";
 function entry(values: Partial<ActivityEntry> = {}): ActivityEntry {
   return { id: 1, actor_email: "staff@example.com", entity_type: "products", entity_id: productId,
     action: "UPDATE", before_data: null, after_data: null, created_at: "2026-10-22T01:00:00Z", ...values };
 }
 test("admin deep links preserve only approved local destinations", () => {
-  for (const path of ["/admin", "/admin/activity", "/admin/team", "/admin/orders", "/admin/storefront", "/admin/discount-events", "/admin/products", "/admin/products/new", "/admin/products/" + productId]) {
+  for (const path of ["/admin", "/admin/activity", "/admin/team", "/admin/orders", "/admin/storefront", "/admin/information/our-story", "/admin/information/client-care", "/admin/discount-events", "/admin/products", "/admin/products/new", "/admin/products/" + productId]) {
     assert.equal(adminNextPath(path, "owner"), path);
   }
   assert.equal(adminNextPath("/admin/activity/?source=mail#latest"), "/admin/activity");
@@ -18,7 +19,7 @@ test("admin deep links preserve only approved local destinations", () => {
 test("admin return destinations reject open redirects and unrecognised paths", () => {
   for (const value of [null, "", "https://other.example/admin", "//other.example", "/admin/login",
     "/admin/../team", "/admin/%2e%2e/team", "/admin/%2f%2fother.example",
-    "/admin/products/not-a-uuid", "/admin/activity\\evil", "/admin/activity\n"]) {
+    "/admin/products/not-a-uuid", "/admin/information/privacy", "/admin/activity\\evil", "/admin/activity\n"]) {
     assert.equal(adminNextPath(value), "/admin", String(value));
   }
 });
@@ -26,15 +27,25 @@ test("Marketing deep links cannot open Owner sections", () => {
   assert.equal(adminNextPath("/admin/activity", "marketing_editor"), "/admin/products");
   assert.equal(adminNextPath("/admin/team", "marketing_editor"), "/admin/products");
   assert.equal(adminNextPath("/admin/products/" + productId, "marketing_editor"), "/admin/products/" + productId);
-  for (const path of ["/admin/team", "/admin/team/member", "/admin/activity", "/admin/activity/", "/admin/orders", "/admin/storefront"]) {
+  for (const path of ["/admin/team", "/admin/team/member", "/admin/activity", "/admin/activity/", "/admin/orders", "/admin/storefront", "/admin/information/our-story", "/admin/information/client-care"]) {
     assert.equal(canOpenAdminSection("marketing_editor", path), false);
     assert.equal(canOpenAdminSection("owner", path), true);
   }
 });
 test("navigation exposes operations to Marketing and additional Owner tools to Owner", () => {
   assert.deepEqual(adminNavigation("marketing_editor").map(item => item.href), ["/admin", "/admin/products", "/admin/discount-events"]);
-  assert.deepEqual(adminNavigation("owner").filter(item => item.group === "Owner tools").map(item => item.href), ["/admin/storefront", "/admin/team", "/admin/activity"]);
+  assert.deepEqual(adminNavigation("owner").filter(item => item.group === "Owner tools").map(item => item.href), ["/admin/storefront", "/admin/information/our-story", "/admin/information/client-care", "/admin/team", "/admin/activity"]);
   assert.ok(adminNavigation("owner").some(item => item.href === "/admin/orders"));
+});
+test("information publication requires valid copy and keeps paragraph breaks from pasted text", () => {
+  const input = { version: 2, eyebrow: " WONS ", title: "Our story", body: "One line\r\ncontinued.\r\n \r\nNext paragraph. " };
+  const { version, copy } = parseInformationEdit(input);
+  assert.equal(version, 2);
+  assert.equal(copy.eyebrow, "WONS");
+  assert.deepEqual(informationParagraphs(copy.body), ["One line\ncontinued.", "Next paragraph."]);
+  for (const invalid of [{ version: "2" }, { title: "Two\nlines" }, { body: "  \n " }, { body: "x".repeat(10001) }]) {
+    assert.throws(() => parseInformationEdit({ ...input, ...invalid }));
+  }
 });
 test("activity filter defaults and cursor accept documented values", () => {
   assert.equal(parseActivityQuery(new URLSearchParams({ type: "storefront_images" })).type, "storefront_images");
@@ -83,6 +94,12 @@ test("history titles and product links resolve from the affected entity", () => 
   assert.equal(activityAction(cover), "Cover published");
   assert.equal(activityAction({ ...cover, action: "DELETE", after_data: null }), "Default cover restored");
   assert.equal(activityProductId(cover), null);
+  const page = entry({ entity_type: "information_pages", entity_id: "client-care", before_data: { body: "Before", version: 1 }, after_data: { body: "After", version: 2 } });
+  assert.equal(parseActivityQuery(new URLSearchParams({ type: "information_pages" })).type, "information_pages");
+  assert.deepEqual(activityChanges(page), ["body"]);
+  assert.equal(activityTitle(page), "Client care");
+  assert.equal(activityAction(page), "Website page updated");
+  assert.equal(activityProductId(page), null);
   assert.equal(activityTitle(entry({ entity_type: "variants", product: { id: productId, name: "Linen shirt" },
     after_data: { sku: "WONS-M-WHITE", product_id: productId } })), "Linen shirt · WONS-M-WHITE");
   assert.equal(activityProductId(entry({ entity_type: "product_images", before_data: { product_id: productId } })), productId);

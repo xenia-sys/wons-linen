@@ -3,31 +3,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import policies from "../../../content/store-policies.json";
 import { policyLinks } from "../../../lib/policy-links";
+import { getInformationCopy } from "../../../lib/information-content";
+import { informationParagraphs, isInformationPage } from "../../../lib/information-pages";
 import "./policy.css";
 
-const pages: Record<
-  string,
-  { title: string; eyebrow: string; paragraphs: string[] }
-> = {
-  "our-story": {
-    title: "Linen, at your own pace.",
-    eyebrow: "MEET WONS",
-    paragraphs: [
-      "WONS is taking shape around a simple idea: a wardrobe that leaves a little room to breathe. Easy silhouettes, natural textures and a palette that feels at home in the everyday.",
-      "The first edit brings Women and Men into the same conversation, with relaxed shirts, thoughtful sets and simple shapes.",
-      "Explore the collection for current styles, colours and product details.",
-    ],
-  },
-  "client-care": {
-    title: "A little care, in every detail.",
-    eyebrow: "CLIENT CARE",
-    paragraphs: [
-      "Explore styles, choose colours and sizes, and add available items to your bag. WONS contacts customers by WhatsApp or email to confirm orders.",
-      "Each product page lists the available sizes and fabric. For measurements, fit or care advice, contact WONS at linenwons@gmail.com or 0912 562 991 (call, WhatsApp or Zalo) before ordering.",
-      "Shipping is free within Vietnam. Product prices include taxes and fees. The only payment method is cash on delivery (COD).",
-    ],
-  },
-};
 type PolicySlug = keyof typeof policies;
 type Language = "vi" | "en";
 type Props = {
@@ -47,7 +26,7 @@ function policyUrl(href: string, lang: Language) {
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const [{ slug }, { lang }] = await Promise.all([params, searchParams]);
   if (isPolicy(slug)) return { title: policies[slug][lang === "vi" ? "vi" : "en"].title };
-  return { title: Object.hasOwn(pages, slug) ? pages[slug].eyebrow : "Information" };
+  return { title: isInformationPage(slug) ? (await getInformationCopy(slug)).title : "Information" };
 }
 
 const contacts: Record<string, string> = {
@@ -106,14 +85,14 @@ function StorePolicy({ slug, lang }: { slug: PolicySlug; lang: Language }) {
 export default async function Information({ params, searchParams }: Props) {
   const [{ slug }, { lang }] = await Promise.all([params, searchParams]);
   if (isPolicy(slug)) return <StorePolicy slug={slug} lang={lang === "vi" ? "vi" : "en"} />;
-  if (!Object.hasOwn(pages, slug)) notFound();
-  const page = pages[slug];
+  if (!isInformationPage(slug)) notFound();
+  const page = await getInformationCopy(slug);
   return (
     <article className="information-page">
       <p className="eyebrow">{page.eyebrow}</p>
       <h1>{page.title}</h1>
-      {page.paragraphs.map((p) => (
-        <p key={p}>{p}</p>
+      {informationParagraphs(page.body).map((p, index) => (
+        <p key={index}>{p}</p>
       ))}
       <Link href="/shop" className="underlined-link">
         Explore the collection →

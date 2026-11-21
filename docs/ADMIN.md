@@ -9,6 +9,7 @@ Production entry: https://wons-linen.vercel.app/admin/login. Use **Language** at
 | Publish or hide products                                                    | Yes              | Yes   |
 | Edit base prices in VND and schedule discount events                       | Yes              | Yes   |
 | Manage variant sizes, colours, SKUs and availability                        | Yes              | Yes   |
+| Publish changes to the Our story and Client care pages                     | No               | Yes   |
 | Grant, change or disable team access                                        | No               | Yes   |
 | Read change history                                                         | No               | Yes   |
 
@@ -49,6 +50,8 @@ Create a new product as **Hidden**, add at least one variant and save. Then uplo
 To feature a published product, choose **Department → New Arrivals** and confirm its **Main department** (Women or Men). It remains in that department and appears first in New Arrivals. Change Department back to Women or Men and save to remove it from New Arrivals. The Department filter in the Products list shows manually featured products when set to New Arrivals.
 
 To replace a homepage cover, sign in as Owner and go to **Storefront images**. Choose an image for **Homepage main cover**, **Women cover** or **Men cover**, add a short image description and select **Publish image**. Each slot can be restored to the original WONS artwork independently. The upload uses a dedicated public Storage bucket in the existing WONS project; restoring the artwork removes the cover from the homepage and leaves the previously published file in Storage. Cover publication and restoration appear in **Activity history**.
+
+Under **Owner tools**, open **Our story** or **Client care** to edit the label above the title, the title and the English body copy. Leave a blank line between paragraphs. **Publish changes** updates the corresponding public page immediately and records the before/after copy in **Activity history → Website pages**. The three policy pages are managed separately.
 
 Set each variant’s base price in **Price (VND)**. **Price (USD)** shows an estimate from the same reference rate as the storefront; the COD total remains in VND. The **Discount events** page lets Owner and Marketing Editor choose products, set a whole percentage from 1 to 99, and schedule the start and end in Vietnam time. **Save event** activates its schedule; clear **Enable this event** and save to pause it. Each selected product’s variants receive the same percentage off their own base prices. The highest active percentage applies when events overlap. Hidden products remain hidden.
 
