@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import policies from "../../../content/store-policies.json";
+import { policyLinks } from "../../../lib/policy-links";
+import "./policy.css";
+
 const pages: Record<
   string,
   { title: string; eyebrow: string; paragraphs: string[] }
@@ -23,26 +27,87 @@ const pages: Record<
       "Shipping is free within Vietnam. Product prices include taxes and fees. The only payment method is cash on delivery (COD).",
     ],
   },
-  privacy: {
-    title: "Your visit, thoughtfully.",
-    eyebrow: "PRIVACY & YOUR BAG",
-    paragraphs: [
-      "The bag stores only product variant identifiers and quantities in your browser’s local storage. It stays on this device until you remove the items or clear this site’s browser data.",
-      "When you place an order for available products, WONS saves your contact details, billing and delivery addresses, order items and any notes to process the order. Access to the order inbox is restricted to the store Owner. We use a coded request identifier to limit repeated submissions. No card or payment details are requested at checkout.",
-      "The collection is loaded from WONS’s Supabase catalog and the website is hosted on Vercel. Requests pass through these services to deliver the website; hosting services may process technical request information.",
-      "Customer accounts are optional. An order placed as a guest is not automatically linked to an account.",
-    ],
-  },
 };
-type Props = { params: Promise<{ slug: string }> };
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  return { title: pages[slug]?.eyebrow ?? "Information" };
+type PolicySlug = keyof typeof policies;
+type Language = "vi" | "en";
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ lang?: string | string[] }>;
+};
+type PolicyBlock = { kind: string; text?: string; items?: string[] };
+
+function isPolicy(slug: string): slug is PolicySlug {
+  return Object.hasOwn(policies, slug);
 }
-export default async function Information({ params }: Props) {
-  const { slug } = await params;
+
+function policyUrl(href: string, lang: Language) {
+  return lang === "en" ? `${href}?lang=en` : href;
+}
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ slug }, { lang }] = await Promise.all([params, searchParams]);
+  if (isPolicy(slug)) return { title: policies[slug][lang === "en" ? "en" : "vi"].title };
+  return { title: Object.hasOwn(pages, slug) ? pages[slug].eyebrow : "Information" };
+}
+
+const contacts: Record<string, string> = {
+  "linenwons@gmail.com": "mailto:linenwons@gmail.com",
+  "0912 562 991": "tel:+84912562991",
+  "0914 841 991": "tel:+84914841991",
+};
+
+function policyText(value: string) {
+  return value.split(/(linenwons@gmail\.com|0912 562 991|0914 841 991)/g).map((part, index) =>
+    Object.hasOwn(contacts, part) ? <a key={index} href={contacts[part]}>{part}</a> : part,
+  );
+}
+
+function PolicyCopy({ blocks }: { blocks: PolicyBlock[] }) {
+  return blocks.map((block, index) => block.kind === "list" && block.items ? (
+    <ul key={index}>
+      {block.items.map((item) => <li key={item}>{policyText(item)}</li>)}
+    </ul>
+  ) : block.text ? <p key={index}>{policyText(block.text)}</p> : null);
+}
+
+function StorePolicy({ slug, lang }: { slug: PolicySlug; lang: Language }) {
+  const { title, effectiveLabel, intro, sections } = policies[slug][lang];
+  const { href } = policyLinks[slug];
+  return (
+    <article className="policy-page" lang={lang} aria-labelledby="policy-title">
+      <header className="policy-header">
+        <p className="eyebrow">WONS LINEN</p>
+        <h1 id="policy-title">{title}</h1>
+        <time dateTime="2026-11-20">{effectiveLabel}</time>
+        <nav className="policy-language" aria-label={lang === "vi" ? "Ngôn ngữ chính sách" : "Policy language"}>
+          <Link href={href} hrefLang="vi" lang="vi" aria-current={lang === "vi" ? "page" : undefined}>Tiếng Việt</Link>
+          <Link href={policyUrl(href, "en")} hrefLang="en" lang="en" aria-current={lang === "en" ? "page" : undefined}>English</Link>
+        </nav>
+      </header>
+      <div className="policy-content">
+        <PolicyCopy blocks={intro} />
+        {sections.map(({ heading, blocks }) => (
+          <section key={heading}>
+            <h2>{heading}</h2>
+            <PolicyCopy blocks={blocks} />
+          </section>
+        ))}
+      </div>
+      <nav className="policy-related" aria-labelledby="related-policy-title">
+        <h2 id="related-policy-title">{lang === "vi" ? "Chính sách liên quan" : "Related policies"}</h2>
+        {Object.values(policyLinks).filter((other) => other.href !== href).map((other) => (
+          <Link key={other.href} href={policyUrl(other.href, lang)}>{other[lang]}</Link>
+        ))}
+      </nav>
+    </article>
+  );
+}
+
+export default async function Information({ params, searchParams }: Props) {
+  const [{ slug }, { lang }] = await Promise.all([params, searchParams]);
+  if (isPolicy(slug)) return <StorePolicy slug={slug} lang={lang === "en" ? "en" : "vi"} />;
+  if (!Object.hasOwn(pages, slug)) notFound();
   const page = pages[slug];
-  if (!page) notFound();
   return (
     <article className="information-page">
       <p className="eyebrow">{page.eyebrow}</p>

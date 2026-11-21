@@ -151,9 +151,15 @@
   background: var(--surface-soft);
 }
 
-.checkout-payment .underlined-link {
-  display: inline-block;
-  margin-top: 9px;
+.checkout-policy-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 12px;
+}
+
+.checkout-policy-links a {
+  padding-block: 7px;
 }
 
 .checkout-summary {

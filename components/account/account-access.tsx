@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { parseUsername } from "../../lib/customer-account";
 import { accountRedirect, customerAuth, customerAuthMessage } from "../../lib/customer-browser";
+import { policyLinks } from "../../lib/policy-links";
 
 const linkSent = "If your email can be used, a sign-in link is on its way. Open it in the same browser to continue.";
 
@@ -102,7 +103,7 @@ export function AccountAccess({
         }}>{passwordLogin ? "Use an email link instead" : "Use a password instead"}</button>
       )}
       <p className="account-small">An account is optional. <Link href="/shop">Continue exploring</Link>.</p>
-      <Link className="account-small underlined-link" href="/information/privacy">Privacy &amp; your bag</Link>
+      <Link className="account-small underlined-link" href={policyLinks.privacy.href}>{policyLinks.privacy.en}</Link>
     </div>
   );
 }

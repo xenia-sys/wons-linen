@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Arrow } from "./icons";
+import { policyLinks } from "../lib/policy-links";
 import { storefrontCollections } from "../lib/storefront-navigation";
 import { useDisplayCurrency } from "./display-currency-provider";
 export function Footer({ ordersOpen }: { ordersOpen: boolean }) {
@@ -26,8 +27,11 @@ export function Footer({ ordersOpen }: { ordersOpen: boolean }) {
           <p className="eyebrow">A LITTLE MORE</p>
           <Link href="/information/our-story">Our story</Link>
           <Link href="/information/client-care">Client care</Link>
-          <Link href="/information/privacy">Privacy & your bag</Link>
         </div>
+        <nav className="footer-column footer-policies" aria-labelledby="footer-policies-title">
+          <p className="eyebrow" id="footer-policies-title">POLICIES</p>
+          {Object.values(policyLinks).map(({ href, en }) => <Link key={href} href={href}>{en}</Link>)}
+        </nav>
       </div>
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} WONS LINEN</span>

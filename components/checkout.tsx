@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { money, subtotal, unitPrice } from "../lib/commerce";
 import { addressLines, COD_LABEL, ORDER_COUNTRY, orderReference, type OrderAddress, type OrderDetails, type OrderItem, type OrderReceipt } from "../lib/orders";
+import { policyLinks } from "../lib/policy-links";
 import type { ResolvedLine } from "../lib/types";
 import { useBag } from "./cart-provider";
 import { useDisplayCurrency } from "./display-currency-provider";
@@ -285,7 +286,13 @@ function GuestCheckout({ lines, complete }: {
           <h2 id="checkout-payment-title">Payment</h2>
           <p><strong>{COD_LABEL}</strong></p>
           <p className="checkout-subtle">Pay in cash when your order is delivered. This is the only payment method.</p>
-          <Link className="underlined-link" href="/information/privacy">Privacy information</Link>
+          <nav aria-label="Store policies" className="checkout-policy-links">
+            {Object.values(policyLinks).map(({ href, en }) => (
+              <Link key={href} className="underlined-link" href={href} target="_blank" rel="noopener noreferrer">
+                {en}<span className="sr-only"> (opens in a new tab)</span>
+              </Link>
+            ))}
+          </nav>
         </section>
       </div>
       <OrderSummary lines={lines} reviewing={review !== null} changed={changed} placing={placing} error={error} place={placeOrder} />

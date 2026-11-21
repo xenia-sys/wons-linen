@@ -1,0 +1,92 @@
+.policy-page {
+  width: min(100% - 2.5rem, 49rem);
+  margin-inline: auto;
+  padding-block: clamp(2.5rem, 7vw, 5.5rem);
+  overflow-wrap: anywhere;
+}
+
+.policy-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.5rem;
+}
+
+.policy-header h1 {
+  margin-block: 1rem .75rem;
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  line-height: 1.12;
+}
+
+.policy-header time {
+  color: var(--muted);
+  font-size: .9375rem;
+}
+
+.policy-language {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1.25rem;
+}
+
+.policy-language a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 1rem;
+  border: 1px solid var(--control-border);
+  font-size: .9375rem;
+}
+
+.policy-language a[aria-current="page"] {
+  background: var(--surface);
+  font-weight: 700;
+}
+
+.policy-content {
+  margin-top: 1.75rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.policy-content section + section,
+.policy-content > :not(section) + section {
+  margin-top: 1.75rem;
+}
+
+.policy-content h2,
+.policy-related h2 {
+  margin-bottom: .65rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.policy-content p + p,
+.policy-content ul {
+  margin-block: .6rem 0;
+}
+
+.policy-content ul {
+  padding-inline-start: 1.35rem;
+}
+
+.policy-content li + li {
+  margin-top: .4rem;
+}
+
+.policy-content a,
+.policy-related a {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.policy-related {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: var(--surface-soft);
+}
+
+.policy-related a {
+  display: block;
+  width: fit-content;
+  padding-block: .55rem;
+}

@@ -1,0 +1,540 @@
+{
+  "terms-of-use": {
+    "vi": {
+      "title": "Điều khoản sử dụng",
+      "effectiveLabel": "Có hiệu lực từ ngày 20 tháng 11 năm 2026",
+      "intro": [],
+      "sections": [
+        {
+          "heading": "1. Bên bán và phạm vi áp dụng",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Website wons-linen.vercel.app do HỘ KINH DOANH WONS FASHION (sau đây gọi là “WONS”) vận hành. Mã số đăng ký hoặc mã số thuế: 058191000112. Địa chỉ: 115 Trần Huy Liệu, P. Phú Nhuận, TP. HCM, Việt Nam."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Điều khoản này áp dụng khi bạn truy cập website hoặc đặt hàng tại đây. Với đơn mua tại cửa hàng, xem Chính sách đổi trả và hoàn tiền của WONS."
+            }
+          ]
+        },
+        {
+          "heading": "2. Tài khoản và đặt hàng",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Bạn có thể đặt hàng mà không cần mở tài khoản. Khi tính năng tài khoản được mở, bạn có thể dùng email đã xác minh để đăng nhập, cập nhật hồ sơ và quản lý địa chỉ đã lưu. Đơn đặt khi mua với tư cách khách không tự động liên kết với tài khoản. Hãy giữ thông tin đăng nhập an toàn và báo WONS nếu nghi ngờ có truy cập trái phép."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Hãy kiểm tra mẫu, màu, kích cỡ, số lượng, địa chỉ giao, ưu đãi và tổng tiền trước khi chọn “Place order”. Mã đơn hoặc thông báo đã nhận yêu cầu chỉ xác nhận WONS đã nhận đơn để xử lý. WONS chấp nhận đơn khi gửi email xác nhận ghi rõ sản phẩm, tổng tiền và thông tin giao hàng. Hãy giữ lại email đó để đối chiếu."
+            }
+          ]
+        },
+        {
+          "heading": "3. Sản phẩm, giá và thanh toán",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Xem mô tả, kích cỡ, tình trạng hàng và điều kiện ưu đãi trên trang sản phẩm. Màu sắc có thể chênh nhẹ do ánh sáng và màn hình. Nếu có sai sót về sản phẩm, giá hoặc tồn kho, WONS sẽ báo và hỏi ý kiến bạn trước khi thay đổi đơn; WONS không tự ý thay sản phẩm hoặc tăng giá của đơn đã xác nhận."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Giá đã gồm thuế áp dụng. Giá bằng VND là căn cứ thanh toán; USD, nếu hiển thị, chỉ để tham khảo. Checkout nhận thanh toán bằng tiền mặt khi giao hàng (COD). Chuyển khoản chỉ áp dụng nếu WONS xác nhận riêng bằng văn bản cho đơn cụ thể và cung cấp thông tin tài khoản chính thức trước khi bạn thanh toán."
+            }
+          ]
+        },
+        {
+          "heading": "4. Giao hàng, thay đổi và hủy đơn",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS giao hàng miễn phí trong phạm vi Việt Nam. Thời gian giao dự kiến: nội thành khoảng 1 ngày, ngoại thành khoảng 3–5 ngày. Mốc áp dụng cho địa chỉ của bạn được nêu trong email xác nhận đơn. Nếu thời gian giao thay đổi đáng kể, WONS sẽ thông báo và trao đổi phương án xử lý với bạn."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Nếu muốn đổi địa chỉ, sửa hoặc hủy đơn trước khi giao cho đơn vị vận chuyển, hãy liên hệ WONS và cung cấp mã đơn. WONS sẽ xác nhận còn kịp xử lý hay không. Nếu đơn đã được gửi, WONS sẽ hướng dẫn theo Chính sách đổi trả và hoàn tiền và quy định pháp luật áp dụng."
+            }
+          ]
+        },
+        {
+          "heading": "5. Hiển thị sản phẩm và sử dụng website",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Thứ tự sản phẩm có thể thay đổi theo danh mục, bộ lọc hoặc cách sắp xếp bạn chọn. Ở chế độ mặc định, WONS có thể ưu tiên sản phẩm được chọn làm nổi bật rồi đến sản phẩm mới hơn. Website hiện không có chức năng phát trực tiếp để bán hàng."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Bạn được xem và sử dụng nội dung website để mua sắm cá nhân. Không truy cập trái phép, gây gián đoạn, mạo danh hoặc sử dụng ảnh, nội dung hay dấu hiệu thương hiệu cho mục đích thương mại khi chưa được phép, trừ trường hợp pháp luật cho phép. Cách WONS xử lý thông tin được nêu trong Chính sách quyền riêng tư."
+            }
+          ]
+        },
+        {
+          "heading": "6. Đổi trả, khiếu nại và cập nhật",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Xem Chính sách đổi trả và hoàn tiền để biết cách yêu cầu đổi, trả hoặc hoàn tiền. Các chính sách của WONS không hạn chế quyền bắt buộc của người tiêu dùng theo pháp luật Việt Nam."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Nếu cần hỗ trợ hoặc khiếu nại, hãy gửi mã đơn (nếu có), mô tả vấn đề và cách liên hệ với bạn đến linenwons@gmail.com, hoặc gọi 0912 562 991 / 0914 841 991, 09:00–21:00 hằng ngày (giờ Việt Nam). WONS sẽ tiếp nhận, trao đổi hướng xử lý và thông báo kết quả. Bạn vẫn có thể yêu cầu cơ quan có thẩm quyền hỗ trợ hoặc lựa chọn phương thức giải quyết tranh chấp theo luật."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS sẽ công bố thay đổi và ngày hiệu lực trên website. Thay đổi không làm giảm quyền đã phát sinh đối với đơn đã xác nhận. Bản tiếng Việt được dùng để giải thích khác biệt giữa hai bản trong phạm vi pháp luật cho phép."
+            }
+          ]
+        }
+      ]
+    },
+    "en": {
+      "title": "Terms of Use",
+      "effectiveLabel": "Effective 20 November 2026",
+      "intro": [],
+      "sections": [
+        {
+          "heading": "1. Seller and scope",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "The website wons-linen.vercel.app is operated by HỘ KINH DOANH WONS FASHION (“WONS”). Business registration or tax ID: 058191000112. Address: 115 Trần Huy Liệu, Phú Nhuận Ward, Ho Chi Minh City, Vietnam."
+            },
+            {
+              "kind": "paragraph",
+              "text": "These terms apply when you visit the website or place an order through it. For purchases made in store, see the WONS Returns and Refunds Policy."
+            }
+          ]
+        },
+        {
+          "heading": "2. Accounts and orders",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "You can order without creating an account. When customer accounts are available, you can sign in with a verified email address, update your profile and manage saved addresses. Guest orders are not automatically linked to an account. Keep your sign-in details secure and let WONS know if you suspect unauthorized access."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Check the style, colour, size, quantity, delivery address, promotions and total before selecting “Place order”. An order reference or receipt screen only acknowledges that WONS received your request. WONS accepts the order when it sends you a confirmation email listing the items, total and delivery details. Keep that email for your records."
+            }
+          ]
+        },
+        {
+          "heading": "3. Products, prices and payment",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "See the product page for descriptions, sizing, availability and promotion terms. Colours may vary slightly because of lighting and screen settings. If there is an error in a product listing, price or availability, WONS will contact you before changing your order. WONS will not substitute an item or increase an agreed price without your approval."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Prices include applicable taxes. Payment is based on the VND price; any USD price is for reference only. Online checkout accepts cash on delivery (COD). A bank transfer is available only if WONS confirms it separately in writing for that order and provides its official bank details before you pay."
+            }
+          ]
+        },
+        {
+          "heading": "4. Delivery, changes and cancellations",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS provides free delivery within Vietnam. Estimated delivery is about 1 day in inner-city areas and 3–5 days in outer areas. Your order confirmation email specifies the estimate for your address. If delivery timing changes materially, WONS will let you know and discuss the available options."
+            },
+            {
+              "kind": "paragraph",
+              "text": "If you need to change your address, amend an order or cancel before dispatch, contact WONS with your order reference. WONS will tell you whether the request can still be processed. If the order has already shipped, WONS will guide you under its Returns and Refunds Policy and applicable law."
+            }
+          ]
+        },
+        {
+          "heading": "5. Product display and use of the website",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Product order may change with the category, filters or sort option you select. By default, WONS may show featured products first, followed by newer products. The website does not currently offer livestream shopping."
+            },
+            {
+              "kind": "paragraph",
+              "text": "You may use the site for personal shopping. Do not gain unauthorized access, disrupt the site, impersonate others or use its photos, content or brand assets commercially without permission, except as allowed by law. See the Privacy Policy for how WONS handles your information."
+            }
+          ]
+        },
+        {
+          "heading": "6. Returns, complaints and updates",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "See the Returns and Refunds Policy for instructions on exchanges, returns and refunds. WONS policies do not limit mandatory consumer rights under Vietnamese law."
+            },
+            {
+              "kind": "paragraph",
+              "text": "For help or to make a complaint, send your order reference (if available), a description of the issue and your contact details to linenwons@gmail.com, or call 0912 562 991 / 0914 841 991 between 09:00 and 21:00 daily (Vietnam time). WONS will review the matter, discuss the options and notify you of the outcome. You may still seek help from a competent authority or use any dispute resolution procedure available by law."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS will publish updates and their effective dates on the website. Updates do not reduce rights already acquired under confirmed orders. If the two language versions differ, the Vietnamese version guides interpretation to the extent permitted by law."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "returns-and-refunds": {
+    "vi": {
+      "title": "Chính sách đổi trả và hoàn tiền",
+      "effectiveLabel": "Có hiệu lực từ ngày 20 tháng 11 năm 2026",
+      "intro": [
+        {
+          "kind": "paragraph",
+          "text": "Chính sách này áp dụng cho sản phẩm mua trên website hoặc trực tiếp tại cửa hàng WONS LINEN. Bên bán là HỘ KINH DOANH WONS FASHION."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "1. Đổi hoặc trả theo nhu cầu cá nhân",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Bạn có thể yêu cầu đổi (ví dụ: đổi kích cỡ hoặc mẫu) hoặc trả sản phẩm đủ điều kiện trong thời hạn sau:"
+            },
+            {
+              "kind": "list",
+              "items": [
+                "Mua tại cửa hàng: Trong vòng 7 ngày lịch kể từ ngày ghi trên hóa đơn.",
+                "Mua online: Trong vòng 7 ngày lịch kể từ ngày đơn vị vận chuyển cập nhật “Giao hàng thành công” cho sản phẩm. Nếu trạng thái giao hàng không đúng, hãy liên hệ WONS để kiểm tra."
+              ]
+            },
+            {
+              "kind": "paragraph",
+              "text": "Sản phẩm phải còn nguyên vẹn, chưa sử dụng, giặt, ủi hoặc chỉnh sửa, còn đầy đủ tem mác và phụ kiện đi kèm nếu có. Vui lòng chuẩn bị hóa đơn mua tại cửa hàng hoặc mã đơn online."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Đổi trả theo nhu cầu cá nhân không áp dụng cho hàng may hoặc sửa theo yêu cầu, hoặc mặt hàng được ghi rõ là không áp dụng đổi trả tự nguyện trước khi bạn đặt mua. Các ngoại lệ này không ảnh hưởng đến quyền của bạn khi hàng có lỗi hoặc không đúng thỏa thuận."
+            }
+          ]
+        },
+        {
+          "heading": "2. Hàng lỗi, giao sai, thiếu hoặc hư hỏng",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Nếu nhận thiếu hàng, nhận sai sản phẩm, hoặc hàng bị lỗi hay hư hỏng, hãy báo WONS kèm mã đơn hoặc chứng từ mua và mô tả tình trạng. Ảnh hiện trạng có thể giúp xử lý nhanh hơn; video mở kiện không phải là điều kiện bắt buộc để tiếp nhận yêu cầu."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS sẽ kiểm tra và hướng dẫn phương án phù hợp, như giao bù, đổi, sửa, hoàn tiền hoặc biện pháp khác theo quy định. WONS chịu chi phí gửi trả và giao lại cần thiết khi vấn đề thuộc trách nhiệm của WONS. Thời hạn và điều kiện đổi trả tự nguyện không hạn chế quyền của khách đối với hàng không đúng thỏa thuận hoặc quyền khác theo pháp luật."
+            }
+          ]
+        },
+        {
+          "heading": "3. Cách gửi yêu cầu",
+          "blocks": [
+            {
+              "kind": "list",
+              "items": [
+                "Mua tại cửa hàng: Liên hệ Fanpage chính thức, gọi hotline hoặc đến trực tiếp cửa hàng WONS.",
+                "Mua online: Gửi email đến linenwons@gmail.com hoặc gọi 0912 562 991 / 0914 841 991. Vui lòng cung cấp mã đơn, sản phẩm cần hỗ trợ, lý do và phương án mong muốn."
+              ]
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS hỗ trợ hằng ngày từ 09:00–21:00 (giờ Việt Nam). Với hàng gửi trả, vui lòng liên hệ trước để WONS hướng dẫn đóng gói, gửi hàng và lưu mã vận đơn. Địa chỉ nhận đổi trả: 115 Trần Huy Liệu, P. Phú Nhuận, TP. HCM, Việt Nam."
+            }
+          ]
+        },
+        {
+          "heading": "4. Chi phí và chênh lệch khi đổi",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Với đổi trả theo nhu cầu cá nhân, khách chịu chi phí gửi trả và chi phí giao hàng thay thế thực tế, nếu có. WONS sẽ cho bạn biết các khoản áp dụng trước khi tiến hành. WONS không truy thu phí giao ban đầu đã được miễn."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Khi tự nguyện đổi hàng mua tại cửa hàng, bạn có thể chọn sản phẩm cùng dòng hoặc dòng khác. Nếu sản phẩm đổi giá cao hơn, bạn thanh toán phần chênh. Nếu tự chọn sản phẩm giá thấp hơn, WONS không hoàn phần chênh. Quy tắc này chỉ áp dụng khi bạn chọn đổi hàng ở cửa hàng; yêu cầu trả để hoàn tiền được xử lý theo mục 5."
+            }
+          ]
+        },
+        {
+          "heading": "5. Kiểm tra và hoàn tiền",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS kiểm tra hàng trả và thông báo kết quả trong vòng 1 ngày làm việc kể từ khi nhận hàng. Khi duyệt yêu cầu hoàn tiền, WONS hoàn số tiền thực tế bạn đã trả cho sản phẩm đủ điều kiện sau khi áp dụng ưu đãi, tùy trường hợp và quyền của bạn theo luật."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS thực hiện chuyển khoản hoàn tiền trong vòng 7 ngày làm việc kể từ ngày duyệt, kể cả đơn COD. Tiền có thể vào tài khoản sau đó tùy ngân hàng. WONS sẽ liên hệ riêng để lấy thông tin tài khoản cần thiết. WONS không yêu cầu mật khẩu, PIN hay OTP để hoàn tiền."
+            }
+          ]
+        }
+      ]
+    },
+    "en": {
+      "title": "Returns and Refunds Policy",
+      "effectiveLabel": "Effective 20 November 2026",
+      "intro": [
+        {
+          "kind": "paragraph",
+          "text": "This policy applies to products purchased on the WONS LINEN website or in store. The seller is HỘ KINH DOANH WONS FASHION."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "1. Change-of-mind exchanges and returns",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "You may request an exchange (for example, for a different size or style) or a return for an eligible product within these time limits:"
+            },
+            {
+              "kind": "list",
+              "items": [
+                "In-store purchases: Within 7 calendar days of the date on the receipt.",
+                "Online purchases: Within 7 calendar days of the carrier marking the item “Delivered”. Contact WONS if the delivery status is incorrect."
+              ]
+            },
+            {
+              "kind": "paragraph",
+              "text": "The item must be intact, unused, unwashed, unironed and unaltered, with all original tags and any accessories. Have your in-store receipt or online order reference ready."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Change-of-mind returns and exchanges exclude made-to-order or custom-altered items and items clearly marked before purchase as ineligible for voluntary returns or exchanges. These exclusions do not affect your rights if an item is faulty or does not match what was agreed."
+            }
+          ]
+        },
+        {
+          "heading": "2. Faulty, incorrect, missing or damaged items",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "If an item is missing, incorrect, faulty or damaged, contact WONS with your order reference or proof of purchase and a description of the issue. Photos can help us assess it sooner. An unboxing video is not required to submit a request."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS will review the issue and explain the appropriate remedy, such as sending a missing item, replacing or repairing the item, issuing a refund or taking other action required by law. WONS covers necessary return and redelivery costs when it is responsible for the issue. The time limits and conditions for voluntary returns do not limit your rights for goods that do not match the agreement or any other statutory rights."
+            }
+          ]
+        },
+        {
+          "heading": "3. How to submit a request",
+          "blocks": [
+            {
+              "kind": "list",
+              "items": [
+                "In-store purchases: Message the official WONS Facebook Page, call our customer care team or visit the WONS store.",
+                "Online purchases: Email linenwons@gmail.com or call 0912 562 991 / 0914 841 991. Include the order reference, the item, why you are contacting us and your preferred resolution."
+              ]
+            },
+            {
+              "kind": "paragraph",
+              "text": "Customer care is available daily from 09:00 to 21:00 (Vietnam time). For mailed returns, contact WONS first for packing and shipping instructions, and keep your tracking number. Returns address: 115 Trần Huy Liệu, Phú Nhuận Ward, Ho Chi Minh City, Vietnam."
+            }
+          ]
+        },
+        {
+          "heading": "4. Shipping costs and exchange price differences",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "For a change-of-mind exchange or return, the customer pays the actual return shipping and any applicable shipping for the replacement. WONS will explain the applicable costs before proceeding. WONS does not charge back the original free delivery."
+            },
+            {
+              "kind": "paragraph",
+              "text": "For a voluntary exchange of an in-store purchase, you may choose an item from the same or a different product line. If the replacement costs more, you pay the difference. If you choose a lower-priced item, WONS does not refund the difference. This applies only when you choose an in-store exchange; returns for a refund are handled under Section 5."
+            }
+          ]
+        },
+        {
+          "heading": "5. Inspection and refunds",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS will inspect the returned item and notify you of the outcome within 1 business day of receiving it. If a refund is approved, WONS will refund what you actually paid for the eligible item after discounts, subject to the circumstances and your rights under applicable law."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS issues refunds by bank transfer within 7 business days of approval, including for COD orders. When the money reaches your account depends on your bank. WONS will contact you privately for the necessary bank details. WONS will never ask for your password, PIN or one-time code to issue a refund."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "privacy": {
+    "vi": {
+      "title": "Chính sách quyền riêng tư",
+      "effectiveLabel": "Có hiệu lực từ ngày 20 tháng 11 năm 2026",
+      "intro": [
+        {
+          "kind": "paragraph",
+          "text": "Chính sách này áp dụng khi bạn truy cập website, mua hàng, sử dụng tài khoản hoặc liên hệ WONS LINEN. Bên kiểm soát dữ liệu cá nhân là HỘ KINH DOANH WONS FASHION, 115 Trần Huy Liệu, P. Phú Nhuận, TP. HCM, Việt Nam."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "1. Thông tin WONS xử lý",
+          "blocks": [
+            {
+              "kind": "list",
+              "items": [
+                "Truy cập website: Địa chỉ IP, loại trình duyệt hoặc thiết bị, thời điểm và đường dẫn truy cập có thể được ghi nhận để vận hành, bảo mật và xử lý lỗi.",
+                "Đặt hàng và nhận hỗ trợ: Tên, email, số điện thoại, địa chỉ thanh toán và giao hàng, sản phẩm, số lượng, ghi chú bạn nhập, trạng thái đơn và nội dung trao đổi. Nếu được hoàn tiền qua chuyển khoản, WONS thu riêng thông tin tài khoản nhận tiền cần thiết. Checkout COD không yêu cầu thông tin thẻ hoặc tài khoản ngân hàng.",
+                "Tài khoản, nếu tính năng được mở: Tên hiển thị, email xác minh, địa chỉ bạn lưu và thông tin xác thực cần thiết để đăng nhập. Bạn có thể mua với tư cách khách. Đơn khách không tự động liên kết với tài khoản."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "2. Mục đích và căn cứ xử lý",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS dùng dữ liệu để xác minh đăng nhập, tiếp nhận và xác nhận đơn, giao hàng, thu COD, xử lý đổi trả, giải quyết khiếu nại, bảo vệ website và thực hiện nghĩa vụ pháp lý. Nếu bạn không cung cấp thông tin bắt buộc của một dịch vụ, WONS có thể không thực hiện được dịch vụ đó. Vui lòng chỉ cung cấp thông tin của người nhận khác khi bạn được phép chia sẻ."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS xin sự đồng ý khi pháp luật yêu cầu. Trường hợp được pháp luật cho phép, WONS có thể xử lý dữ liệu để thực hiện nghĩa vụ theo hợp đồng, thực hiện nghĩa vụ pháp lý hoặc theo căn cứ khác được pháp luật quy định. Nếu triển khai theo dõi quảng cáo hoặc email tiếp thị, WONS sẽ thông báo mục đích và xin đồng ý riêng trước khi xử lý nếu pháp luật yêu cầu."
+            }
+          ]
+        },
+        {
+          "heading": "3. Thông tin lưu trên trình duyệt",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Website lưu mã biến thể, số lượng trong giỏ và tùy chọn VND/USD trên thiết bị. Khi bạn đăng nhập, trình duyệt có thể lưu thông tin cần thiết để duy trì phiên. Bạn có thể đăng xuất để kết thúc phiên. Xóa dữ liệu website trong trình duyệt có thể xóa giỏ và tùy chọn trên thiết bị nhưng không xóa đơn đã gửi."
+            }
+          ]
+        },
+        {
+          "heading": "4. Bên nhận dữ liệu và xử lý ngoài Việt Nam",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS giới hạn quyền truy cập cho người được phân quyền. Vercel lưu trữ website và có thể xử lý dữ liệu kỹ thuật của lượt truy cập. Supabase cung cấp cơ sở dữ liệu và xác thực; cơ sở dữ liệu của WONS đặt tại Singapore. Nếu dùng dịch vụ gửi email giao dịch, WONS chia sẻ dữ liệu cần thiết để gửi thông báo hoặc liên kết đăng nhập."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Đơn vị vận chuyển nhận thông tin cần thiết để giao hàng và thu COD. Khi chuyển khoản hoàn tiền, ngân hàng xử lý thông tin cần thiết cho giao dịch. WONS có thể cung cấp dữ liệu cho cơ quan có thẩm quyền khi có yêu cầu hợp pháp. Một số dữ liệu được xử lý ngoài Việt Nam; WONS áp dụng các yêu cầu pháp luật về bảo vệ và chuyển dữ liệu xuyên biên giới."
+            }
+          ]
+        },
+        {
+          "heading": "5. Thời gian lưu và bảo mật",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Thông tin tài khoản và địa chỉ đã lưu được giữ khi bạn sử dụng tài khoản. Hồ sơ đơn, hoàn tiền và trao đổi hỗ trợ được lưu trong thời gian cần thiết để hoàn tất giao dịch, giải quyết yêu cầu và đáp ứng nghĩa vụ kế toán, thuế hoặc giải quyết tranh chấp. Thời gian lưu nhật ký kỹ thuật và bản sao lưu phụ thuộc vào mục đích bảo mật, khôi phục và cấu hình của dịch vụ liên quan."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Khi không còn căn cứ lưu giữ, WONS xóa hoặc khử nhận dạng theo quy định áp dụng. WONS sử dụng biện pháp bảo mật và kiểm soát quyền truy cập phù hợp. Không gửi mật khẩu, mã xác minh hoặc thông tin thẻ qua kênh chăm sóc khách hàng."
+            }
+          ]
+        },
+        {
+          "heading": "6. Quyền của bạn, liên hệ và cập nhật",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Theo pháp luật Việt Nam, bạn có thể được biết về việc xử lý dữ liệu; xem, nhận bản sao hoặc yêu cầu chỉnh sửa, xóa, hạn chế hay phản đối xử lý; đồng ý, từ chối hoặc rút lại sự đồng ý; và khiếu nại hoặc yêu cầu biện pháp bảo vệ theo luật. Việc rút lại sự đồng ý không ảnh hưởng đến xử lý hợp pháp trước đó."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Nếu có tài khoản, bạn có thể xem và sửa thông tin hồ sơ hoặc địa chỉ đã lưu trong mục Account. Với yêu cầu khác, hãy gửi email đến linenwons@gmail.com hoặc nhắn Zalo 0912 562 991. Bạn cũng có thể gọi số này để được hướng dẫn. WONS có thể xác minh danh tính khi cần và sẽ xử lý trong thời hạn theo luật. WONS công bố bản cập nhật và ngày hiệu lực trên website."
+            }
+          ]
+        }
+      ]
+    },
+    "en": {
+      "title": "Privacy Policy",
+      "effectiveLabel": "Effective 20 November 2026",
+      "intro": [
+        {
+          "kind": "paragraph",
+          "text": "This policy applies when you visit the website, shop, use an account or contact WONS LINEN. The personal data controller is HỘ KINH DOANH WONS FASHION, 115 Trần Huy Liệu, Phú Nhuận Ward, Ho Chi Minh City, Vietnam."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "1. Information WONS processes",
+          "blocks": [
+            {
+              "kind": "list",
+              "items": [
+                "Website visits: We may record IP addresses, browser or device type, visit times and pages accessed to run and secure the site and diagnose errors.",
+                "Orders and support: Names, email addresses, phone numbers, billing and delivery addresses, items, quantities, notes you enter, order status and communications. Where a refund is paid by bank transfer, WONS separately collects the bank details needed to issue it. COD checkout does not ask for card or bank details.",
+                "Accounts, when available: A display name, verified email address, saved addresses and the authentication information needed to sign in. Guest checkout is available. Guest orders are not automatically linked to an account."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "2. Purposes and grounds for processing",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS uses data to verify sign-ins, receive and confirm orders, deliver goods, collect COD payments, handle returns and complaints, protect the site and meet legal obligations. If you do not provide information required for a service, WONS may be unable to provide it. Only supply another recipient’s details if you are authorized to share them."
+            },
+            {
+              "kind": "paragraph",
+              "text": "WONS asks for consent where required by law. Where the law allows, WONS may process data to perform contractual obligations, meet legal obligations or rely on another ground provided by law. If WONS introduces ad tracking or marketing emails, it will explain the purpose and seek separate consent before processing where legally required."
+            }
+          ]
+        },
+        {
+          "heading": "3. Information stored in your browser",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "The site saves product variant IDs, bag quantities and your VND/USD preference on your device. When you sign in, your browser may store information needed to maintain the session. Sign out to end your session. Clearing website data may remove your bag and preferences from your device. It will not delete submitted orders."
+            }
+          ]
+        },
+        {
+          "heading": "4. Data recipients and processing outside Vietnam",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "WONS limits access to authorized people. Vercel hosts the site and may process technical request data. Supabase provides the database and authentication; the WONS database is hosted in Singapore. If WONS uses a transactional email service, it shares the information needed for notifications or sign-in links."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Carriers receive the information needed to deliver orders and collect COD payments. Banks process the information required to issue bank transfer refunds. WONS may also disclose information to competent authorities in response to a lawful request. Some data is processed outside Vietnam; WONS applies relevant legal requirements for data protection and cross-border transfers."
+            }
+          ]
+        },
+        {
+          "heading": "5. Retention and security",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Account information and saved addresses are kept while you use your account. Order, refund and support records are kept as needed to complete transactions, resolve requests and meet accounting, tax or dispute resolution obligations. Retention for technical logs and backups depends on security and recovery needs and the relevant service settings."
+            },
+            {
+              "kind": "paragraph",
+              "text": "When there is no longer a basis to retain personal data, WONS deletes or de-identifies it in line with applicable law. WONS uses appropriate security measures and access controls. Do not send passwords, verification codes or card details through customer support channels."
+            }
+          ]
+        },
+        {
+          "heading": "6. Your rights, contacts and updates",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Under Vietnamese law, you may have the right to be informed about processing; view, obtain a copy of, correct or delete your data; restrict or object to processing; give, refuse or withdraw consent; and make a complaint or seek protection under the law. Withdrawal of consent does not affect prior lawful processing."
+            },
+            {
+              "kind": "paragraph",
+              "text": "If you have an account, you can view and edit profile details or saved addresses under Account. For other requests, email linenwons@gmail.com or message 0912 562 991 on Zalo. You may also call this number for guidance. WONS may verify your identity as needed and will act within legal time limits. WONS posts updates and their effective dates on the website."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
