@@ -27,7 +27,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Hãy kiểm tra mẫu, màu, kích cỡ, số lượng, địa chỉ giao, ưu đãi và tổng tiền trước khi chọn “Place order”. Mã đơn hoặc thông báo đã nhận yêu cầu chỉ xác nhận WONS đã nhận đơn để xử lý. WONS chấp nhận đơn khi liên hệ xác nhận với bạn qua điện thoại, Zalo hoặc email, nêu rõ sản phẩm, tổng tiền và thông tin giao hàng. Hãy lưu lại mã đơn để đối chiếu."
+              "text": "Hãy kiểm tra mẫu, màu, kích cỡ, số lượng, địa chỉ giao, ưu đãi và tổng tiền trước khi chọn “Place order”. Mã đơn hoặc thông báo đã nhận yêu cầu chỉ xác nhận WONS đã nhận đơn để xử lý. WONS chấp nhận đơn khi liên hệ xác nhận với bạn qua WhatsApp hoặc email, nêu rõ sản phẩm, tổng tiền và thông tin giao hàng. Hãy lưu lại mã đơn để đối chiếu."
             }
           ]
         },
@@ -116,7 +116,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Check the style, colour, size, quantity, delivery address, promotions and total before selecting “Place order”. An order reference or receipt screen only acknowledges that WONS received your request. WONS accepts the order when it confirms it with you by phone, Zalo or email, stating the items, total and delivery details. Keep your order reference for your records."
+              "text": "Check the style, colour, size, quantity, delivery address, promotions and total before selecting “Place order”. An order reference or receipt screen only acknowledges that WONS received your request. WONS accepts the order when it confirms it with you by WhatsApp or email, stating the items, total and delivery details. Keep your order reference for your records."
             }
           ]
         },
@@ -233,7 +233,7 @@
             {
               "kind": "list",
               "items": [
-                "Mua tại cửa hàng: Nhắn Zalo 0912 562 991, gọi 0912 562 991 / 0914 841 991 hoặc đến trực tiếp cửa hàng WONS.",
+                "Mua tại cửa hàng: Nhắn WhatsApp hoặc Zalo 0912 562 991, gọi hotline 0912 562 991 / 0914 841 991 hoặc đến trực tiếp cửa hàng WONS.",
                 "Mua online: Gửi email đến linenwons@gmail.com hoặc gọi 0912 562 991 / 0914 841 991. Vui lòng cung cấp mã đơn, sản phẩm cần hỗ trợ, lý do và phương án mong muốn."
               ]
             },
@@ -324,7 +324,7 @@
             {
               "kind": "list",
               "items": [
-                "In-store purchases: Message 0912 562 991 on Zalo, call 0912 562 991 / 0914 841 991 or visit the WONS store.",
+                "In-store purchases: Message 0912 562 991 on WhatsApp or Zalo, call our hotline on 0912 562 991 / 0914 841 991 or visit the WONS store.",
                 "Online purchases: Email linenwons@gmail.com or call 0912 562 991 / 0914 841 991. Include the order reference, the item, why you are contacting us and your preferred resolution."
               ]
             },
@@ -418,7 +418,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Đơn vị vận chuyển nhận thông tin cần thiết để giao hàng và thu COD. Khi chuyển khoản hoàn tiền, ngân hàng xử lý thông tin cần thiết cho giao dịch. WONS có thể cung cấp dữ liệu cho cơ quan có thẩm quyền khi có yêu cầu hợp pháp. Một số dữ liệu được xử lý ngoài Việt Nam; WONS áp dụng các yêu cầu pháp luật về bảo vệ và chuyển dữ liệu xuyên biên giới."
+              "text": "Đơn vị vận chuyển nhận thông tin cần thiết để giao hàng và thu COD. Khi WONS xác nhận đơn hoặc hỗ trợ qua WhatsApp hoặc Zalo, các nền tảng này xử lý số điện thoại và nội dung tin nhắn theo chính sách của họ. Khi chuyển khoản hoàn tiền, ngân hàng xử lý thông tin cần thiết cho giao dịch. WONS có thể cung cấp dữ liệu cho cơ quan có thẩm quyền khi có yêu cầu hợp pháp. Một số dữ liệu được xử lý ngoài Việt Nam; WONS áp dụng các yêu cầu pháp luật về bảo vệ và chuyển dữ liệu xuyên biên giới."
             }
           ]
         },
@@ -504,7 +504,7 @@
             },
             {
               "kind": "paragraph",
-              "text": "Carriers receive the information needed to deliver orders and collect COD payments. Banks process the information required to issue bank transfer refunds. WONS may also disclose information to competent authorities in response to a lawful request. Some data is processed outside Vietnam; WONS applies relevant legal requirements for data protection and cross-border transfers."
+              "text": "Carriers receive the information needed to deliver orders and collect COD payments. When WONS confirms orders or provides support through WhatsApp or Zalo, those platforms process phone numbers and message content under their own policies. Banks process the information required to issue bank transfer refunds. WONS may also disclose information to competent authorities in response to a lawful request. Some data is processed outside Vietnam; WONS applies relevant legal requirements for data protection and cross-border transfers."
             }
           ]
         },

@@ -22,8 +22,8 @@ const pages: Record<
     title: "A little care, in every detail.",
     eyebrow: "CLIENT CARE",
     paragraphs: [
-      "Explore styles, choose colours and sizes, and add available items to your bag. WONS contacts customers by phone, Zalo or email to confirm orders.",
-      "Each product page lists the available sizes and fabric. For measurements, fit or care advice, contact WONS at linenwons@gmail.com or 0912 562 991 (call or Zalo) before ordering.",
+      "Explore styles, choose colours and sizes, and add available items to your bag. WONS contacts customers by WhatsApp or email to confirm orders.",
+      "Each product page lists the available sizes and fabric. For measurements, fit or care advice, contact WONS at linenwons@gmail.com or 0912 562 991 (call, WhatsApp or Zalo) before ordering.",
       "Shipping is free within Vietnam. Product prices include taxes and fees. The only payment method is cash on delivery (COD).",
     ],
   },
