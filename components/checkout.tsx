@@ -78,11 +78,12 @@ function getAddress(read: (field: string) => string, prefix: string): OrderAddre
 type Review = OrderDetails & { items: OrderItem[]; separateDelivery: boolean };
 
 function OrderSummary({
-  lines, reviewing, changed, placing, error, place,
+  lines, reviewing, changed, placing, error, place, agreed, setAgreed,
 }: {
   lines: ResolvedLine[];
   reviewing: boolean; changed: boolean; placing: boolean;
   error: { message: string; code?: string } | null; place: () => void;
+  agreed: boolean; setAgreed: (value: boolean) => void;
 }) {
   const count = lines.reduce((total, line) => total + line.quantity, 0);
   const { currency, format } = useDisplayCurrency();
@@ -128,7 +129,21 @@ function OrderSummary({
       {reviewing ? (
         <>
           {changed && <p className="checkout-summary-notice" role="alert">Your bag changed. Edit your details and review the updated order.</p>}
-          <button className="button dark checkout-review-button" type="button" onClick={place} disabled={placing || changed}>
+          <label className="checkout-checkbox checkout-agreement">
+            <input type="checkbox" required checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
+            <span>
+              I agree to the{" "}
+              <Link className="underlined-link" href={policyLinks["terms-of-use"].href} target="_blank" rel="noopener noreferrer">Terms of Use</Link>{" "}
+              and the{" "}
+              <Link className="underlined-link" href={policyLinks["returns-and-refunds"].href} target="_blank" rel="noopener noreferrer">Returns and Refunds Policy</Link>,
+              and I have read the{" "}
+              <Link className="underlined-link" href={policyLinks.privacy.href} target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
+              <span className="sr-only"> Policy links open in a new tab.</span>
+            </span>
+          </label>
+          {!agreed && <p className="checkout-subtle checkout-agreement-hint" id="checkout-agreement-hint">Tick the box above to place your order.</p>}
+          <button className="button dark checkout-review-button" type="button" onClick={place} disabled={placing || changed || !agreed}
+            aria-describedby={agreed ? undefined : "checkout-agreement-hint"}>
             {placing ? "Placing order…" : "Place order"} <Arrow />
           </button>
         </>
@@ -151,6 +166,7 @@ function GuestCheckout({ lines, complete }: {
   const [separateDelivery, setSeparateDelivery] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
   const [placing, setPlacing] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<{ message: string; code?: string } | null>(null);
   const requestId = useRef<string>(null);
   const inFlight = useRef(false);
@@ -195,7 +211,7 @@ function GuestCheckout({ lines, complete }: {
   }
 
   async function placeOrder() {
-    if (!review || changed || inFlight.current) return;
+    if (!review || changed || !agreed || inFlight.current) return;
     inFlight.current = true;
     setPlacing(true);
     setError(null);
@@ -286,7 +302,6 @@ function GuestCheckout({ lines, complete }: {
           <h2 id="checkout-payment-title">Payment</h2>
           <p><strong>{COD_LABEL}</strong></p>
           <p className="checkout-subtle">Pay in cash when your order is delivered. This is the only payment method.</p>
-          <p className="checkout-subtle">By placing your order, you agree to the Terms of Use and the Returns and Refunds Policy, and confirm that you have read the Privacy Policy.</p>
           <nav aria-label="Store policies" className="checkout-policy-links">
             {Object.values(policyLinks).map(({ href, en }) => (
               <Link key={href} className="underlined-link" href={href} target="_blank" rel="noopener noreferrer">
@@ -296,7 +311,7 @@ function GuestCheckout({ lines, complete }: {
           </nav>
         </section>
       </div>
-      <OrderSummary lines={lines} reviewing={review !== null} changed={changed} placing={placing} error={error} place={placeOrder} />
+      <OrderSummary lines={lines} reviewing={review !== null} changed={changed} placing={placing} error={error} place={placeOrder} agreed={agreed} setAgreed={setAgreed} />
     </div>
   );
 }

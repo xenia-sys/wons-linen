@@ -266,6 +266,31 @@
   background: var(--ink);
 }
 
+.checkout-summary .checkout-agreement {
+  align-items: flex-start;
+  width: auto;
+  margin: 14px 0 4px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.checkout-summary .checkout-agreement .underlined-link {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+}
+
+.checkout-summary .checkout-agreement input {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.checkout-summary .checkout-agreement-hint {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
 .checkout-summary .checkout-payment-note {
   margin-top: 12px;
   text-align: center;
