@@ -1,10 +1,12 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { parseUsername } from "../../lib/customer-account";
 import { accountRedirect, customerAuth, customerAuthMessage } from "../../lib/customer-browser";
 
 export function AccountDetails({ user }: { user: User }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -30,9 +32,9 @@ export function AccountDetails({ user }: { user: User }) {
         ...(changingEmail ? { email } : {}),
       }, { emailRedirectTo: accountRedirect() });
       if (error) setError(customerAuthMessage(error));
-      else setMessage(changingEmail
-        ? "Check your email and follow the confirmation instructions. Your current email remains active until the change is verified."
-        : "Account details saved.");
+      else if (changingEmail)
+        setMessage("Check your email and follow the confirmation instructions. Your current email remains active until the change is verified.");
+      else router.replace("/");
     } catch {
       setError("Your changes could not be saved. Please try again.");
     } finally {
@@ -55,6 +57,7 @@ export function AccountDetails({ user }: { user: User }) {
 }
 
 export function AccountPassword() {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [verify, setVerify] = useState(false);
   const [message, setMessage] = useState("");
@@ -94,7 +97,7 @@ export function AccountPassword() {
       else {
         element.reset();
         setVerify(false);
-        setMessage("Password saved. You can sign in with your email and password or a secure link.");
+        router.replace("/");
       }
     } catch {
       setError("Your password could not be saved. Please try again.");
