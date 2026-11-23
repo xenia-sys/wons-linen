@@ -138,7 +138,7 @@ function AdminWorkspace({ enabled, children }: { enabled: boolean; children: Rea
       setSignOutError("Sign-out could not be completed. Please try again.");
     }
   }
-  if (!enabled) return <div className="admin-root admin-access">{accessLanguage}<Link href="/" className="admin-wordmark">WONS</Link><h1>{t("Production access only.")}</h1><p>{t("Use the live WONS website to manage the store.")}</p><a className="button dark" href="https://wons-linen.vercel.app/admin/login">{t("Open WONS admin")}</a></div>;
+  if (!enabled) return <div className="admin-root admin-access">{accessLanguage}<Link href="/" className="admin-wordmark">WONS</Link><h1>{t("Production access only.")}</h1><p>{t("Use the live WONS website to manage the store.")}</p><a className="button dark" href="https://www.wonslinen.vn/admin/login">{t("Open WONS admin")}</a></div>;
   if (checking) return <div className="admin-root admin-access">{accessLanguage}<p className="eyebrow">{t("WONS / STORE ADMINISTRATION")}</p><p role="status">{t("Checking your session…")}</p></div>;
   if (!profile) {
     if (issue && issue.kind !== "signed_out") return <div className="admin-root admin-access">{accessLanguage}

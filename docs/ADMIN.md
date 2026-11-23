@@ -1,6 +1,6 @@
 # WONS product administration
 
-Production entry: https://wons-linen.vercel.app/admin/login. Use **Language** at the upper right to switch the admin interface between **English** and **Tiếng Việt**, including on the sign-in screen. The browser remembers the choice. It does not change storefront copy, product content or account permissions.
+Production entry: https://www.wonslinen.vn/admin/login (the custom domain; `wonslinen.vn` redirects to `www`, and https://wons-linen.vercel.app still serves the same deployment). Use **Language** at the upper right to switch the admin interface between **English** and **Tiếng Việt**, including on the sign-in screen. The browser remembers the choice. It does not change storefront copy, product content or account permissions.
 
 | Capability                                                                  | Marketing Editor | Owner |
 | --------------------------------------------------------------------------- | ---------------- | ----- |
@@ -21,7 +21,7 @@ No email address is automatically granted Owner access. The founder must specify
 
 Account configuration in the WONS project only (`imgjlzoodxggihhljojf`):
 
-1. Site URL is configured as `https://wons-linen.vercel.app` with the exact allowed redirect `https://wons-linen.vercel.app/admin/login`. Both were saved and verified in the Dashboard. Do not allow wildcard preview redirects.
+1. Site URL is `https://www.wonslinen.vn` with the exact allowed redirect `https://www.wonslinen.vn/admin/login`. Keep the legacy exact redirect `https://wons-linen.vercel.app/admin/login` while old links are still in use. Do not allow wildcard preview redirects.
 2. Keep email confirmation enabled. Confirm working email delivery for the intended staff recipients. Supabase's default mail service restricts recipients and is not a verified production delivery channel; configure an approved SMTP provider if required. No paid email service was provisioned.
 3. Approve the founder's email as Owner, then use **Activate a staff account** and confirm its email before signing in. Set the password yourself; never share passwords or confirmation codes with an operator or in chat.
 4. Owner opens **Team & access**, enters a teammate's individual email and selects **Marketing Editor**. Share the admin URL with that teammate. Saving access does not send an invitation or create an Auth account; they activate and confirm their own account separately.
