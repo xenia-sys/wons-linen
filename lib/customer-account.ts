@@ -17,7 +17,7 @@ export type OrderSummary = {
   id: string;
   order_number: string;
   placed_at: string;
-  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled" | "refunded";
+  status: "pending" | "confirmed" | "packed" | "shipped" | "delivered" | "completed" | "cancelled" | "refunded";
   total_vnd: number;
 };
 

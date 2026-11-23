@@ -5,10 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { money, subtotal, unitPrice } from "../lib/commerce";
+import type { Address } from "../lib/customer-account";
+import { customerAuth } from "../lib/customer-browser";
+import { checkoutAddresses } from "../lib/checkout-addresses";
 import { addressLines, COD_LABEL, ORDER_COUNTRY, orderReference, type OrderAddress, type OrderDetails, type OrderItem, type OrderReceipt } from "../lib/orders";
 import { policyLinks } from "../lib/policy-links";
 import type { ResolvedLine } from "../lib/types";
 import { useBag } from "./cart-provider";
+import { checkoutIdentity, useCheckoutAccount, type CheckoutIdentity } from "./checkout-account";
 import { useDisplayCurrency } from "./display-currency-provider";
 import { GarmentArt } from "./garment-art";
 import { Arrow, BagIcon } from "./icons";
@@ -39,7 +43,7 @@ const addressFields: Field[] = [
   { key: "postcode", label: "Postal code", optional: true, max: 20 },
 ];
 
-function Fields({ prefix, fields }: { prefix: string; fields: Field[] }) {
+function Fields({ prefix, fields, defaults }: { prefix: string; fields: Field[]; defaults?: Record<string, string> }) {
   return (
     <div className="checkout-field-grid">
       {fields.map(({ key, label, type, wide, optional, max }) => {
@@ -49,7 +53,7 @@ function Fields({ prefix, fields }: { prefix: string; fields: Field[] }) {
             <label htmlFor={id}>
               {label} {optional && <span>(optional)</span>}
             </label>
-            <input id={id} type={type ?? "text"} required={!optional} maxLength={max ?? (type === "tel" ? 40 : 160)} />
+            <input id={id} type={type ?? "text"} required={!optional} defaultValue={defaults?.[key]} maxLength={max ?? (type === "tel" ? 40 : 160)} />
           </div>
         );
       })}
@@ -57,10 +61,14 @@ function Fields({ prefix, fields }: { prefix: string; fields: Field[] }) {
   );
 }
 
-function AddressFields({ prefix }: { prefix: string }) {
+function AddressFields({ prefix, initial }: { prefix: string; initial?: OrderAddress }) {
+  const defaults = initial && {
+    "first-name": initial.firstName, "last-name": initial.lastName, street: initial.street,
+    unit: initial.unit, city: initial.city, province: initial.province, postcode: initial.postcode,
+  };
   return (
     <>
-      <Fields prefix={prefix} fields={addressFields} />
+      <Fields prefix={prefix} fields={addressFields} defaults={defaults} />
       <p className="checkout-country"><strong>Country / region:</strong> {ORDER_COUNTRY}</p>
     </>
   );
@@ -76,6 +84,12 @@ function getAddress(read: (field: string) => string, prefix: string): OrderAddre
 }
 
 type Review = OrderDetails & { items: OrderItem[]; separateDelivery: boolean };
+type CheckoutReceipt = OrderReceipt & { linkedToAccount: boolean };
+type CheckoutFormProps = {
+  lines: ResolvedLine[];
+  complete: (receipt: CheckoutReceipt, items: OrderItem[]) => void;
+  accountsEnabled: boolean;
+};
 
 function OrderSummary({
   lines, reviewing, changed, placing, error, place, agreed, setAgreed,
@@ -126,6 +140,7 @@ function OrderSummary({
       </dl>
       {currency === "USD" && <p className="checkout-subtle">Orders are recorded in VND ({money(subtotal(lines))}). USD amounts are estimates.</p>}
       {error && <p className="checkout-summary-notice" role="alert">{error.message} {error.code === "BAG_CHANGED" && <a href="/bag" className="underlined-link">Refresh bag</a>}</p>}
+      {error?.code === "ACCOUNT_SESSION" && <Link href="/account" target="_blank" rel="noopener noreferrer" className="underlined-link">Open your account in a new tab</Link>}
       {reviewing ? (
         <>
           {changed && <p className="checkout-summary-notice" role="alert">Your bag changed. Edit your details and review the updated order.</p>}
@@ -157,13 +172,20 @@ function OrderSummary({
   );
 }
 
-function GuestCheckout({ lines, complete }: {
-  lines: ResolvedLine[];
-  complete: (receipt: OrderReceipt, items: OrderItem[]) => void;
+function CheckoutWithAccount(props: CheckoutFormProps) {
+  const { loading, identity, addresses } = useCheckoutAccount(props.accountsEnabled);
+  if (loading) return <p className="checkout-loading" role="status">Loading your checkout details…</p>;
+  return <CheckoutForm key={identity?.id ?? "guest"} identity={identity} addresses={addresses} {...props} />;
+}
+
+function CheckoutForm({ lines, complete, identity, addresses, accountsEnabled }: CheckoutFormProps & {
+  identity: CheckoutIdentity | null;
+  addresses: Address[];
 }) {
   const router = useRouter();
+  const [initial] = useState(() => checkoutAddresses(addresses));
   const items = lines.map(line => ({ variantId: line.variantId, quantity: line.quantity, price: unitPrice(line.variant) }));
-  const [separateDelivery, setSeparateDelivery] = useState(false);
+  const [separateDelivery, setSeparateDelivery] = useState(initial.separate);
   const [review, setReview] = useState<Review | null>(null);
   const [placing, setPlacing] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -216,10 +238,20 @@ function GuestCheckout({ lines, complete }: {
     setPlacing(true);
     setError(null);
     try {
+      let token: string | undefined;
+      if (accountsEnabled) {
+        const { data: { session }, error: sessionError } = await customerAuth().auth.getSession();
+        const latest = checkoutIdentity(session);
+        if (latest?.id !== identity?.id || (identity && sessionError)) {
+          setError({ message: "Your account session changed. Sign in again and review your order details.", code: "ACCOUNT_SESSION" });
+          return;
+        }
+        if (latest && session) token = session.access_token;
+      }
       requestId.current ??= crypto.randomUUID();
       const { separateDelivery: _separateDelivery, ...details } = review;
       const response = await fetch("/api/checkout", {
-        method: "POST", headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ id: requestId.current, ...details }),
         signal: AbortSignal.timeout(18000),
       });
@@ -232,7 +264,7 @@ function GuestCheckout({ lines, complete }: {
         setError({ message: result.message ?? "We could not confirm your order.", code: result.code });
         return;
       }
-      complete(result, review.items);
+      complete({ ...result, linkedToAccount: Boolean(token) }, review.items);
     } catch {
       setError({ message: "We could not confirm your order yet. Retry here with the same details to avoid a duplicate." });
     } finally {
@@ -247,12 +279,15 @@ function GuestCheckout({ lines, complete }: {
         <form ref={editTarget} id={FORM_ID} autoComplete="on" hidden={review !== null} onSubmit={reviewOrder}>
           <fieldset className="checkout-section">
             <legend>Contact details</legend>
-            <p className="checkout-subtle">You can check out as a guest. No account is needed.</p>
-            <Fields prefix="contact" fields={contactFields} />
+            <p className="checkout-subtle">{identity
+              ? "Your order will appear in Recent orders. You can change the contact and address details for this order."
+              : "You can check out as a guest. No account is needed."}</p>
+            <Fields prefix="contact" fields={contactFields} defaults={identity ? { email: identity.email } : undefined} />
           </fieldset>
           <fieldset className="checkout-section">
             <legend>Billing address</legend>
-            <AddressFields prefix="billing" />
+            {initial.billing && <p className="checkout-subtle">Filled from your saved addresses.</p>}
+            <AddressFields prefix="billing" initial={initial.billing} />
           </fieldset>
           <fieldset className="checkout-section">
             <legend>Delivery address</legend>
@@ -265,7 +300,7 @@ function GuestCheckout({ lines, complete }: {
               Ship to a different address?
             </label>
             {separateDelivery ? (
-              <AddressFields prefix="delivery" />
+              <AddressFields prefix="delivery" initial={initial.shipping} />
             ) : (
               <p className="checkout-subtle">Same as the billing address.</p>
             )}
@@ -316,9 +351,9 @@ function GuestCheckout({ lines, complete }: {
   );
 }
 
-export function Checkout({ enabled }: { enabled: boolean }) {
+export function Checkout({ enabled, accountsEnabled }: { enabled: boolean; accountsEnabled: boolean }) {
   const { ready, lines, consume } = useBag();
-  const [receipt, setReceipt] = useState<OrderReceipt | null>(null);
+  const [receipt, setReceipt] = useState<CheckoutReceipt | null>(null);
   const receiptTitle = useRef<HTMLHeadingElement>(null);
   const canOrder = enabled && lines.length > 0 && lines.every(line => line.product.status === "published" && !line.product.is_demo);
   useEffect(() => {
@@ -340,6 +375,7 @@ export function Checkout({ enabled }: { enabled: boolean }) {
           <h2 id="checkout-receipt" tabIndex={-1} ref={receiptTitle}>Order received.</h2>
           <p><strong>{orderReference(receipt.order_number)}</strong> · {money(receipt.total_vnd)}</p>
           <p>WONS will contact you to confirm. Pay in cash when your order is delivered.</p>
+          {receipt.linkedToAccount && <p><Link href="/account#recent-orders" className="underlined-link">View recent orders</Link></p>}
           <Link href="/shop" className="button dark">Continue exploring <Arrow /></Link>
         </section>
       ) : !ready ? (
@@ -364,7 +400,7 @@ export function Checkout({ enabled }: { enabled: boolean }) {
             <strong>Delivery within Vietnam</strong>
             <p>Free shipping. Review your details before placing your order.</p>
           </div>
-          <GuestCheckout lines={lines} complete={(order, items) => {
+          <CheckoutWithAccount lines={lines} accountsEnabled={accountsEnabled} complete={(order, items) => {
             setReceipt(order);
             consume(items);
           }} />

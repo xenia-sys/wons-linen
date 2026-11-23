@@ -14,10 +14,12 @@ type AccountData = {
 };
 
 const orderStatus: Record<OrderSummary["status"], string> = {
-  pending: "Pending",
+  pending: "Awaiting confirmation",
   confirmed: "Confirmed",
+  packed: "Packed",
   shipped: "Shipped",
   delivered: "Delivered",
+  completed: "Completed",
   cancelled: "Cancelled",
   refunded: "Refunded",
 };
@@ -86,7 +88,7 @@ export function AccountDashboard({ user }: { user: User }) {
         <h2 id="orders-title">Recent orders</h2>
         {!data ? <p role="status">Loading your orders…</p> :
           !data.orders ? <><p role="alert">Your orders could not be loaded.</p><button className="underlined-link" onClick={refresh}>Try again</button></> :
-          data.orders.length === 0 ? <><p>No orders yet. Orders placed with this account will appear here once shopping opens.</p><Link className="underlined-link" href="/shop">Explore the collection</Link></> :
+          data.orders.length === 0 ? <><p>No orders yet. Orders placed while signed in will appear here.</p><Link className="underlined-link" href="/shop">Explore the collection</Link></> :
           <ul className="account-orders">
             {data.orders.map((order) => (
               <li key={order.id}>

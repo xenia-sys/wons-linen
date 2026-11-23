@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import { checkoutGatewaySecret } from "../../../lib/checkout-config.ts";
+import { customerAccountsEnabled } from "../../../lib/customer-config.ts";
 import { parseOrder } from "../../../lib/orders.ts";
 
 const headers = { "Cache-Control": "no-store" };
@@ -41,6 +42,9 @@ export async function POST(request: Request) {
     return failure("INVALID_ORIGIN", "Please place your order from the WONS website.", 403);
   if (request.headers.get("content-type")?.split(";")[0].trim() !== "application/json")
     return failure("INVALID_ORDER", "Check your order details and try again.", 400);
+  const authorization = request.headers.get("authorization");
+  if (authorization && (!customerAccountsEnabled() || !/^Bearer [^\s]+$/i.test(authorization)))
+    return failure("ACCOUNT_SESSION", "Sign in to your WONS account again, then retry with the same order details.", 401);
 
   let order;
   try {
@@ -62,7 +66,11 @@ export async function POST(request: Request) {
   try {
     const response = await fetch(new URL("/rest/v1/rpc/submit_wons_order", supabaseUrl), {
       method: "POST",
-      headers: { apikey: publishableKey, "Content-Type": "application/json" },
+      headers: {
+        apikey: publishableKey,
+        "Content-Type": "application/json",
+        ...(authorization ? { Authorization: authorization } : {}),
+      },
       body: JSON.stringify({ gateway_secret: secret, order_data: order, client_key: clientKey }),
       cache: "no-store",
       redirect: "error",
@@ -70,6 +78,8 @@ export async function POST(request: Request) {
     });
     const result = await response.json();
     if (!response.ok) {
+      if (authorization && (result.code === "WN006" || response.status === 401))
+        return failure("ACCOUNT_SESSION", "Sign in to your WONS account again, then retry with the same order details.", 401);
       if (result.code === "WN001")
         return failure("BAG_CHANGED", "A price or availability changed. Return to your bag and review your items.", 409);
       if (result.code === "WN002")

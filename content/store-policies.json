@@ -23,7 +23,7 @@
           "blocks": [
             {
               "kind": "paragraph",
-              "text": "Bạn có thể đặt hàng mà không cần mở tài khoản. Khi tính năng tài khoản được mở, bạn có thể dùng email đã xác minh để đăng nhập, cập nhật hồ sơ và quản lý địa chỉ đã lưu. Đơn đặt khi mua với tư cách khách không tự động liên kết với tài khoản. Hãy giữ thông tin đăng nhập an toàn và báo WONS nếu nghi ngờ có truy cập trái phép."
+              "text": "Bạn có thể đặt hàng mà không cần mở tài khoản. Bạn có thể dùng email đã xác minh để đăng nhập, cập nhật hồ sơ và quản lý địa chỉ đã lưu. Đơn đặt khi đăng nhập hiển thị trong mục Recent orders của tài khoản đó. Đơn đặt khi mua với tư cách khách không tự động liên kết với tài khoản. Hãy giữ thông tin đăng nhập an toàn và báo WONS nếu nghi ngờ có truy cập trái phép."
             },
             {
               "kind": "paragraph",
@@ -112,7 +112,7 @@
           "blocks": [
             {
               "kind": "paragraph",
-              "text": "You can order without creating an account. When customer accounts are available, you can sign in with a verified email address, update your profile and manage saved addresses. Guest orders are not automatically linked to an account. Keep your sign-in details secure and let WONS know if you suspect unauthorized access."
+              "text": "You can order without creating an account. You can sign in with a verified email address, update your profile and manage saved addresses. Orders placed while signed in appear in Recent orders for that account. Guest orders are not automatically linked to an account. Keep your sign-in details secure and let WONS know if you suspect unauthorized access."
             },
             {
               "kind": "paragraph",
@@ -382,7 +382,7 @@
               "items": [
                 "Truy cập website: Địa chỉ IP, loại trình duyệt hoặc thiết bị, thời điểm và đường dẫn truy cập có thể được ghi nhận để vận hành, bảo mật và xử lý lỗi.",
                 "Đặt hàng và nhận hỗ trợ: Tên, email, số điện thoại, địa chỉ thanh toán và giao hàng, sản phẩm, số lượng, ghi chú bạn nhập, trạng thái đơn và nội dung trao đổi. Nếu được hoàn tiền qua chuyển khoản, WONS thu riêng thông tin tài khoản nhận tiền cần thiết. Checkout COD không yêu cầu thông tin thẻ hoặc tài khoản ngân hàng.",
-                "Tài khoản, nếu tính năng được mở: Tên hiển thị, email xác minh, địa chỉ bạn lưu và thông tin xác thực cần thiết để đăng nhập. Bạn có thể mua với tư cách khách. Đơn khách không tự động liên kết với tài khoản."
+                "Tài khoản: Tên hiển thị, email xác minh, địa chỉ bạn lưu và thông tin xác thực cần thiết để đăng nhập. Khi bạn đăng nhập để mua hàng, địa chỉ đã lưu có thể được điền sẵn để bạn kiểm tra, và mã đơn, ngày đặt, trạng thái, tổng tiền được hiển thị trong lịch sử đơn hàng của bạn. Đơn khách không tự động liên kết với tài khoản."
               ]
             }
           ]
@@ -468,7 +468,7 @@
               "items": [
                 "Website visits: We may record IP addresses, browser or device type, visit times and pages accessed to run and secure the site and diagnose errors.",
                 "Orders and support: Names, email addresses, phone numbers, billing and delivery addresses, items, quantities, notes you enter, order status and communications. Where a refund is paid by bank transfer, WONS separately collects the bank details needed to issue it. COD checkout does not ask for card or bank details.",
-                "Accounts, when available: A display name, verified email address, saved addresses and the authentication information needed to sign in. Guest checkout is available. Guest orders are not automatically linked to an account."
+                "Accounts: A display name, verified email address, saved addresses and the authentication information needed to sign in. When you check out while signed in, saved addresses can be filled in for your review, and the order reference, date, status and total appear in your order history. Guest orders are not automatically linked to an account."
               ]
             }
           ]
