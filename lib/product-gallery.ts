@@ -41,6 +41,16 @@ export function preferredColour(product: Product): string {
 }
 
 /**
+ * The photo used when a product link is shared (Facebook, Zalo, Messenger):
+ * the first photo of the colour the product page opens on, else its first photo.
+ */
+export function shareImage(product: Product) {
+  const images = product.images ?? [];
+  const colour = preferredColour(product);
+  return images.find((image) => image.color === colour) ?? images[0];
+}
+
+/**
  * The photo a catalog card reveals on hover: the back view of the cover's colour
  * when there is one, otherwise the next photo of that colour (or a shared photo).
  */

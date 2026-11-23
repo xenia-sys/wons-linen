@@ -26,9 +26,18 @@ const serif = localFont({
 });
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.wonslinen.vn"),
   title: { default: "WONS LINEN | Women & Men", template: "%s | WONS LINEN" },
   description:
     "The WONS LINEN collection. Easy silhouettes for Women and Men, at your own pace.",
+  // Link previews on Facebook, Zalo and Messenger. Product pages replace the image with a product photo.
+  openGraph: {
+    type: "website",
+    siteName: "WONS LINEN",
+    locale: "en_US",
+    images: [{ url: "/wons-logo.png", width: 2048, height: 2048, alt: "WONS Fashion" }],
+  },
+  twitter: { card: "summary_large_image" },
   robots: { index: false, follow: false },
 };
 export default async function RootLayout({

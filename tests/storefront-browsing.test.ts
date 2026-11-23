@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { selectNewArrivals } from "../lib/new-arrivals.ts";
-import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour, cardHoverImage } from "../lib/product-gallery.ts";
+import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour, cardHoverImage, shareImage } from "../lib/product-gallery.ts";
 import type { Product } from "../lib/types.ts";
 
 const style = (slug: string, day: number, options: Partial<Product> = {}) => ({
@@ -68,6 +68,15 @@ test("a product opens on the first colour that has its own photography", () => {
   assert.equal(preferredColour(style("shared", 1, { variants, images: [image("a"), image("b", "Black")] })), "Black");
   assert.equal(preferredColour(style("unmatched", 1, { variants, images: [image("a", "Navy")] })), "Olive");
   assert.equal(preferredColour(style("unpictured", 1, { variants })), "Olive");
+});
+
+test("a shared product link shows a photo of the colour the page opens on", () => {
+  const variant = (color: string) => ({ id: color, sku: color, color, color_hex: "#000000", size: "S", price_vnd: 100, available_quantity: 1 });
+  const image = (id: string, color?: string) => ({ id, src: `/${id}.jpg`, alt: id, color });
+  const variants = ["Olive", "White"].map(variant);
+  assert.equal(shareImage(style("pictured", 1, { variants, images: [image("shared"), image("w1", "White"), image("w2", "White")] }))?.id, "w1");
+  assert.equal(shareImage(style("shared only", 1, { variants, images: [image("shared")] }))?.id, "shared");
+  assert.equal(shareImage(style("unpictured", 1, { variants }))?.id, undefined);
 });
 
 test("catalog cards reveal the cover colour's back view, then its next photo", () => {
