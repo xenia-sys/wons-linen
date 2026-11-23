@@ -35,7 +35,8 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "WONS LINEN",
     locale: "en_US",
-    images: [{ url: "/wons-logo.png", width: 2048, height: 2048, alt: "WONS Fashion" }],
+    // 1200x630 logo on cream: link previews crop to a wide frame and some apps darken transparent images.
+    images: [{ url: "/og-wons.png", width: 1200, height: 630, type: "image/png", alt: "WONS Fashion" }],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: false, follow: false },
