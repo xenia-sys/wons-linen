@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { staffAuth } from "../../lib/admin-browser";
+import { emailLinkFrom, forgetEmailLink } from "../../lib/email-links";
 import { OrderInboxBadge } from "./order-inbox";
 import { adminLoginPath, adminNavigation, adminNextPath, adminSectionName, canOpenAdminSection, staffRoleLabel, STAFF_AUTH_REQUIRED, STAFF_ACCESS_CHANGED } from "../../lib/admin-navigation";
 import type { StaffRole } from "../../lib/admin-validation";
@@ -48,6 +49,16 @@ function AdminWorkspace({ enabled, children }: { enabled: boolean; children: Rea
       setChecking(false);
       setIssue({ kind: "error", message: "Your session could not be loaded. Try again to open the workspace." });
     }, 15000);
+    // Staff account confirmation emails link to /admin/login?token_hash=…&type=email.
+    const emailLink = emailLinkFrom(new URL(window.location.href));
+    if (emailLink) {
+      forgetEmailLink();
+      staffAuth().auth.verifyOtp({ token_hash: emailLink.tokenHash, type: emailLink.type }).then(({ error }) => {
+        if (error && active) setIssue({ kind: "error", message: "This email link has expired or was already used. Sign in or request a new link." });
+      }, () => {
+        if (active) setIssue({ kind: "error", message: "Could not connect to the store. Check your connection and try again." });
+      });
+    }
     const { data: { subscription } } = staffAuth().auth.onAuthStateChange((_event, session) => {
       clearTimeout(initialTimeout);
       const request = ++sequence;

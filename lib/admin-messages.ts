@@ -517,6 +517,7 @@ export const vietnameseAdminMessages: Readonly<Record<string, string>> = {
   "The server returned an incomplete response. Please try again.": "Máy chủ trả về dữ liệu chưa đầy đủ. Vui lòng thử lại.",
   "The request took too long. Please try again.": "Yêu cầu mất quá nhiều thời gian. Vui lòng thử lại.",
   "Could not connect to the store. Check your connection and try again.": "Không thể kết nối với cửa hàng. Kiểm tra kết nối và thử lại.",
+  "This email link has expired or was already used. Sign in or request a new link.": "Liên kết trong email đã hết hạn hoặc đã được dùng. Hãy đăng nhập hoặc yêu cầu liên kết mới.",
   "The product form is too large.": "Form sản phẩm có quá nhiều dữ liệu.",
   "Invalid request data.": "Dữ liệu gửi lên không hợp lệ.",
   "This product changed in another session. Reload before saving again.": "Sản phẩm đã thay đổi ở phiên khác. Hãy tải lại trước khi lưu.",

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { customerAuth } from "../../lib/customer-browser";
+import { emailLinkFrom, forgetEmailLink } from "../../lib/email-links";
 import { AccountAccess } from "./account-access";
 import { AccountDashboard } from "./account-dashboard";
 
@@ -23,12 +24,29 @@ export function CustomerAccount({ enabled }: { enabled: boolean }) {
     const incoming = new URL(window.location.href);
     const returnedFromLink = incoming.searchParams.has("code") ||
       incoming.searchParams.has("error") || incoming.hash.includes("error=");
+    const emailLink = emailLinkFrom(incoming);
+    let verifyingLink = Boolean(emailLink);
     let disposed = false;
     let revision = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    if (emailLink) {
+      // The token is single-use: remove it from the address bar and history first.
+      forgetEmailLink();
+      auth.verifyOtp({ token_hash: emailLink.tokenHash, type: emailLink.type }).then(({ error }) => {
+        verifyingLink = false;
+        if (disposed || !error) return; // Success arrives as a SIGNED_IN event.
+        setState({ status: "guest", linkError: "This link has expired or was already used. Request a new one below." });
+      }, () => {
+        verifyingLink = false;
+        if (!disposed) setState({ status: "guest", linkError: "We could not connect. Check your connection and try again." });
+      });
+    }
+
     const { data: { subscription } } = auth.onAuthStateChange((event, session) => {
       if (event === "TOKEN_REFRESHED") return;
+      // Keep showing "Checking your sign-in…" until an incoming email link is verified.
+      if (!session && verifyingLink) return;
       const current = ++revision;
       clearTimeout(timer);
       // Supabase Auth callbacks run under an internal lock; verify outside it.
