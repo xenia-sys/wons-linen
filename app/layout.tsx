@@ -39,7 +39,9 @@ export const metadata: Metadata = {
     images: [{ url: "/og-wons.png", width: 1200, height: 630, type: "image/png", alt: "WONS Fashion" }],
   },
   twitter: { card: "summary_large_image" },
-  robots: { index: false, follow: false },
+  // Admin, account, bag and checkout set their own noindex; robots.ts blocks crawling them.
+  robots: { index: true, follow: true },
+  verification: { google: "ETlbBG-02aHAPGtecObvcMNA1bNFjiCcBkWUtqknLcY" },
 };
 export default async function RootLayout({
   children,
