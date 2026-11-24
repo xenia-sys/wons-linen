@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { selectNewArrivals } from "../lib/new-arrivals.ts";
-import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour, cardHoverImage, shareImage } from "../lib/product-gallery.ts";
+import { galleryDragOffset, galleryIndex, gallerySwipeDirection, preferredColour, cardHoverImage, shareImage, colourPhotos } from "../lib/product-gallery.ts";
 import type { Product } from "../lib/types.ts";
 
 const style = (slug: string, day: number, options: Partial<Product> = {}) => ({
@@ -87,4 +87,15 @@ test("catalog cards reveal the cover colour's back view, then its next photo", (
   assert.equal(cards([image("a", "Front view", "White"), image("b", "Close-up")]), "b");
   assert.equal(cards([image("a", "Front view", "White")]), undefined);
   assert.equal(cards([]), undefined);
+});
+
+test("a colour without its own photos shows every product photo", () => {
+  const image = (id: string, color?: string) => ({ id, src: `/${id}.jpg`, alt: id, color });
+  const product = style("gallery", 1, { images: [image("n1", "Navy"), image("n2", "Navy"), image("shared")] });
+  const ids = (color: string) => colourPhotos(product, color).map((i) => i.id);
+  assert.deepEqual(ids("Navy"), ["n1", "n2", "shared"]);
+  assert.deepEqual(ids("Red"), ["n1", "n2", "shared"]);
+  const mixed = style("mixed", 1, { images: [image("n1", "Navy"), image("w1", "White"), image("shared")] });
+  assert.deepEqual(colourPhotos(mixed, "White").map((i) => i.id), ["w1", "shared"]);
+  assert.deepEqual(colourPhotos(mixed, "Olive").map((i) => i.id), ["n1", "w1", "shared"]);
 });

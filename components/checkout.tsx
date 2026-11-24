@@ -112,7 +112,8 @@ function OrderSummary({
         {lines.map(({ variantId, product, variant, quantity }) => {
           const cover =
             product.images?.find((image) => image.color === variant.color) ??
-            product.images?.find((image) => !image.color);
+            product.images?.find((image) => !image.color) ??
+            product.images?.[0];
           return (
             <li key={variantId} className="checkout-item">
               <div className="checkout-thumbnail">

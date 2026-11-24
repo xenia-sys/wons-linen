@@ -63,13 +63,22 @@ export function cardHoverImage(product: Product) {
   return sameColour.find((image) => /^back view\b/i.test(image.alt)) ?? sameColour[0];
 }
 
+/**
+ * Photos shown for a colour: its own photos plus shared ones. A colour without
+ * photos of its own shows every product photo, so its gallery is never empty.
+ */
+export function colourPhotos(product: Product, color: string) {
+  const all = product.images ?? [];
+  return all.some((image) => image.color === color)
+    ? all.filter((image) => !image.color || image.color === color)
+    : all;
+}
+
 export function getProductGallery(
   product: Product,
   color: string,
 ): GalleryMedia[] {
-  const images = (product.images ?? []).filter(
-    (image) => !image.color || image.color === color,
-  );
+  const images = colourPhotos(product, color);
   if (images.length) {
     return images.map((image) => ({
       ...image,

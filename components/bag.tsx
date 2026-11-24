@@ -48,7 +48,9 @@ export function Bag({ enabled }: { enabled: boolean }) {
                 const cover =
                   line.product.images?.find(
                     (i) => i.color === line.variant.color,
-                  ) ?? line.product.images?.find((i) => !i.color);
+                  ) ??
+                  line.product.images?.find((i) => !i.color) ??
+                  line.product.images?.[0];
                 return (
                   <li key={line.variantId} className="bag-item">
                     <Link
